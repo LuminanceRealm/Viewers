@@ -666,11 +666,13 @@ function _createStudyBrowserTabs(
       label: 'Primary',
       studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
+    /**
     {
       name: 'recent',
       label: 'Recent',
       studies: recentStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
+    */
     {
       name: 'all',
       label: 'All',
