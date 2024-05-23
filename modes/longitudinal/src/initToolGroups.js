@@ -26,6 +26,10 @@ function initDefaultToolGroup(
   const tools = {
     active: [
       {
+        toolName: toolNames.StackScrollMouseWheel,
+        bindings: [], // No mouse button bindings for mobile context
+      },
+      {
         toolName: toolNames.WindowLevel,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
@@ -112,6 +116,10 @@ function initSRToolGroup(extensionManager, toolGroupService) {
   const tools = {
     active: [
       {
+        toolName: toolNames.StackScrollMouseWheel,
+        bindings: [], // No mouse button bindings for mobile context
+      },
+      {
         toolName: toolNames.WindowLevel,
         bindings: [
           {
@@ -174,6 +182,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
 
   const tools = {
     active: [
+      {
+        toolName: toolNames.StackScrollMouseWheel,
+        bindings: [], // No mouse button bindings for mobile context
+      },
       {
         toolName: toolNames.WindowLevel,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
@@ -270,6 +282,10 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
 
   const tools = {
     active: [
+      {
+        toolName: toolNames.TrackballRotateTool,
+        bindings: [], // No mouse button bindings for mobile context
+      },
       {
         toolName: toolNames.TrackballRotateTool,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],

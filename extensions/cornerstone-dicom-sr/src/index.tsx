@@ -15,7 +15,7 @@ const Component = React.lazy(() => {
 
 const OHIFCornerstoneSRViewport = props => {
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
+    <React.Suspense fallback={<div>Cargando...</div>}>
       <Component {...props} />
     </React.Suspense>
   );

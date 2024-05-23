@@ -445,17 +445,19 @@ function WorkList({
   const commitHash = process.env.COMMIT_HASH;
 
   const menuOptions = [
+    /**
     {
       title: t('Header:About'),
       icon: 'info',
       onClick: () =>
         show({
           content: AboutModal,
-          title: t('AboutModal:About OHIF Viewer'),
+          title: t('AboutModal:About NUBIX Viewer'),
           contentProps: { versionNumber, commitHash },
           containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
+    */
     {
       title: t('Header:Preferences'),
       icon: 'settings',

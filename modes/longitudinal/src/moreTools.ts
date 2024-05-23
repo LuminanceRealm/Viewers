@@ -127,6 +127,8 @@ const moreTools = [
           commands: 'toggleCine',
           evaluate: ['evaluate.cine', 'evaluate.not3D'],
         }),
+        // Remove these three buttons
+        /*
         createButton({
           id: 'Angle',
           icon: 'tool-angle',
@@ -144,6 +146,15 @@ const moreTools = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
+          id: 'CalibrationLine',
+          icon: 'tool-calibration',
+          label: 'Calibration',
+          tooltip: 'Calibration Line',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        */
+        createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
           label: 'Zoom-in',
@@ -152,12 +163,31 @@ const moreTools = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
-          id: 'CalibrationLine',
-          icon: 'tool-calibration',
-          label: 'Calibration',
-          tooltip: 'Calibration Line',
+          id: 'TrackballRotate',
+          icon: 'tool-3d-rotate',
+          label: '3D Rotate',
+          tooltip: '3D Rotate',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: {
+            name: 'evaluate.cornerstoneTool',
+            disabledText: 'Select a 3D viewport to enable this tool',
+          },
+        }),
+        createButton({
+          id: 'Crosshairs',
+          icon: 'tool-crosshair',
+          label: 'Crosshairs',
+          tooltip: 'Crosshairs',
+          commands: {
+            commandName: 'setToolActiveToolbar',
+            commandOptions: {
+              toolGroupIds: ['mpr'],
+            },
+          },
+          evaluate: {
+            name: 'evaluate.cornerstoneTool',
+            disabledText: 'Select an MPR viewport to enable this tool',
+          },
         }),
         createButton({
           id: 'TagBrowser',

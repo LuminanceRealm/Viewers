@@ -50,7 +50,7 @@ async function createReportAsync({
 }
 
 function Loading() {
-  return <div className="text-primary-active">Loading...</div>;
+  return <div className="text-primary-active">Cargando...</div>;
 }
 
 export default createReportAsync;
