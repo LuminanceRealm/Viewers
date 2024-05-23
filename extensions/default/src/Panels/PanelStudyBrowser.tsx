@@ -365,11 +365,13 @@ function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, dis
       label: 'Primary',
       studies: primaryStudies,
     },
+    /**
     {
       name: 'recent',
       label: 'Recent',
       studies: recentStudies,
     },
+    */
     {
       name: 'all',
       label: 'All',

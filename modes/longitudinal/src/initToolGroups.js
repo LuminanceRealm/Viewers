@@ -26,7 +26,7 @@ function initDefaultToolGroup(
   const tools = {
     active: [
       {
-        toolName: toolNames.WindowLevel,
+        toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
@@ -71,7 +71,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
+      // { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
@@ -175,7 +175,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
   const tools = {
     active: [
       {
-        toolName: toolNames.WindowLevel,
+        toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
@@ -220,7 +220,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
+      // { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
@@ -270,6 +270,10 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
 
   const tools = {
     active: [
+      {
+        toolName: toolNames.TrackballRotateTool,
+        bindings: [], // No mouse button bindings for mobile context
+      },
       {
         toolName: toolNames.TrackballRotateTool,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],

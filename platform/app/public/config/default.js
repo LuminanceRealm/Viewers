@@ -24,7 +24,7 @@ window.config = {
   showPatientInfo: 'disabled',
   showLoadingIndicator: false,
   activateViewportBeforeInteraction: false,
-  useSharedArrayBuffer: 'AUTO',
+  useSharedArrayBuffer: false,
   extensions: [],
   modes: [],
   customizationService: {},

@@ -105,6 +105,31 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
+        // Add these three buttons
+        createButton({
+          id: 'Angle',
+          icon: 'tool-angle',
+          label: 'Angle',
+          tooltip: 'Angle',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'CobbAngle',
+          icon: 'tool-angle',
+          label: 'Cobb Angle',
+          tooltip: 'Cobb Angle',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'CalibrationLine',
+          icon: 'tool-calibration',
+          label: 'Calibration',
+          tooltip: 'Calibration Line',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
       ],
     },
   },
@@ -141,20 +166,6 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'TrackballRotate',
-    uiType: 'ohif.radioGroup',
-    props: {
-      type: 'tool',
-      icon: 'tool-3d-rotate',
-      label: '3D Rotate',
-      commands: setToolActiveToolbar,
-      evaluate: {
-        name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select a 3D viewport to enable this tool',
-      },
-    },
-  },
   /**
   {
     id: 'Capture',
@@ -174,25 +185,6 @@ const toolbarButtons: Button[] = [
       rows: 3,
       columns: 4,
       evaluate: 'evaluate.action',
-    },
-  },
-  {
-    id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
-    props: {
-      type: 'tool',
-      icon: 'tool-crosshair',
-      label: 'Crosshairs',
-      commands: {
-        commandName: 'setToolActiveToolbar',
-        commandOptions: {
-          toolGroupIds: ['mpr'],
-        },
-      },
-      evaluate: {
-        name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select an MPR viewport to enable this tool',
-      },
     },
   },
 ];
