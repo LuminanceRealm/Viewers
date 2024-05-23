@@ -56,7 +56,8 @@
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
     "lerna:customVersion": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "deploy:beta": "cd ./platform/app/dist && aws s3 sync ./ s3://beta-visor.nubix.cloud"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",

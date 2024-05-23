@@ -107,6 +107,7 @@ const toolbarButtons = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  /**
   {
     id: 'Capture',
     uiType: 'ohif.radioGroup',
@@ -117,6 +118,7 @@ const toolbarButtons = [
       evaluate: 'evaluate.action',
     },
   },
+  */
   {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',

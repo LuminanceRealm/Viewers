@@ -128,6 +128,7 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
+  /**
   {
     id: 'Capture',
     uiType: 'ohif.radioGroup',
@@ -143,6 +144,7 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.action',
     },
   },
+  */
    {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',

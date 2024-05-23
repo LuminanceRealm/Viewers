@@ -71,6 +71,8 @@ function Header({
               appConfig={appConfig}
             />
           )}
+          {/* Commenting out the options menu */}
+          {/*
           <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
           <div className="flex-shrink-0">
             <Dropdown
@@ -90,6 +92,7 @@ function Header({
               </IconButton>
             </Dropdown>
           </div>
+          */}
         </div>
       </div>
     </NavBar>
