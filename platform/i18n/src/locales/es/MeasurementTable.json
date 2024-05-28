@@ -7,5 +7,8 @@
   "Relabel": "Re-etiquetar",
   "Targets": "Objetivos",
   "Export": "Exportar",
-  "Create Report": "Crear reporte"
+  "Create Report": "Crear reporte",
+  "Segmentation": "Segmentación",
+  "MEASUREMENTS": "MEDIDAS",
+  "No tracked measurements": "No hay medidas registradas"
 }

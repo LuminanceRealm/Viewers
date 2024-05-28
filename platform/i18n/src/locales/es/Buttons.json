@@ -60,5 +60,8 @@
   "3D Rotate": "Rotar 3D",
   "Dicom Tag Browser": "Navegador de etiquetas DICOM",
   "Magnify Probe": "Lupa de magnificación",
-  "Ultrasound Directional": "Ultrasonido direccional"
+  "Ultrasound Directional": "Ultrasonido direccional",
+  "Common": "Común",
+  "Advanced": "Avanzado",
+  "Custom": "Personalizado"
 }
