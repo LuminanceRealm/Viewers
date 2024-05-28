@@ -210,6 +210,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
                 label: 'Export',
                 onClick: exportReport,
               },
+              /**
               {
                 label: 'Create Report',
                 onClick: () => {
@@ -219,6 +220,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
                   });
                 },
               },
+              */
             ]}
             disabled={disabled}
           />
