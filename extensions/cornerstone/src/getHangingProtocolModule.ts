@@ -21,16 +21,16 @@ function getHangingProtocolModule() {
       protocol: only3D,
     },
     {
-      name: fourUp.id,
-      protocol: fourUp,
+      name: primary3D.id,
+      protocol: primary3D,
     },
     {
       name: main3D.id,
       protocol: main3D,
     },
     {
-      name: primary3D.id,
-      protocol: primary3D,
+      name: fourUp.id,
+      protocol: fourUp,
     },
     {
       name: primaryAxial.id,
