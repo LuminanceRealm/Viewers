@@ -1,7 +1,7 @@
 export const main3D = {
   id: 'main3D',
   locked: true,
-  name: '3D main',
+  name: '3D',
   icon: 'layout-advanced-3d-main',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
