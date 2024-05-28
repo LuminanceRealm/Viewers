@@ -1,6 +1,11 @@
 {
   "Cancel": "$t(Buttons:Cancel)",
+  "No hotkeys found": "No se encontraron teclas rápidas.",
   "Reset to defaults": "$t(Buttons:Reset to defaults)",
+  "ResetDefaultMessage": "Ajustes restablecidos. Por favor, guarde.",
   "Save": "$t(Buttons:Save)",
-  "User preferences": "Preferencias de Usuario"
+  "SaveMessage": "Guardado",
+  "User preferences": "Preferencias de usuario",
+  "Language": "Idioma",
+  "General": "General"
 }

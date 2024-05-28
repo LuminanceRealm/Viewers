@@ -232,10 +232,12 @@ export default function PanelMeasurementTable({
               label: 'Export',
               onClick: exportReport,
             },
+            /**
             {
               label: 'Create Report',
               onClick: createReport,
             },
+            */
           ]}
         />
       </div>
