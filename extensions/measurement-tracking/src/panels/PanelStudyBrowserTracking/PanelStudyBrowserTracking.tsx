@@ -58,9 +58,9 @@ function PanelStudyBrowserTracking({
     } catch (error) {
       console.warn(error);
       uiNotificationService.show({
-        title: 'Thumbnail Double Click',
+        title: 'Doble clic en miniatura',
         message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+          'No se pudieron agregar los conjuntos de visualización seleccionados al visor debido a una discrepancia en las reglas del Protocolo de Visualización.',
         type: 'info',
         duration: 3000,
       });
@@ -352,24 +352,24 @@ function PanelStudyBrowserTracking({
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Untrack Series',
+        title: 'Dejar de rastrear serie',
         body: () => (
           <div className="bg-primary-dark p-4 text-white">
-            <p>Are you sure you want to untrack this series?</p>
+            <p>¿Está seguro de que desea dejar de rastrear esta serie?</p>
             <p className="mt-2">
-              This action cannot be undone and will delete all your existing measurements.
+              Esta acción no se puede deshacer y eliminará todas sus mediciones existentes.
             </p>
           </div>
         ),
         actions: [
           {
             id: 'cancel',
-            text: 'Cancel',
+            text: 'Cancelar',
             type: ButtonEnums.type.secondary,
           },
           {
             id: 'yes',
-            text: 'Yes',
+            text: 'Si',
             type: ButtonEnums.type.primary,
             classes: ['untrack-yes-button'],
           },

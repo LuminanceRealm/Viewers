@@ -1,6 +1,7 @@
 {
-  "Measurements": "Mediciones",
   "Studies": "Estudios",
-  "MEASURMENTS": "MEDICIONES",
-  "Segmentation": "Segmentación"
+  "Measurements": "Mediciones",
+  "Measure": "Medir",
+  "Segmentation": "Segmentación",
+  "MEASUREMENTS": "MEDICIONES"
 }

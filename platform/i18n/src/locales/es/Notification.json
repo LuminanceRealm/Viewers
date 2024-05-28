@@ -1,0 +1,18 @@
+{
+  "Do you want to add this measurement to the existing report?": "¿Desea agregar esta medida al reporte existente?",
+  "Create new report": "Crear nuevo reporte",
+  "Add to existing report": "Agregar al reporte existente",
+  "Discard": "Descartar",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "Tiene medidas registradas existentes. ¿Qué le gustaría hacer con sus medidas registradas?",
+  "No, do not ask again for this series": "No, no volver a preguntar para esta serie",
+  "No": "No",
+  "Track measurements for this series?": "¿Registrar medidas para esta serie?",
+  "Yes": "Sí",
+  "Cancel": "Cancelar",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "Las medidas no pueden abarcar múltiples estudios. ¿Desea guardar sus medidas registradas?",
+  "No, discard previously tracked series & measurements": "No, descartar series y medidas registradas anteriormente.",
+  "Do you want to continue tracking measurements for this study?": "¿Desea continuar registrando medidas para este estudio?",
+  "Create Report": "Crear reporte",
+  "Measurements saved successfully": "Medidas guardadas exitosamente",
+  "Failed to store measurements": "Error al guardar las medidas"
+}

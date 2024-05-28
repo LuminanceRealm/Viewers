@@ -2,7 +2,7 @@
   "AccessionNumber": "Num. Adhesión",
   "ClearFilters": "Limpiar filtros",
   "Description": "Descripción",
-  "Empty": "vacío",
+  "Empty": "Vacío",
   "Filter list to 100 studies or less to enable sorting": "Filtre la lista a 100 estudios o menos para habilitar la clasificación",
   "Instances": "Instancias",
   "MRN": "MRN",
@@ -12,7 +12,17 @@
   "Page": "Página",
   "Next": "Siguiente >",
   "Results per page": "Resultados por página",
-  "Number of studies": "Estudios",
+  "Number of studies": "Número de estudios",
   "StudyDate": "Fecha del estudio",
-  "StudyList": "Lista de Estudios"
+  "StudyList": "Lista de Estudios",
+  "Study date": "Fecha del estudio",
+  "Patient Name": "Nombre del paciente",
+  "Study list": "Lista de estudios",
+  "Clear filters": "Limpiar filtros",
+  "Start Date": "Fecha de inicio",
+  "Series": "Series",
+  "No studies available": "No hay estudios disponibles",
+  "Loading...": "Cargando...",
+  "Select...": "Seleccionar...",
+  "InstitutionName": "Nombre de la institución"
 }

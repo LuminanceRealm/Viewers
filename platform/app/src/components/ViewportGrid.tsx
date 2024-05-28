@@ -112,9 +112,9 @@ function ViewerViewportGrid(props: withAppTypes) {
       } catch (error) {
         console.warn(error);
         uiNotificationService.show({
-          title: 'Drag and Drop',
+          title: 'Arrastrar y soltar',
           message:
-            'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+            'No se pudieron agregar los conjuntos de visualización seleccionados al puerto de visualización debido a una discrepancia en las reglas del Protocolo de Colgado.',
           type: 'info',
           duration: 3000,
         });

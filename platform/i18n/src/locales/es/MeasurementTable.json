@@ -5,10 +5,14 @@
   "MAX": "Máximo",
   "NonTargets": "No objetivos",
   "Relabel": "Re-etiquetar",
+  "Measurements": "Medidas",
   "Targets": "Objetivos",
+  "Export CSV": "Exportar CSV",
+  "No tracked measurements": "No hay medidas registradas",
   "Export": "Exportar",
   "Create Report": "Crear reporte",
+  "Do you want to add this measurement to the existing report?": "¿Desea agregar esta medida al reporte existente?",
+  "Track measurements for this series?": "¿Desea registrar medidas para esta serie?",
   "Segmentation": "Segmentación",
-  "MEASUREMENTS": "MEDIDAS",
-  "No tracked measurements": "No hay medidas registradas"
+  "MEASUREMENTS": "MEDIDAS"
 }

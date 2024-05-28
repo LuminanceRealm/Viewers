@@ -47,8 +47,8 @@ function PanelStudyBrowser({
     } catch (error) {
       console.warn(error);
       uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message: 'The selected display sets could not be added to the viewport.',
+        title: 'Doble clic en miniatura',
+        message: 'No se pudieron agregar los conjuntos de visualización seleccionados al visor.',
         type: 'info',
         duration: 3000,
       });
