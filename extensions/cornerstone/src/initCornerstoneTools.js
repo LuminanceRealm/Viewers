@@ -40,6 +40,7 @@ import {
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
+import ZoomTouchTool from './tools/ZoomTouchTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
@@ -51,7 +52,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelTool);
   addTool(StackScrollMouseWheelTool);
   addTool(StackScrollTool);
-  addTool(ZoomTool);
+  // addTool(ZoomTool);
   addTool(ProbeTool);
   addTool(VolumeRotateMouseWheelTool);
   addTool(MIPJumpToClickTool);
@@ -83,6 +84,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(SplineROITool);
   addTool(LivewireContourTool);
   addTool(OrientationMarkerTool);
+  addTool(ZoomTouchTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -105,7 +107,7 @@ const toolNames = {
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
   StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,
-  Zoom: ZoomTool.toolName,
+  Zoom: ZoomTouchTool.toolName,
   VolumeRotateMouseWheel: VolumeRotateMouseWheelTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
