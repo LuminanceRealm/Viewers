@@ -1,7 +1,7 @@
 export const primaryAxial = {
   id: 'primaryAxial',
   locked: true,
-  name: 'Axial Primary',
+  name: 'Axial principal',
   icon: 'layout-advanced-axial-primary',
   isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
