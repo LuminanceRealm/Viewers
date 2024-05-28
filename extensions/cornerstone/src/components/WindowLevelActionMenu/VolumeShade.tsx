@@ -28,7 +28,7 @@ export function VolumeShade({
   return (
     <SwitchButton
       key={key}
-      label="Shade"
+      label="Sombra"
       checked={shade}
       onChange={() => {
         setShade(!shade);

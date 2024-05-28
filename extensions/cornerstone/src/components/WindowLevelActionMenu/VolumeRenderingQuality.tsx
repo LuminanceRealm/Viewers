@@ -48,7 +48,7 @@ export function VolumeRenderingQuality({
           className="block text-white"
           htmlFor="volume"
         >
-          Quality
+          Calidad
         </label>
         {quality !== null && (
           <input

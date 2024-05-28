@@ -14,7 +14,7 @@ export function VolumeRenderingPresets({
   const onClickPresets = () => {
     uiModalService.show({
       content: VolumeRenderingPresetsContent,
-      title: 'Rendering Presets',
+      title: 'Preajustes de renderizados',
       movable: true,
       contentProps: {
         onClose: uiModalService.hide,
@@ -29,7 +29,7 @@ export function VolumeRenderingPresets({
 
   return (
     <AllInOneMenu.Item
-      label="Rendering Presets"
+      label="Preajustes de renderizados"
       icon={<Icon name="VolumeRendering" />}
       rightIcon={<Icon name="action-new-dialog" />}
       onClick={onClickPresets}

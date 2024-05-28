@@ -180,7 +180,7 @@ export function WindowLevelActionMenu({
         )}
 
         {volumeRenderingQualityRange && is3DVolume && (
-          <AllInOneMenu.SubMenu itemLabel="Rendering Options">
+          <AllInOneMenu.SubMenu itemLabel="Opciones de renderizado">
             <VolumeRenderingOptions
               viewportId={viewportId}
               commandsManager={commandsManager}

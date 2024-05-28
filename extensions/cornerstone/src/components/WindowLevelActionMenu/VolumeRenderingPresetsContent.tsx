@@ -46,7 +46,7 @@ export function VolumeRenderingPresetsContent({
             <InputFilterText
               value={searchValue}
               onDebounceChange={handleSearchChange}
-              placeholder={'Search all'}
+              placeholder={'Buscar'}
             />
           </div>
         </div>

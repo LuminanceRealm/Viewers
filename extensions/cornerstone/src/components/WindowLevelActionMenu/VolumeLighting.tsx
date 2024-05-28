@@ -45,7 +45,7 @@ export function VolumeLighting({
           className="block  text-white"
           htmlFor="ambient"
         >
-          Ambient
+          Ambiente
         </label>
         {ambient !== null && (
           <input
@@ -73,7 +73,7 @@ export function VolumeLighting({
           className="block  text-white"
           htmlFor="diffuse"
         >
-          Diffuse
+          Difuso
         </label>
         {diffuse !== null && (
           <input
@@ -102,7 +102,7 @@ export function VolumeLighting({
           className="block  text-white"
           htmlFor="specular"
         >
-          Specular
+          Especular
         </label>
         {specular !== null && (
           <input
