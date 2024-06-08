@@ -162,7 +162,7 @@ const createBaseStyle = (expandedWidth: number) => {
 const SidePanel = ({
   side,
   className,
-  activeTabIndex: activeTabIndexProp,
+  activeTabIndex: activeTabIndexProp = null,
   tabs,
   onOpen,
   expandedWidth = 248,
@@ -404,11 +404,6 @@ const SidePanel = ({
       )}
     </div>
   );
-};
-
-SidePanel.defaultProps = {
-  defaultComponentOpen: null,
-  activeTabIndex: null, // the default is to close the side panel
 };
 
 SidePanel.propTypes = {
