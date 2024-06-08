@@ -110,9 +110,8 @@ export default async function init({
     !sharedArrayBufferDisabled
   ) {
     uiNotificationService.show({
-      title: 'Cross Origin Isolation',
-      message:
-        'Cross Origin Isolation is not enabled, read more about it here: https://docs.ohif.org/faq/',
+      title: 'Aceleración deshabilitada',
+      message: 'El renderizado offScreen y la aceleración GPU se han deshabilitado en este modo.',
       type: 'warning',
     });
   }
