@@ -36,21 +36,23 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to add this measurement to the existing report?';
+    const message = '¿Desea añadir esta medida al informe existente?';
     const actions = [
       {
         type: ButtonEnums.type.secondary,
-        text: 'Cancel',
+        text: 'Cancelar',
         value: RESPONSE.CANCEL,
       },
+      /**
       {
         type: ButtonEnums.type.primary,
-        text: 'Create new report',
+        text: 'Crear un nuevo informe',
         value: RESPONSE.CREATE_REPORT,
       },
+      */
       {
         type: ButtonEnums.type.primary,
-        text: 'Add to existing report',
+        text: 'Añadir a informe existente',
         value: RESPONSE.ADD_SERIES,
       },
     ];
