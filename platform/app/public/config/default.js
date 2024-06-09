@@ -21,10 +21,12 @@ const config = {
       );
     },
   },
-  investigationalUseDialog: 'never',
+  investigationalUseDialog: {
+    option: 'never',
+  },
   disableConfirmationPrompts: true,
   showPatientInfo: 'disabled',
-  showLoadingIndicator: false,
+  showLoadingIndicator: true,
   activateViewportBeforeInteraction: false,
   useSharedArrayBuffer: 'AUTO',
   extensions: [],
@@ -34,10 +36,11 @@ const config = {
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
-  showWarningMessageForCrossOrigin: true,
-  showCPUFallbackMessage: true,
+  showWarningMessageForCrossOrigin: false,
+  showCPUFallbackMessage: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
+  preferSizeOverAccuracy: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 1,

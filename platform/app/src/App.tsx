@@ -87,7 +87,7 @@ function App({
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl2');
 
-  const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+  const max3DTextureSize = gl ? gl.getParameter(gl.MAX_3D_TEXTURE_SIZE) : 2048;
   appConfigState.max3DTextureSize = max3DTextureSize;
 
   const {
