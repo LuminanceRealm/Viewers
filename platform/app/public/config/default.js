@@ -40,7 +40,6 @@ const config = {
   showCPUFallbackMessage: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
-  preferSizeOverAccuracy: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 1,
