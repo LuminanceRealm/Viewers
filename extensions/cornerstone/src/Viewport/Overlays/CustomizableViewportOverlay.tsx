@@ -42,6 +42,11 @@ const OverlayItemComponents = {
   'ohif.overlayItem.windowLevel': VOIOverlayItem,
   'ohif.overlayItem.zoomLevel': ZoomOverlayItem,
   'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
+  'ohif.overlayItem.sliceThickness': SliceThicknessOverlayItem,
+  'ohif.overlayItem.patientID': PatientIDOverlayItem,
+  'ohif.overlayItem.patientName': PatientNameOverlayItem,
+  'ohif.overlayItem.patientAge': PatientAgeOverlayItem,
+  'ohif.overlayItem.patientSex': PatientSexOverlayItem,
 };
 
 /**
@@ -249,11 +254,36 @@ function CustomizableViewportOverlay({
         .map((instance, index) => {
           return [
             {
+              id: 'PatientID',
+              customizationType: 'ohif.overlayItem.patientID',
+              instanceIndex: index,
+            },
+            {
               ...studyDateItem,
               instanceIndex: index,
             },
             {
+              id: 'PatientName',
+              customizationType: 'ohif.overlayItem.patientName',
+              instanceIndex: index,
+            },
+            {
+              id: 'PatientAge',
+              customizationType: 'ohif.overlayItem.patientAge',
+              instanceIndex: index,
+            },
+            {
+              id: 'PatientSex',
+              customizationType: 'ohif.overlayItem.patientSex',
+              instanceIndex: index,
+            },
+            {
               ...seriesDescriptionItem,
+              instanceIndex: index,
+            },
+            {
+              id: 'SliceThickness',
+              customizationType: 'ohif.overlayItem.sliceThickness',
               instanceIndex: index,
             },
           ];
@@ -473,6 +503,110 @@ function InstanceNumberOverlayItem({
           `${imageIndex + 1}/${numberOfSlices}`
         )}
       </span>
+    </div>
+  );
+}
+
+/**
+ * Slice Thickness Overlay item
+ */
+function SliceThicknessOverlayItem({ instance, customization }: OverlayItemProps) {
+  console.log('Instance:', instance);
+  const sliceThickness = instance?.SliceThickness;
+
+  if (sliceThickness === undefined || sliceThickness === null) {
+    return null;
+  }
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span className="mr-1 shrink-0">Grosor:</span>
+      <span>{sliceThickness} mm</span>
+    </div>
+  );
+}
+
+/**
+ * Patient ID Overlay item
+ */
+function PatientIDOverlayItem({ instance, customization }: OverlayItemProps) {
+  const patientID = instance?.PatientID;
+
+  if (patientID === undefined || patientID === null) {
+    return null;
+  }
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span>{patientID}</span>
+    </div>
+  );
+}
+
+/**
+ * Patient Name Overlay item
+ */
+function PatientNameOverlayItem({ instance, customization }: OverlayItemProps) {
+  const patientName = instance?.PatientName;
+
+  if (patientName === undefined || patientName === null) {
+    return null;
+  }
+
+  const formattedPatientName = formatPN(patientName);
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span>{formattedPatientName}</span>
+    </div>
+  );
+}
+
+/**
+ * Patient Age Overlay item
+ */
+function PatientAgeOverlayItem({ instance, customization }: OverlayItemProps) {
+  const patientAge = instance?.PatientAge;
+
+  if (patientAge === undefined || patientAge === null) {
+    return null;
+  }
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span>{patientAge}</span>
+    </div>
+  );
+}
+
+/**
+ * Patient Sex Overlay item
+ */
+function PatientSexOverlayItem({ instance, customization }: OverlayItemProps) {
+  const patientSex = instance?.PatientSex;
+
+  if (patientSex === undefined || patientSex === null) {
+    return null;
+  }
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span>{patientSex}</span>
     </div>
   );
 }
