@@ -511,7 +511,6 @@ function InstanceNumberOverlayItem({
  * Slice Thickness Overlay item
  */
 function SliceThicknessOverlayItem({ instance, customization }: OverlayItemProps) {
-  console.log('Instance:', instance);
   const sliceThickness = instance?.SliceThickness;
 
   if (sliceThickness === undefined || sliceThickness === null || sliceThickness === '0.00') {
