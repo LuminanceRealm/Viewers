@@ -130,6 +130,14 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
+        createButton({
+          id: 'Capture',
+          icon: 'tool-capture',
+          label: 'Capture',
+          tooltip: 'Capture',
+          commands: 'showDownloadViewportModal',
+          evaluate: 'evaluate.action',
+        }),
       ],
     },
   },
@@ -166,18 +174,6 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  /**
-  {
-    id: 'Capture',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
-    },
-  },
-  */
   {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',
