@@ -15,5 +15,6 @@
   "The minimum valid height is 100px.": "La altura mínima válida es de 100px",
   "The minimum valid width is 100px.": "El ancho mínimo válido es de 100px",
   "Show Annotations": "Mostrar anotaciones",
-  "Please specify the dimensions, filename, and desired type for the output image.": "Por favor, especifique las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida."
+  "Please specify the dimensions, filename, and desired type for the output image.": "Por favor, especifique las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida.",
+  "Download High Quality Image": "Descargar imagen"
 }
