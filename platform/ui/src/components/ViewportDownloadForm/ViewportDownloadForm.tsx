@@ -21,7 +21,7 @@ const FILE_TYPE_OPTIONS = [
   },
 ];
 
-const DEFAULT_FILENAME = 'image';
+const DEFAULT_FILENAME = 'Imagen - NUBIX';
 
 const REFRESH_VIEWPORT_TIMEOUT = 100;
 
@@ -145,9 +145,9 @@ const ViewportDownloadForm = ({
   };
 
   const error_messages = {
-    width: 'The minimum valid width is 100px.',
-    height: 'The minimum valid height is 100px.',
-    filename: 'The file name cannot be empty.',
+    width: 'El ancho mínimo válido es de 100px',
+    height: 'La altura mínima válida es de 100px.',
+    filename: 'El nombre del archivo no puede estar vacío.',
   };
 
   const renderErrorHandler = errorType => {
@@ -263,7 +263,9 @@ const ViewportDownloadForm = ({
   return (
     <div>
       <Typography variant="h6">
-        {t('Please specify the dimensions, filename, and desired type for the output image.')}
+        {t(
+          'Por favor, especifique las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida.'
+        )}
       </Typography>
 
       <div className="mt-6 flex flex-col">
@@ -272,7 +274,7 @@ const ViewportDownloadForm = ({
             data-cy="file-name"
             value={filename}
             onChange={evt => setFilename(evt.target.value)}
-            label={t('File Name')}
+            label={t('Nombre del archivo')}
           />
           {renderErrorHandler('filename')}
         </div>
@@ -284,7 +286,7 @@ const ViewportDownloadForm = ({
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
-                  label={t('Image width (px)')}
+                  label={t('Ancho (px)')}
                   value={dimensions.width}
                   onChange={evt => onDimensionsChange(evt.target.value, 'width')}
                   data-cy="image-width"
@@ -296,7 +298,7 @@ const ViewportDownloadForm = ({
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
-                  label={t('Image height (px)')}
+                  label={t('Altura (px)')}
                   value={dimensions.height}
                   onChange={evt => onDimensionsChange(evt.target.value, 'height')}
                   data-cy="image-height"
@@ -308,7 +310,7 @@ const ViewportDownloadForm = ({
             <div className="mt-8 flex items-center">
               <Tooltip
                 position="right"
-                content={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'}
+                content={keepAspect ? 'Ignorar dimensiones' : 'Mantener dimensiones'}
               >
                 <IconButton
                   onClick={onKeepAspectToggle}
@@ -325,7 +327,7 @@ const ViewportDownloadForm = ({
             <div>
               <InputLabelWrapper
                 sortDirection="none"
-                label={t('File Type')}
+                label={t('Formato')}
                 isSortable={false}
                 onLabelClick={() => {}}
               >
@@ -356,7 +358,7 @@ const ViewportDownloadForm = ({
                   checked={showAnnotations}
                   onChange={event => setShowAnnotations(event.target.checked)}
                 />
-                <Typography>{t('Show Annotations')}</Typography>
+                <Typography>{t('Incluir anotaciones')}</Typography>
               </label>
             </div>
           </div>
@@ -368,7 +370,7 @@ const ViewportDownloadForm = ({
           className="bg-secondary-dark border-secondary-primary w-max-content min-w-full rounded p-4"
           data-cy="image-preview"
         >
-          <Typography variant="h5">{t('Image preview')}</Typography>
+          <Typography variant="h5">{t('Vista previa')}</Typography>
           {activeViewportElement && (
             <div
               className="mx-auto my-2"
@@ -380,7 +382,9 @@ const ViewportDownloadForm = ({
             ></div>
           )}
           {!activeViewportElement && (
-            <Typography className="mt-4">{t('Active viewport has no displayed image')}</Typography>
+            <Typography className="mt-4">
+              {t('El visor activo no muestra ninguna imagen')}
+            </Typography>
           )}
         </div>
       </div>
@@ -391,7 +395,7 @@ const ViewportDownloadForm = ({
           type={ButtonEnums.type.secondary}
           onClick={onClose}
         >
-          {t('Cancel')}
+          {t('Cancelar')}
         </Button>
         <Button
           className="ml-2"
@@ -400,7 +404,7 @@ const ViewportDownloadForm = ({
           type={ButtonEnums.type.primary}
           name={'download'}
         >
-          {t('Download')}
+          {t('Descargar')}
         </Button>
       </div>
     </div>

@@ -1,9 +1,9 @@
 {
-  "Active viewport has no displayed image": "El puerto activo no muestra ninguna imagen",
+  "Active viewport has no displayed image": "El visor activo no muestra ninguna imagen",
   "Cancel": "Cancelar",
   "Download": "Descargar",
-  "The file name cannot be empty.": "El nombre del archivo no puede estar vacío",
-  "File Type": "Tipo de archivo",
+  "The file name cannot be empty.": "El nombre del archivo no puede estar vacío.",
+  "File Type": "Formato del archivo",
   "File Name": "Nombre del archivo",
   "formTitle": "Por favor, especifique las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida.",
   "Image height (px)": "Altura (px)",
@@ -14,7 +14,7 @@
   "loadingPreview": "Cargando vista previa...",
   "The minimum valid height is 100px.": "La altura mínima válida es de 100px",
   "The minimum valid width is 100px.": "El ancho mínimo válido es de 100px",
-  "Show Annotations": "Mostrar anotaciones",
+  "Show Annotations": "Incluir anotaciones",
   "Please specify the dimensions, filename, and desired type for the output image.": "Por favor, especifique las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida.",
   "Download High Quality Image": "Descargar imagen"
 }

@@ -396,8 +396,8 @@ function commandsModule({
       if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
         // Cannot download a non-cornerstone viewport (image).
         uiNotificationService.show({
-          title: 'Download Image',
-          message: 'Image cannot be downloaded',
+          title: 'Descargar imagen',
+          message: 'La imagen no pudo ser descargada',
           type: 'error',
         });
         return;
@@ -408,7 +408,7 @@ function commandsModule({
       if (uiModalService) {
         uiModalService.show({
           content: CornerstoneViewportDownloadForm,
-          title: 'Download High Quality Image',
+          title: 'Descargar imagen',
           contentProps: {
             activeViewportId,
             onClose: uiModalService.hide,
