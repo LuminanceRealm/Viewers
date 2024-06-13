@@ -86,7 +86,7 @@ function DicomUpload({ dataSource, onComplete, onStarted }: DicomUploadProps): R
   return (
     <>
       {dicomFileUploaderArr.length ? (
-        <div className={classNames('h-[calc(100vh-300px)]', baseClassNames)}>
+        <div className={classNames('h-[calc(100dvh-300px)]', baseClassNames)}>
           <DicomUploadProgress
             dicomFileUploaderArr={Array.from(dicomFileUploaderArr)}
             onComplete={onComplete}

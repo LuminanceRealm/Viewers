@@ -109,8 +109,8 @@ function DataSourceConfigurationModalComponent({
     itemIndex === currentSelectedItemIndex + 1
       ? classNames('border-2', 'border-solid', 'border-primary-light')
       : itemIndex < selectedItems.length
-      ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
-      : 'border border-dashed border-secondary-light';
+        ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
+        : 'border border-dashed border-secondary-light';
 
   const getSelectedItemTextClasses = itemIndex =>
     itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary-active';
@@ -173,7 +173,7 @@ function DataSourceConfigurationModalComponent({
   };
 
   return (
-    <div className="flex h-[calc(100vh-300px)] select-none flex-col gap-4 pt-0.5">
+    <div className="flex h-[calc(100dvh-300px)] select-none flex-col gap-4 pt-0.5">
       {getSelectedItemsComponent()}
       <div className="h-0.5 w-full shrink-0 bg-black"></div>
       {errorMessage ? (

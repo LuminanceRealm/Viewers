@@ -272,7 +272,7 @@ module.exports = {
       auto: 'auto',
       ...theme('spacing'),
       full: '100%',
-      screen: '100vh',
+      screen: '100dvh',
     }),
     inset: theme => ({
       ...theme('spacing'),
@@ -319,7 +319,7 @@ module.exports = {
     }),
     maxHeight: theme => ({
       full: '100%',
-      screen: '100vh',
+      screen: '100dvh',
       ...theme('spacing'),
     }),
     maxWidth: (theme, { breakpoints }) => ({
@@ -342,7 +342,7 @@ module.exports = {
       ...theme('spacing'),
       0: '0',
       full: '100%',
-      screen: '100vh',
+      screen: '100dvh',
     }),
     minWidth: theme => ({
       ...theme('spacing'),
