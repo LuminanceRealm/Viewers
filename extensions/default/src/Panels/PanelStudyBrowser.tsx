@@ -4,7 +4,7 @@ import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 
-const { sortStudyInstances, formatDate } = utils;
+const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
 /**
  *
@@ -206,14 +206,14 @@ function PanelStudyBrowser({
     };
   }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
-  const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+  const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -323,61 +323,4 @@ function _getComponentType(ds) {
   }
 
   return 'thumbnail';
-}
-
-/**
- *
- * @param {string[]} primaryStudyInstanceUIDs
- * @param {object[]} studyDisplayList
- * @param {string} studyDisplayList.studyInstanceUid
- * @param {string} studyDisplayList.date
- * @param {string} studyDisplayList.description
- * @param {string} studyDisplayList.modalities
- * @param {number} studyDisplayList.numInstances
- * @param {object[]} displaySets
- * @returns tabs - The prop object expected by the StudyBrowser component
- */
-function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
-  const primaryStudies = [];
-  const recentStudies = [];
-  const allStudies = [];
-
-  studyDisplayList.forEach(study => {
-    const displaySetsForStudy = displaySets.filter(
-      ds => ds.StudyInstanceUID === study.studyInstanceUid
-    );
-    const tabStudy = Object.assign({}, study, {
-      displaySets: displaySetsForStudy,
-    });
-
-    if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
-      primaryStudies.push(tabStudy);
-    } else {
-      // TODO: Filter allStudies to dates within one year of current date
-      recentStudies.push(tabStudy);
-      allStudies.push(tabStudy);
-    }
-  });
-
-  const tabs = [
-    {
-      name: 'primary',
-      label: 'Primary',
-      studies: primaryStudies,
-    },
-    /**
-    {
-      name: 'recent',
-      label: 'Recent',
-      studies: recentStudies,
-    },
-    */
-    {
-      name: 'all',
-      label: 'All',
-      studies: allStudies,
-    },
-  ];
-
-  return tabs;
 }

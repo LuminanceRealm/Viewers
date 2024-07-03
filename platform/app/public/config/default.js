@@ -1,6 +1,6 @@
 /** @type {AppTypes.Config} */
 
-const config = {
+window.config = {
   routerBasename: '/',
   whiteLabeling: {
     //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
@@ -38,6 +38,8 @@ const config = {
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
+  showLoadingIndicator: true,
+  experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   maxNumRequests: {
@@ -167,5 +169,3 @@ const config = {
     },
   ],
 };
-
-window.config = config;
