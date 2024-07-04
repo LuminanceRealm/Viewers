@@ -189,7 +189,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
           />
         )}
         <MeasurementTable
-          title="Measurements"
+          title="Medidas"
           data={displayMeasurementsWithoutFindings}
           servicesManager={servicesManager}
           onClick={jumpToImage}
@@ -197,7 +197,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
         />
         {additionalFindings.length !== 0 && (
           <MeasurementTable
-            title="Additional Findings"
+            title="Resultados adicionales"
             data={additionalFindings}
             servicesManager={servicesManager}
             onClick={jumpToImage}
@@ -206,7 +206,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
         )}
         {nonAcquisitionMeasurements.length !== 0 && (
           <MeasurementTable
-            title="Non-tracked"
+            title="No rastreado"
             data={nonAcquisitionMeasurements}
             servicesManager={servicesManager}
             onClick={jumpToImage}
@@ -220,7 +220,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
             t={t}
             actions={[
               {
-                label: 'Download CSV',
+                label: 'Descargar CSV',
                 onClick: exportReport,
               },
               /**
@@ -270,7 +270,9 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
   const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
   if (!displaySets[0] || !displaySets[0].images) {
-    throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
+    throw new Error(
+      'El panel de medidas rastreadas sólo debería rastrear los displaySets "apilados".'
+    );
   }
 
   const {
@@ -285,7 +287,7 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
   } = measurement;
 
   const firstSite = findingSites?.[0];
-  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  const label = baseLabel || finding?.text || firstSite?.text || '(vacío)';
   let displayText = baseDisplayText || [];
   if (findingSites) {
     const siteText = [];
