@@ -71,7 +71,43 @@ const seriesDescriptionItem = {
   contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription
 };
 
-const topLeftItems = { id: 'cornerstoneOverlayTopLeft', items: [studyDateItem, seriesDescriptionItem] };
+const patientIDItem = {
+  id: 'PatientID',
+  customizationType: 'ohif.overlayItem.patientID'
+}
+
+const patientNameItem = {
+  id: 'PatientName',
+  customizationType: 'ohif.overlayItem.patientName'
+}
+
+const patientAgeItem = {
+  id: 'PatientAge',
+  customizationType: 'ohif.overlayItem.patientAge'
+}
+
+const patientSexItem = {
+  id: 'PatientSex',
+  customizationType: 'ohif.overlayItem.patientSex'
+}
+
+const sliceTicknessItem = {
+  id: 'SliceThickness',
+  customizationType: 'ohif.overlayItem.sliceThickness'
+}
+
+const topLeftItems = {
+  id: 'cornerstoneOverlayTopLeft',
+  items: [
+    patientIDItem,
+    studyDateItem,
+    patientNameItem,
+    patientAgeItem,
+    patientSexItem,
+    seriesDescriptionItem,
+    sliceTicknessItem,
+  ]
+};
 
 const topRightItems = { id: 'cornerstoneOverlayTopRight', items: [] };
 
