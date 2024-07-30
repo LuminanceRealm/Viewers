@@ -38,7 +38,6 @@ window.config = {
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: false,
   showCPUFallbackMessage: false,
-  showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
@@ -47,7 +46,7 @@ window.config = {
     thumbnail: 1,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
-    prefetch: 50,
+    prefetch: 33,
   },
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomjson',
