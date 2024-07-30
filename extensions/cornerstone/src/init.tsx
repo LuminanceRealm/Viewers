@@ -46,7 +46,7 @@ export default async function init({
   servicesManager,
   commandsManager,
   extensionManager,
-  appConfig
+  appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
