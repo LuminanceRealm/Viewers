@@ -2,8 +2,8 @@ import { Types } from '@ohif/core';
 
 const frameView: Types.HangingProtocol.Protocol = {
   id: '@ohif/frameView',
-  description: 'Frame view for the active series',
-  name: 'Frame View',
+  description: 'Ver todas las imágenes de la serie activa.',
+  name: 'Todas las imágenes',
   icon: 'tool-stack-scroll',
   isPreset: true,
   toolGroupIds: ['default'],

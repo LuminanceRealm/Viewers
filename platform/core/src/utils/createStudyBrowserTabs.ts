@@ -12,7 +12,12 @@
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
 
-export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets, recentTimeframeMS = 31536000000) {
+export function createStudyBrowserTabs(
+  primaryStudyInstanceUIDs,
+  studyDisplayList,
+  displaySets,
+  recentTimeframeMS = 31536000000
+) {
   const primaryStudies = [];
   const allStudies = [];
 
@@ -60,6 +65,7 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
       label: 'Primary',
       studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
+    /**
     {
       name: 'recent',
       label: 'Recent',
@@ -70,6 +76,7 @@ export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayLis
       label: 'All',
       studies: allStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
+    */
   ];
 
   return tabs;
