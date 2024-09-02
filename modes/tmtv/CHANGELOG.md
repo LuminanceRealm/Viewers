@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.80...v3.9.0-beta.81) (2024-08-27)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.79...v3.9.0-beta.80) (2024-08-16)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.78...v3.9.0-beta.79) (2024-08-16)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.77...v3.9.0-beta.78) (2024-08-15)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.76...v3.9.0-beta.77) (2024-08-15)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.75...v3.9.0-beta.76) (2024-08-08)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.74...v3.9.0-beta.75) (2024-08-07)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.73...v3.9.0-beta.74) (2024-08-06)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.72...v3.9.0-beta.73) (2024-08-02)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.71...v3.9.0-beta.72) (2024-07-31)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.9.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.70...v3.9.0-beta.71) (2024-07-30)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
 # [3.9.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.69...v3.9.0-beta.70) (2024-07-30)
 
 **Note:** Version bump only for package @ohif/mode-tmtv

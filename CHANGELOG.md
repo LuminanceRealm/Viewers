@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.80...v3.9.0-beta.81) (2024-08-27)
+
+
+### Bug Fixes
+
+* 🐛 SeriesInstanceUID fallback + update retrieve metadata filtered to check for lazy ([#4346](https://github.com/OHIF/Viewers/issues/4346)) ([14498d4](https://github.com/OHIF/Viewers/commit/14498d4e9a6a57324b8be9f0b314f2901459dc4a))
+
+
+
+
+
+# [3.9.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.79...v3.9.0-beta.80) (2024-08-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.78...v3.9.0-beta.79) (2024-08-16)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.77...v3.9.0-beta.78) (2024-08-15)
+
+
+### Features
+
+* Add CS3D WSI and Video Viewports and add annotation navigation for MPR ([#4182](https://github.com/OHIF/Viewers/issues/4182)) ([7599ec9](https://github.com/OHIF/Viewers/commit/7599ec9421129dcade94e6fa6ec7908424ab3134))
+
+
+
+
+
+# [3.9.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.76...v3.9.0-beta.77) (2024-08-15)
+
+
+### Bug Fixes
+
+* **roundNumber:** handle negative numbers properly ([#4336](https://github.com/OHIF/Viewers/issues/4336)) ([7377db8](https://github.com/OHIF/Viewers/commit/7377db8d280a90515fe099cb580607450cb146a5))
+
+
+
+
+
+# [3.9.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.75...v3.9.0-beta.76) (2024-08-08)
+
+
+### Bug Fixes
+
+* unexpected mpr measurements ([#4332](https://github.com/OHIF/Viewers/issues/4332)) ([ab6e341](https://github.com/OHIF/Viewers/commit/ab6e341731652a4fa894fcb576eb23dc95aefa11))
+
+
+
+
+
+# [3.9.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.74...v3.9.0-beta.75) (2024-08-07)
+
+
+### Bug Fixes
+
+* **ui:** Tailwind build errors ([#4329](https://github.com/OHIF/Viewers/issues/4329)) ([8e7cc11](https://github.com/OHIF/Viewers/commit/8e7cc1152917f562ea7e6a5f3f7e492b300dc564))
+
+
+
+
+
+# [3.9.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.73...v3.9.0-beta.74) (2024-08-06)
+
+
+### Bug Fixes
+
+* **url:** series query param filtering ([#4328](https://github.com/OHIF/Viewers/issues/4328)) ([9b10303](https://github.com/OHIF/Viewers/commit/9b10303a2efa809096156d4a2322b2b46f160a91))
+
+
+
+
+
+# [3.9.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.72...v3.9.0-beta.73) (2024-08-02)
+
+
+### Features
+
+* **ui:** Created design and added core components for ui-next ([#4324](https://github.com/OHIF/Viewers/issues/4324)) ([9036418](https://github.com/OHIF/Viewers/commit/90364189b865514cc471786d2f91c270517e98fc))
+
+
+
+
+
+# [3.9.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.71...v3.9.0-beta.72) (2024-07-31)
+
+
+### Bug Fixes
+
+* customization types ([#4321](https://github.com/OHIF/Viewers/issues/4321)) ([72bef63](https://github.com/OHIF/Viewers/commit/72bef63ef6e63395ba18ff91a39294913966e9db))
+
+
+
+
+
+# [3.9.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.70...v3.9.0-beta.71) (2024-07-30)
+
+
+### Bug Fixes
+
+* ip SSRF improper categorization ([#4319](https://github.com/OHIF/Viewers/issues/4319)) ([aa0e5a5](https://github.com/OHIF/Viewers/commit/aa0e5a59379453bb8e6a4f286447576744ea6bf5))
+
+
+
+
+
 # [3.9.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.69...v3.9.0-beta.70) (2024-07-30)
 
 
