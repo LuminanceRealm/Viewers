@@ -141,7 +141,13 @@ const toolbarButtons: Button[] = [
           context: 'CORNERSTONE',
         },
       ],
-      evaluate: 'evaluate.action',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
     },
   },
   */

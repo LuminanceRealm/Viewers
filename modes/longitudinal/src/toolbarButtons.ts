@@ -205,7 +205,7 @@ const toolbarButtons: Button[] = [
         'evaluate.action',
         {
           name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video'],
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
         },
       ],
     },
