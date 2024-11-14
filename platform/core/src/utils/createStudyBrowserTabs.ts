@@ -65,7 +65,6 @@ export function createStudyBrowserTabs(
       label: 'Primary',
       studies: primaryStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
-    /**
     {
       name: 'recent',
       label: 'Recent',
@@ -76,7 +75,6 @@ export function createStudyBrowserTabs(
       label: 'All',
       studies: allStudies.sort((studyA, studyB) => _byDate(studyA.date, studyB.date)),
     },
-    */
   ];
 
   return tabs;
