@@ -41,7 +41,6 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
-  useExperimentalUI: false,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 1,
