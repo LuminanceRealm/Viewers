@@ -182,7 +182,7 @@ export default function PanelSegmentation({
         disabled={disabled}
         data={segmentationsWithRepresentations}
         mode={SegmentationTableMode}
-        title="Segmentations"
+        title="Segmentaciones"
         exportOptions={exportOptions}
         disableEditing={disableEditing}
         onSegmentationAdd={onSegmentationAdd}
