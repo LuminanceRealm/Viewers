@@ -181,22 +181,6 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'Capture',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: 'showDownloadViewportModal',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'wholeSlide'],
-        },
-      ],
-    },
-  },
-  {
     id: 'Layout',
     uiType: 'ohif.layoutSelector',
     props: {
