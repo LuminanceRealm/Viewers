@@ -175,6 +175,11 @@ const SidePanel = ({
     [onOpen, onClose]
   );
 
+    // Utility function to detect mobile devices
+    const isMobileDevice = () => {
+      return window.innerWidth <= 768;
+    };
+
   const updateActiveTabIndex = useCallback(
     (activeTabIndex: number) => {
       if (activeTabIndex === null) {
@@ -183,7 +188,7 @@ const SidePanel = ({
       }
 
       setActiveTabIndex(activeTabIndex);
-      updatePanelOpen(true);
+      updatePanelOpen(!isMobileDevice());
 
       if (onActiveTabIndexChange) {
         onActiveTabIndexChange({ activeTabIndex });
