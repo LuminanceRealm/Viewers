@@ -167,7 +167,63 @@ window.config = {
       keys: ['9'],
     },
   ],
-  tours: [],
+  tours: [
+    {
+      id: 'mobileSidePanelTour',
+      route: '/viewer',
+      steps: [
+        {
+          id: 'openSidePanelStep',
+          title: 'Ver más imágenes o series',
+          text: 'Pulse la flecha para abrir o cerrar el panel lateral y poder seleccionar otra imagen o serie.',
+          attachTo: {
+            element: '[data-cy="side-panel-header-left"]',
+            on: 'right',
+          },
+          advanceOn: {
+            selector: '[data-cy="side-panel-header-left"]',
+            event: 'click',
+          },
+          beforeShowPromise: () => {
+            return new Promise((resolve, reject) => {
+              const checkElementReady = () => {
+                const element = document.querySelector('[data-cy="side-panel-header-left"]');
+                if (element && element.offsetWidth > 0 && element.offsetHeight > 0) {
+                  // Scroll the element into view before starting the step
+                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                  // Check if mobile
+                  const isMobileDevice = window.innerWidth <= 768;
+                  if (isMobileDevice) {
+                    setTimeout(resolve, 500); // slight delay to allow scrolling to finish
+                  } else {
+                    reject();
+                  }
+                } else {
+                  setTimeout(checkElementReady, 200);
+                }
+              };
+              checkElementReady();
+            });
+          },
+        },
+      ],
+      tourOptions: {
+        useModalOverlay: true,
+        defaultStepOptions: {
+          buttons: [
+            {
+              text: 'Cerrar',
+              action() {
+                this.complete();
+              },
+              secondary: true,
+            },
+          ],
+        },
+      },
+    },
+  ],
 };
 
 function waitForElement(selector, maxAttempts = 20, interval = 25) {
