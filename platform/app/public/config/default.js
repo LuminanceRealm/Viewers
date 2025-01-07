@@ -1,6 +1,7 @@
 /** @type {AppTypes.Config} */
 
 window.config = {
+  name: 'config/default.js',
   routerBasename: '/',
   whiteLabeling: {
     //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */

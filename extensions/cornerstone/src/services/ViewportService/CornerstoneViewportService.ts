@@ -130,6 +130,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * individual resize observers
    */
   public resize(isGridResize = false) {
+    // https://stackoverflow.com/a/26279685
+    // This resize() call, among other things, rerenders the viewports. But when the entire viewer is
+    // display: none'd, it makes the size of all hidden elements 0, including the viewport canvas and its containers.
+    // Even if the viewer is later displayed again, trying to render when the size is 0 permanently "breaks" the
+    // viewport, making it fully black even after the size is normal again. So just ignore resize events when hidden:
+    const areViewportsHidden = Array.from(this.viewportsById.values()).every(viewportInfo => {
+      const element = viewportInfo.getElement();
+
+      return element.clientWidth === 0 && element.clientHeight === 0;
+    });
+    if (areViewportsHidden) {
+      console.warn('Ignoring resize when viewports have size 0');
+      return;
+    }
+
     // if there is a grid resize happening, it means the viewport grid
     // has been manipulated (e.g., panels closed, added, etc.) and we need
     // to resize all viewports, so we will add a timeout here to make sure
@@ -590,10 +605,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     let initialImageIndexToUse =
       presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
-    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
-      initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
-    }
-
     const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
     const properties = { ...presentations.lutPresentation?.properties };
@@ -622,12 +633,26 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     let imageIdsToSet = imageIds;
-    const res = this._processExtraDisplaySetsForViewport(viewport);
-    imageIdsToSet = res?.imageIds ?? imageIdsToSet;
+    const overlayProcessingResult = this._processExtraDisplaySetsForViewport(viewport);
+    imageIdsToSet = overlayProcessingResult?.imageIds ?? imageIdsToSet;
+
+    const referencedImageId = presentations?.positionPresentation?.viewReference?.referencedImageId;
+    if (referencedImageId) {
+      initialImageIndexToUse = imageIdsToSet.indexOf(referencedImageId);
+    }
+
+    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
+      initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
+    }
 
     return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations, viewportInfo);
+
+      if (overlayProcessingResult?.addOverlayFn) {
+        overlayProcessingResult.addOverlayFn();
+      }
+
       if (displayArea) {
         viewport.setDisplayArea(displayArea);
       }
@@ -812,9 +837,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // For SEG and RT viewports
-    this._processExtraDisplaySetsForViewport(viewport);
+    const { addOverlayFn } = this._processExtraDisplaySetsForViewport(viewport) || {};
 
     await viewport.setVolumes(volumeInputArray);
+
+    if (addOverlayFn) {
+      addOverlayFn();
+    }
 
     volumesProperties.forEach(({ properties, volumeId }) => {
       viewport.setProperties(properties, volumeId);
@@ -865,8 +894,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
     );
     const imageIds = referenceDisplaySet.images.map(image => image.imageId);
-    this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport);
-    return { imageIds };
+
+    return {
+      imageIds,
+      addOverlayFn: () =>
+        this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport),
+    };
   }
 
   private addOverlayRepresentationForDisplaySet(
@@ -1043,6 +1076,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // Store the current position presentations for each viewport.
       viewports.forEach(({ id: viewportId }) => {
         const presentation = this._getPositionPresentation(viewportId);
+
+        // During a resize, the slice index should remain unchanged. This is a temporary fix for
+        // a larger issue regarding the definition of slice index with slab thickness.
+        // We need to revisit this to make it more robust and understandable.
+        delete presentation.viewReference?.sliceIndex;
         this.beforeResizePositionPresentations.set(viewportId, presentation);
       });
 
@@ -1051,10 +1089,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       renderingEngine.resize(isImmediate);
       renderingEngine.render();
 
-      // Reset the camera for viewports that should reset their camera on resize,
+      // Reset the camera for all viewports using position presentation to maintain relative size/position
       // which means only those viewports that have a zoom level of 1.
       this.beforeResizePositionPresentations.forEach((positionPresentation, viewportId) => {
-        this.setPresentations(viewportId, { positionPresentation });
+        this.setPresentations(viewportId, {
+          positionPresentation,
+        });
       });
 
       // Resize and render the rendering engine again.

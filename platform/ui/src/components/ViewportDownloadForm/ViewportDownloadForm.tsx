@@ -5,11 +5,10 @@ import Typography from '../Typography';
 import Input from '../Input';
 import Tooltip from '../Tooltip';
 import IconButton from '../IconButton';
-import Icon from '../Icon';
 import Select from '../Select';
 import InputLabelWrapper from '../InputLabelWrapper';
 import Button, { ButtonEnums } from '../Button';
-
+import { Icons } from '@ohif/ui-next';
 const FILE_TYPE_OPTIONS = [
   {
     value: 'jpg',
@@ -317,7 +316,7 @@ const ViewportDownloadForm = ({
                   size="small"
                   rounded="full"
                 >
-                  <Icon name={keepAspect ? 'link' : 'unlink'} />
+                  <Icons.ByName name={keepAspect ? 'link' : 'unlink'} />
                 </IconButton>
               </Tooltip>
             </div>
