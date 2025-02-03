@@ -65,25 +65,11 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-0.5"
                   onClick={() => {
-                    sendTrackedMeasurementsEvent('SAVE_REPORT', {
-                      viewportId: viewportGrid.activeViewportId,
-                      isBackupSave: true,
-                    });
-                  }}
-                >
-                  <Icons.Add />
-                  Create SR
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="pl-0.5"
-                  onClick={() => {
                     commandsManager.runCommand('clearMeasurements', { measurementFilter });
                   }}
                 >
                   <Icons.Delete />
-                  Delete All
+                  Borrar todas
                 </Button>
               </div>
             </div>

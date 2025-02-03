@@ -13,7 +13,7 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
   const { findingSites, finding, label: baseLabel, displayText: baseDisplayText } = measurement;
 
   const firstSite = findingSites?.[0];
-  const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
+  const label = baseLabel || finding?.text || firstSite?.text || '(vacío)';
 
   // Initialize displayText with the structure used in Length.ts and CobbAngle.ts
   const displayText = {
@@ -62,7 +62,7 @@ export function useMeasurements(servicesManager, { measurementFilter }) {
 
   useEffect(() => {
     const updateDisplayMeasurements = () => {
-      let measurements = measurementService.getMeasurements(measurementFilter);
+      const measurements = measurementService.getMeasurements(measurementFilter);
       const mappedMeasurements = measurements.map(m =>
         mapMeasurementToDisplay(m, displaySetService)
       );
