@@ -28,6 +28,10 @@ const SidePanelWithServices = ({
   onClose,
   ...props
 }: SidePanelWithServicesProps) => {
+  const isMobileDevice = () => {
+    return window.innerWidth <= 768;
+  };
+
   const panelService = servicesManager?.services?.panelService;
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
@@ -98,6 +102,10 @@ const SidePanelWithServices = ({
       activatePanelSubscription.unsubscribe();
     };
   }, [tabs, sidePanelExpanded, panelService, closedManually]);
+
+  useEffect(() => {
+    setSidePanelExpanded(!isMobileDevice())
+  }, [])
 
   return (
     <SidePanel

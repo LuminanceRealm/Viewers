@@ -232,11 +232,6 @@ const SidePanel = ({
     [panelOpen, onOpen, onClose]
   );
 
-  // Utility function to detect mobile devices
-  const isMobileDevice = () => {
-    return window.innerWidth <= 768;
-  };
-
   const updateActiveTabIndex = useCallback(
     (activeTabIndex: number, forceOpen: boolean = false) => {
       if (forceOpen) {
