@@ -12,7 +12,7 @@ function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName }) {
         <div className="grid h-[28px] w-[28px] place-items-center">
           <Icons.Add />
         </div>
-        <span className="text-[13px]">{t('Add segmentation')}</span>
+        <span className="text-[13px]">{t('Agregar segmentación')}</span>
       </div>
     </div>
   );

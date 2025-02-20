@@ -168,7 +168,7 @@ export default function SegmentationPanel() {
                     <AccordionTrigger className="bg-muted hover:bg-accent mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
                       <div className="flex space-x-2">
                         <Icons.Controls className="text-primary" />
-                        <span className="text-primary pr-1">Appearance Settings</span>
+                        <span className="text-primary pr-1">Ajustes de apariencia</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent>

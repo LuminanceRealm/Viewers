@@ -60,7 +60,7 @@ export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, s
             onClick={() => onSegmentAdd(segmentationIdToUse)}
           >
             <Icons.Add />
-            Add Segment
+            Agregar segmento
           </Button>
         ) : null}
       </div>
