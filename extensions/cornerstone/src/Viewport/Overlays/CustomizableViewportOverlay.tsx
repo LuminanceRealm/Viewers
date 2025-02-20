@@ -75,28 +75,28 @@ const seriesDescriptionItem = {
 
 const patientIDItem = {
   id: 'PatientID',
-  customizationType: 'ohif.overlayItem.patientID'
-}
+  customizationType: 'ohif.overlayItem.patientID',
+};
 
 const patientNameItem = {
   id: 'PatientName',
-  customizationType: 'ohif.overlayItem.patientName'
-}
+  customizationType: 'ohif.overlayItem.patientName',
+};
 
 const patientAgeItem = {
   id: 'PatientAge',
-  customizationType: 'ohif.overlayItem.patientAge'
-}
+  customizationType: 'ohif.overlayItem.patientAge',
+};
 
 const patientSexItem = {
   id: 'PatientSex',
-  customizationType: 'ohif.overlayItem.patientSex'
-}
+  customizationType: 'ohif.overlayItem.patientSex',
+};
 
 const sliceTicknessItem = {
   id: 'SliceThickness',
-  customizationType: 'ohif.overlayItem.sliceThickness'
-}
+  customizationType: 'ohif.overlayItem.sliceThickness',
+};
 
 const topLeftItems = {
   id: 'cornerstoneOverlayTopLeft',
@@ -108,7 +108,7 @@ const topLeftItems = {
     patientSexItem,
     seriesDescriptionItem,
     sliceTicknessItem,
-  ]
+  ],
 };
 
 const topRightItems = { id: 'cornerstoneOverlayTopRight', items: [] };
@@ -181,26 +181,18 @@ function CustomizableViewportOverlay({
   const [scale, setScale] = useState(1);
   const { imageIndex } = imageSliceData;
 
-  // The new customization is 'cornerstoneOverlay', with an append or replace
-  // on the individual items rather than defining individual items.
-  const cornerstoneOverlay = customizationService.getCustomization('@ohif/cornerstoneOverlay');
-
   // Historical usage defined the overlays as separate items due to lack of
   // append functionality.  This code enables the historical usage, but
   // the recommended functionality is to append to the default values in
   // cornerstoneOverlay rather than defining individual items.
-  const topLeftCustomization =
-    customizationService.getCustomization('cornerstoneOverlayTopLeft') ||
-    cornerstoneOverlay?.topLeftItems;
-  const topRightCustomization =
-    customizationService.getCustomization('cornerstoneOverlayTopRight') ||
-    cornerstoneOverlay?.topRightItems;
-  const bottomLeftCustomization =
-    customizationService.getCustomization('cornerstoneOverlayBottomLeft') ||
-    cornerstoneOverlay?.bottomLeftItems;
-  const bottomRightCustomization =
-    customizationService.getCustomization('cornerstoneOverlayBottomRight') ||
-    cornerstoneOverlay?.bottomRightItems;
+  const topLeftCustomization = customizationService.getCustomization('viewportOverlay.topLeft');
+  const topRightCustomization = customizationService.getCustomization('viewportOverlay.topRight');
+  const bottomLeftCustomization = customizationService.getCustomization(
+    'viewportOverlay.bottomLeft'
+  );
+  const bottomRightCustomization = customizationService.getCustomization(
+    'viewportOverlay.bottomRight'
+  );
 
   const instanceNumber = useMemo(
     () =>
@@ -302,8 +294,8 @@ function CustomizableViewportOverlay({
         return null;
       }
 
-      const { customizationType } = item;
-      const OverlayItemComponent = OverlayItemComponents[customizationType];
+      const { inheritsFrom } = item;
+      const OverlayItemComponent = OverlayItemComponents[inheritsFrom];
 
       if (OverlayItemComponent) {
         return <OverlayItemComponent {...overlayItemProps} />;
@@ -331,10 +323,6 @@ function CustomizableViewportOverlay({
 
   const getContent = useCallback(
     (customization, keyPrefix) => {
-      if (!customization?.items) {
-        return null;
-      }
-      const { items } = customization;
       const props = {
         ...displaySetProps,
         formatters: { formatDate: formatDICOMDate },
@@ -347,7 +335,7 @@ function CustomizableViewportOverlay({
 
       return (
         <>
-          {items.map((item, index) => (
+          {customization.map((item, index) => (
             <div key={`${keyPrefix}_${index}`}>
               {((!item?.condition || item.condition(props)) && _renderOverlayItem(item, props)) ||
                 null}
@@ -674,4 +662,4 @@ CustomizableViewportOverlay.propTypes = {
 
 export default CustomizableViewportOverlay;
 
-export { CustomizableViewportOverlay, CornerstoneOverlay };
+export { CustomizableViewportOverlay };

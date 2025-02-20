@@ -285,14 +285,25 @@ export default class HangingProtocolService extends PubSubService {
    * @param protocolId - the id of the protocol
    * @returns protocol - the protocol with the given id
    */
-  public getProtocolById(protocolId: string): HangingProtocol.Protocol {
+  public getProtocolById(protocolId: string, caseInsensitive = true): HangingProtocol.Protocol {
     if (!protocolId) {
       return;
     }
     if (protocolId === this.protocol?.id) {
       return this.protocol;
     }
-    const protocol = this.protocols.get(protocolId);
+
+    let protocol = this.protocols.get(protocolId);
+    if (!protocol && caseInsensitive) {
+      const lowerCaseId = protocolId.toLowerCase();
+      for (const [key] of this.protocols) {
+        if (key.toLowerCase() === lowerCaseId) {
+          protocol = this.getProtocolById(key);
+          break;
+        }
+      }
+    }
+
     if (!protocol) {
       throw new Error(`No protocol ${protocolId} found`);
     }
@@ -434,7 +445,9 @@ export default class HangingProtocolService extends PubSubService {
       this._setProtocol(matchedProtocol);
     }
 
-    this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
+    if (this.protocol?.callbacks?.onProtocolEnter) {
+      this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
+    }
   }
 
   /**
@@ -531,8 +544,7 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   _validateProtocol(protocol: HangingProtocol.Protocol): HangingProtocol.Protocol {
-    protocol.id = protocol.id || protocol.name;
-    protocol.name = protocol.name || protocol.id;
+    protocol.name = protocol.name ?? protocol.id;
     const { stages } = protocol;
 
     if (!stages) {
@@ -1028,7 +1040,9 @@ export default class HangingProtocolService extends PubSubService {
         // before reassigning the protocol, we need to check if there is a callback
         // on the old protocol that needs to be called
         // Send the notification about updating the state
-        this._commandsManager.run(this.protocol?.callbacks?.onProtocolExit);
+        if (this.protocol?.callbacks?.onProtocolExit) {
+          this._commandsManager.run(this.protocol.callbacks.onProtocolExit);
+        }
 
         this.protocol = protocol;
 

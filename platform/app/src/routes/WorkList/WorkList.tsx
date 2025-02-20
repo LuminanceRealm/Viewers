@@ -22,7 +22,6 @@ import {
   useModal,
   AboutModal,
   UserPreferences,
-  LoadingIndicatorProgress,
   useSessionStorage,
   InvestigationalUseDialog,
   Button,
@@ -527,8 +526,10 @@ function WorkList({
   }
 
   const { customizationService } = servicesManager.services;
-  const { component: DicomUploadComponent } =
-    customizationService.getCustomization('dicomUploadComponent') || {};
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
+  const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent');
 
   const uploadProps =
     DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
@@ -556,8 +557,9 @@ function WorkList({
         }
       : undefined;
 
-  const { component: dataSourceConfigurationComponent } =
-    customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+  const dataSourceConfigurationComponent = customizationService.getCustomization(
+    'ohif.dataSourceConfigurationComponent'
+  );
 
   return (
     <div className="flex h-screen flex-col bg-black">

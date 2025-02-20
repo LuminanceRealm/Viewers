@@ -15,7 +15,7 @@ export const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   {
     id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MeasurementTools',
       // group evaluate to determine which item should move to the top
@@ -143,7 +143,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Zoom',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
@@ -154,7 +154,7 @@ const toolbarButtons: Button[] = [
   // Window Level
   {
     id: 'WindowLevel',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
       label: 'Window Level',
@@ -171,7 +171,7 @@ const toolbarButtons: Button[] = [
   // Pan...
   {
     id: 'Pan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-move',
