@@ -35,7 +35,7 @@ const moreTools = [
         createButton({
           id: 'Reset',
           icon: 'tool-reset',
-          label: 'Reset View',
+          label: 'Restaurar',
           tooltip: 'Reset View',
           commands: 'resetViewport',
           evaluate: 'evaluate.action',
@@ -43,7 +43,7 @@ const moreTools = [
         createButton({
           id: 'rotate-right',
           icon: 'tool-rotate-right',
-          label: 'Rotate Right',
+          label: 'Rotar',
           tooltip: 'Rotate +90',
           commands: 'rotateViewportCW',
           evaluate: [
@@ -57,7 +57,7 @@ const moreTools = [
         createButton({
           id: 'flipHorizontal',
           icon: 'tool-flip-horizontal',
-          label: 'Flip Horizontal',
+          label: 'Voltear horizontalmente',
           tooltip: 'Flip Horizontally',
           commands: 'flipViewportHorizontal',
           evaluate: [
@@ -71,7 +71,7 @@ const moreTools = [
         createButton({
           id: 'ImageSliceSync',
           icon: 'link',
-          label: 'Image Slice Sync',
+          label: 'Sincronización',
           tooltip: 'Enable position synchronization on stack viewports',
           commands: {
             commandName: 'toggleSynchronizer',
@@ -96,7 +96,7 @@ const moreTools = [
         createButton({
           id: 'ReferenceLines',
           icon: 'tool-referenceLines',
-          label: 'Reference Lines',
+          label: 'Líneas de referencia',
           tooltip: 'Show Reference Lines',
           commands: 'toggleEnabledDisabledToolbar',
           listeners: {
@@ -114,7 +114,7 @@ const moreTools = [
         createButton({
           id: 'ImageOverlayViewer',
           icon: 'toggle-dicom-overlay',
-          label: 'Image Overlay',
+          label: 'Superposición',
           tooltip: 'Toggle Image Overlay',
           commands: 'toggleEnabledDisabledToolbar',
           evaluate: [
@@ -128,7 +128,7 @@ const moreTools = [
         createButton({
           id: 'StackScroll',
           icon: 'tool-stack-scroll',
-          label: 'Stack Scroll',
+          label: 'Recorrer',
           tooltip: 'Stack Scroll',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -136,7 +136,7 @@ const moreTools = [
         createButton({
           id: 'invert',
           icon: 'tool-invert',
-          label: 'Invert',
+          label: 'Negativo',
           tooltip: 'Invert Colors',
           commands: 'invertViewport',
           evaluate: [
@@ -150,7 +150,7 @@ const moreTools = [
         createButton({
           id: 'Probe',
           icon: 'tool-probe',
-          label: 'Probe',
+          label: 'Probar',
           tooltip: 'Probe',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -213,7 +213,7 @@ const moreTools = [
         createButton({
           id: 'TrackballRotate',
           icon: 'tool-3d-rotate',
-          label: '3D Rotate',
+          label: 'Rotar 3D',
           tooltip: '3D Rotate',
           commands: setToolActiveToolbar,
           evaluate: {
@@ -224,7 +224,7 @@ const moreTools = [
         createButton({
           id: 'Crosshairs',
           icon: 'tool-crosshair',
-          label: 'Crosshairs',
+          label: 'Punto de mira',
           tooltip: 'Crosshairs',
           commands: {
             commandName: 'setToolActiveToolbar',
@@ -240,14 +240,14 @@ const moreTools = [
         createButton({
           id: 'TagBrowser',
           icon: 'dicom-tag-browser',
-          label: 'Dicom Tag Browser',
+          label: 'Navegador de etiquetas DICOM',
           tooltip: 'Dicom Tag Browser',
           commands: 'openDICOMTagViewer',
         }),
         createButton({
           id: 'AdvancedMagnify',
           icon: 'icon-tool-loupe',
-          label: 'Magnify Probe',
+          label: 'Lupa de magnificación',
           tooltip: 'Magnify Probe',
           commands: 'toggleActiveDisabledToolbar',
           evaluate: [
@@ -261,7 +261,7 @@ const moreTools = [
         createButton({
           id: 'UltrasoundDirectionalTool',
           icon: 'icon-tool-ultrasound-bidirectional',
-          label: 'Ultrasound Directional',
+          label: 'Ultrasonido direccional',
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
           evaluate: [
@@ -275,7 +275,7 @@ const moreTools = [
         createButton({
           id: 'WindowLevelRegion',
           icon: 'icon-tool-window-region',
-          label: 'Window Level Region',
+          label: 'Venta / Nivel de región',
           tooltip: 'Window Level Region',
           commands: setToolActiveToolbar,
           evaluate: [

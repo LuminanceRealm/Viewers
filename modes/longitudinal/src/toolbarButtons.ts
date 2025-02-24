@@ -36,7 +36,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'Length',
           icon: 'tool-length',
-          label: 'Length',
+          label: 'Longitud',
           tooltip: 'Length Tool',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -44,7 +44,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'Bidirectional',
           icon: 'tool-bidirectional',
-          label: 'Bidirectional',
+          label: 'Bidireccional',
           tooltip: 'Bidirectional Tool',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -52,7 +52,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'ArrowAnnotate',
           icon: 'tool-annotate',
-          label: 'Annotation',
+          label: 'Anotación',
           tooltip: 'Arrow Annotate',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -60,7 +60,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'EllipticalROI',
           icon: 'tool-ellipse',
-          label: 'Ellipse',
+          label: 'Elipse',
           tooltip: 'Ellipse ROI',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -68,7 +68,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'RectangleROI',
           icon: 'tool-rectangle',
-          label: 'Rectangle',
+          label: 'Rectángulo',
           tooltip: 'Rectangle ROI',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -76,7 +76,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'CircleROI',
           icon: 'tool-circle',
-          label: 'Circle',
+          label: 'Círculo',
           tooltip: 'Circle Tool',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -92,7 +92,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'SplineROI',
           icon: 'icon-tool-spline-roi',
-          label: 'Spline ROI',
+          label: 'ROI de spline',
           tooltip: 'Spline ROI',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -100,7 +100,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'LivewireContour',
           icon: 'icon-tool-livewire',
-          label: 'Livewire tool',
+          label: 'Herramienta de livewire',
           tooltip: 'Livewire tool',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -109,7 +109,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'Angle',
           icon: 'tool-angle',
-          label: 'Angle',
+          label: 'Ángulo',
           tooltip: 'Angle',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -117,7 +117,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'CobbAngle',
           icon: 'tool-angle',
-          label: 'Cobb Angle',
+          label: 'Ángulo de Cobb',
           tooltip: 'Cobb Angle',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -125,7 +125,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'CalibrationLine',
           icon: 'tool-calibration',
-          label: 'Calibration',
+          label: 'Calibración',
           tooltip: 'Calibration Line',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
@@ -133,7 +133,7 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'Capture',
           icon: 'tool-capture',
-          label: 'Capture',
+          label: 'Descargar imagen',
           tooltip: 'Capture',
           commands: 'showDownloadViewportModal',
           evaluate: 'evaluate.action',
