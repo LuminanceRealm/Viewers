@@ -1,14 +1,41 @@
 export default {
   'viewportOverlay.topLeft': [
     {
+      id: 'PatientId',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Patient ID',
+      condition: ({ referenceInstance }) => referenceInstance?.PatientID,
+      contentF: ({ referenceInstance }) => referenceInstance.PatientID,
+    },
+    {
+      id: 'PatientName',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Patient name',
+      condition: ({ referenceInstance }) => referenceInstance?.PatientName,
+      contentF: ({ referenceInstance }) => referenceInstance.PatientName,
+    },
+    {
       id: 'StudyDate',
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Study date',
       condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
-      contentF: ({ referenceInstance, formatters: { formatDate } }) =>
-        formatDate(referenceInstance.StudyDate),
+      contentF: ({ referenceInstance, formatters: { formatDate, formatTime } }) =>
+        `${formatDate(referenceInstance.StudyDate)} ${formatTime(referenceInstance.StudyTime)}`,
     },
+    {
+      id: 'PatientSexAndAge',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Patient name',
+      condition: ({ referenceInstance }) => referenceInstance?.PatientSex,
+      contentF: ({ referenceInstance }) =>
+        `${referenceInstance.PatientAge} ${referenceInstance.PatientSex}`,
+    },
+  ],
+  'viewportOverlay.topRight': [
     {
       id: 'SeriesDescription',
       inheritsFrom: 'ohif.overlayItem',
@@ -20,7 +47,6 @@ export default {
       contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
     },
   ],
-  'viewportOverlay.topRight': [],
   'viewportOverlay.bottomLeft': [
     {
       id: 'WindowLevel',
@@ -33,6 +59,10 @@ export default {
         const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
         return activeToolName === 'Zoom';
       },
+    },
+    {
+      id: 'SliceTickness',
+      inheritsFrom: 'ohif.overlayItem.sliceTickness',
     },
   ],
   'viewportOverlay.bottomRight': [
