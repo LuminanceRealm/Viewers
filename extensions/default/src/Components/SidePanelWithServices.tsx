@@ -105,6 +105,7 @@ const SidePanelWithServices = ({
 
   useEffect(() => {
     setSidePanelExpanded(!isMobileDevice())
+    if (side === 'right') setSidePanelExpanded(false)
   }, [])
 
   return (

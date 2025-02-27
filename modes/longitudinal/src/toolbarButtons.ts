@@ -24,7 +24,7 @@ const toolbarButtons: Button[] = [
         id: 'Length',
         icon: 'tool-length',
         label: 'Length',
-        tooltip: 'Length Tool',
+        tooltip: 'Longitud',
         commands: setToolActiveToolbar,
         evaluate: 'evaluate.cornerstoneTool',
       }),
@@ -157,7 +157,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
-      label: 'Window Level',
+      label: 'Ventana / Nivel',
       commands: setToolActiveToolbar,
       evaluate: [
         'evaluate.cornerstoneTool',
@@ -175,7 +175,7 @@ const toolbarButtons: Button[] = [
     props: {
       type: 'tool',
       icon: 'tool-move',
-      label: 'Pan',
+      label: 'Mover',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },

@@ -275,7 +275,7 @@ const moreTools = [
         createButton({
           id: 'WindowLevelRegion',
           icon: 'icon-tool-window-region',
-          label: 'Venta / Nivel de región',
+          label: 'Ventana / Nivel de región',
           tooltip: 'Window Level Region',
           commands: setToolActiveToolbar,
           evaluate: [
