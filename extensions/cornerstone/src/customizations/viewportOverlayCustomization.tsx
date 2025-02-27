@@ -61,8 +61,12 @@ export default {
       },
     },
     {
-      id: 'SliceTickness',
-      inheritsFrom: 'ohif.overlayItem.sliceTickness',
+      id: 'SliceThickness',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'SliceThickness',
+      condition: ({ referenceInstance }) => referenceInstance?.SliceThickness,
+      contentF: ({ referenceInstance }) => `Grosor: ${referenceInstance.SliceThickness}`,
     },
   ],
   'viewportOverlay.bottomRight': [
