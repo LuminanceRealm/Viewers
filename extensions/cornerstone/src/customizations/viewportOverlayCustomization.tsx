@@ -17,15 +17,6 @@ export default {
       contentF: ({ referenceInstance }) => referenceInstance.PatientName,
     },
     {
-      id: 'StudyDate',
-      inheritsFrom: 'ohif.overlayItem',
-      label: '',
-      title: 'Study date',
-      condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
-      contentF: ({ referenceInstance, formatters: { formatDate, formatTime } }) =>
-        `${formatDate(referenceInstance.StudyDate)} ${formatTime(referenceInstance.StudyTime)}`,
-    },
-    {
       id: 'PatientSexAndAge',
       inheritsFrom: 'ohif.overlayItem',
       label: '',
@@ -36,6 +27,15 @@ export default {
     },
   ],
   'viewportOverlay.topRight': [
+    {
+      id: 'StudyDate',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Study date',
+      condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
+      contentF: ({ referenceInstance, formatters: { formatDate, formatTime } }) =>
+        `${formatDate(referenceInstance.StudyDate)} ${formatTime(referenceInstance.StudyTime)}`,
+    },
     {
       id: 'SeriesDescription',
       inheritsFrom: 'ohif.overlayItem',
@@ -60,19 +60,19 @@ export default {
         return activeToolName === 'Zoom';
       },
     },
+  ],
+  'viewportOverlay.bottomRight': [
+    {
+      id: 'InstanceNumber',
+      inheritsFrom: 'ohif.overlayItem.instanceNumber',
+    },
     {
       id: 'SliceThickness',
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'SliceThickness',
       condition: ({ referenceInstance }) => referenceInstance?.SliceThickness,
-      contentF: ({ referenceInstance }) => `Grosor: ${referenceInstance.SliceThickness}`,
-    },
-  ],
-  'viewportOverlay.bottomRight': [
-    {
-      id: 'InstanceNumber',
-      inheritsFrom: 'ohif.overlayItem.instanceNumber',
+      contentF: ({ referenceInstance }) => `Grosor: ${referenceInstance.SliceThickness} mm`,
     },
   ],
 };
