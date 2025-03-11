@@ -3,6 +3,149 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.117...v3.10.0-beta.118) (2025-03-07)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.116...v3.10.0-beta.117) (2025-03-07)
+
+
+### Features
+
+* **toolbox:** Refactor Toolbar and Toolbox to enable sections ([#4825](https://github.com/OHIF/Viewers/issues/4825)) ([cc5cdfb](https://github.com/OHIF/Viewers/commit/cc5cdfb08158eaa1fa576875f959a665e72f9d5e))
+
+
+
+
+
+# [3.10.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.115...v3.10.0-beta.116) (2025-03-06)
+
+
+### Bug Fixes
+
+* dicom tag browser row height on toggle ([#4832](https://github.com/OHIF/Viewers/issues/4832)) ([5a7f784](https://github.com/OHIF/Viewers/commit/5a7f7841b2c3b88d4fa6313862bc355be74acf5d))
+
+
+
+
+
+# [3.10.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.114...v3.10.0-beta.115) (2025-02-28)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.114](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.113...v3.10.0-beta.114) (2025-02-28)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.112...v3.10.0-beta.113) (2025-02-28)
+
+
+### Bug Fixes
+
+* Performance of panel study browser ([#4819](https://github.com/OHIF/Viewers/issues/4819)) ([d25809e](https://github.com/OHIF/Viewers/commit/d25809eed073d3f308f6af8244ceae7df8c2ee35))
+
+
+
+
+
+# [3.10.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.111...v3.10.0-beta.112) (2025-02-28)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.110...v3.10.0-beta.111) (2025-02-26)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.109...v3.10.0-beta.110) (2025-02-26)
+
+
+### Bug Fixes
+
+* **sr:** sr hydration and load was not working, Screenshot Comparison, and Testing ([#4814](https://github.com/OHIF/Viewers/issues/4814)) ([9233143](https://github.com/OHIF/Viewers/commit/9233143b9da5850080365e1526e24b44e9910075))
+
+
+
+
+
+# [3.10.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.108...v3.10.0-beta.109) (2025-02-25)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.107...v3.10.0-beta.108) (2025-02-25)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.106...v3.10.0-beta.107) (2025-02-25)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.105...v3.10.0-beta.106) (2025-02-25)
+
+
+### Features
+
+* **hotkeys:** Migrate hotkeys to customization service and fix issues with overrides ([#4777](https://github.com/OHIF/Viewers/issues/4777)) ([3e6913b](https://github.com/OHIF/Viewers/commit/3e6913b097569280a5cc2fa5bbe4add52f149305))
+
+
+
+
+
+# [3.10.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.104...v3.10.0-beta.105) (2025-02-25)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.103...v3.10.0-beta.104) (2025-02-25)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.102...v3.10.0-beta.103) (2025-02-23)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
 # [3.10.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.101...v3.10.0-beta.102) (2025-02-20)
 
 **Note:** Version bump only for package @ohif/extension-default
