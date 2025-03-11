@@ -95,11 +95,8 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
         'Zoom',
         'Pan',
-        'TrackballRotate',
         'WindowLevel',
-        'Capture',
         'Layout',
-        'Crosshairs',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [
@@ -112,6 +109,10 @@ function modeFactory({ modeConfiguration }) {
         'PlanarFreehandROI',
         'SplineROI',
         'LivewireContour',
+        'Angle',
+        'CobbAngle',
+        'CalibrationLine',
+        'Capture',
       ]);
 
       toolbarService.createButtonSection('moreToolsSection', [
@@ -125,10 +126,9 @@ function modeFactory({ modeConfiguration }) {
         'invert',
         'Probe',
         'Cine',
-        'Angle',
-        'CobbAngle',
         'Magnify',
-        'CalibrationLine',
+        'TrackballRotate',
+        'Crosshairs',
         'TagBrowser',
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',

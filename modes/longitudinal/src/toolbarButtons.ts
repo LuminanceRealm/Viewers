@@ -41,8 +41,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-reset',
-      label: 'Reset View',
-      tooltip: 'Reset View',
+      label: 'Restaurar',
+      tooltip: 'Restaurar',
       commands: 'resetViewport',
       evaluate: 'evaluate.action',
     },
@@ -52,7 +52,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-rotate-right',
-      label: 'Rotate Right',
+      label: 'Rotar',
       tooltip: 'Rotate +90',
       commands: 'rotateViewportCW',
       evaluate: [
@@ -69,7 +69,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-flip-horizontal',
-      label: 'Flip Horizontal',
+      label: 'Voltear horizontalmente',
       tooltip: 'Flip Horizontally',
       commands: 'flipViewportHorizontal',
       evaluate: [
@@ -86,7 +86,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'link',
-      label: 'Image Slice Sync',
+      label: 'Sincronización',
       tooltip: 'Enable position synchronization on stack viewports',
       commands: {
         commandName: 'toggleSynchronizer',
@@ -114,7 +114,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-referenceLines',
-      label: 'Reference Lines',
+      label: 'Líneas de referencia',
       tooltip: 'Show Reference Lines',
       commands: 'toggleEnabledDisabledToolbar',
       listeners: {
@@ -135,7 +135,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'toggle-dicom-overlay',
-      label: 'Image Overlay',
+      label: 'Superposición',
       tooltip: 'Toggle Image Overlay',
       commands: 'toggleEnabledDisabledToolbar',
       evaluate: [
@@ -152,8 +152,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-stack-scroll',
-      label: 'Stack Scroll',
-      tooltip: 'Stack Scroll',
+      label: 'Recorrer',
+      tooltip: 'Recorrer',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -163,7 +163,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-invert',
-      label: 'Invert',
+      label: 'Negativo',
       tooltip: 'Invert Colors',
       commands: 'invertViewport',
       evaluate: [
@@ -180,7 +180,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-probe',
-      label: 'Probe',
+      label: 'Probar',
       tooltip: 'Probe',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -208,7 +208,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-angle',
-      label: 'Angle',
+      label: 'Ángulo',
       tooltip: 'Angle',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -219,7 +219,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-cobb-angle',
-      label: 'Cobb Angle',
+      label: 'Ángulo de Cobb',
       tooltip: 'Cobb Angle',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -247,7 +247,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-calibration',
-      label: 'Calibration',
+      label: 'Calibración',
       tooltip: 'Calibration Line',
       commands: setToolActiveToolbar,
       evaluate: [
@@ -264,7 +264,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'dicom-tag-browser',
-      label: 'Dicom Tag Browser',
+      label: 'Navegador de etiquetas DICOM',
       tooltip: 'Dicom Tag Browser',
       commands: 'openDICOMTagViewer',
     },
@@ -274,7 +274,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-loupe',
-      label: 'Magnify Probe',
+      label: 'Lupa de magnificación',
       tooltip: 'Magnify Probe',
       commands: 'toggleActiveDisabledToolbar',
       evaluate: [
@@ -291,7 +291,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-ultrasound-bidirectional',
-      label: 'Ultrasound Directional',
+      label: 'Ultrasonido direccional',
       tooltip: 'Ultrasound Directional',
       commands: setToolActiveToolbar,
       evaluate: [
@@ -308,7 +308,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-window-region',
-      label: 'Window Level Region',
+      label: 'Ventana / Nivel de región',
       tooltip: 'Window Level Region',
       commands: setToolActiveToolbar,
       evaluate: [
@@ -325,8 +325,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-length',
-      label: 'Length',
-      tooltip: 'Length Tool',
+      label: 'Longitud',
+      tooltip: 'Longitud',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -336,7 +336,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-bidirectional',
-      label: 'Bidirectional',
+      label: 'Bidireccional',
       tooltip: 'Bidirectional Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -347,7 +347,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-annotate',
-      label: 'Annotation',
+      label: 'Anotación',
       tooltip: 'Arrow Annotate',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -358,7 +358,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-ellipse',
-      label: 'Ellipse',
+      label: 'Elipsn',
       tooltip: 'Ellipse ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -369,7 +369,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-rectangle',
-      label: 'Rectangle',
+      label: 'Rectángulo',
       tooltip: 'Rectangle ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -380,7 +380,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-circle',
-      label: 'Circle',
+      label: 'Círculo',
       tooltip: 'Circle Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -402,7 +402,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-spline-roi',
-      label: 'Spline ROI',
+      label: 'ROI de spline',
       tooltip: 'Spline ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -413,7 +413,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-livewire',
-      label: 'Livewire tool',
+      label: 'Herramienta de livewire',
       tooltip: 'Livewire tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
@@ -464,7 +464,7 @@ const toolbarButtons: Button[] = [
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
-      label: '3D Rotate',
+      label: 'Rotar 3D',
       commands: setToolActiveToolbar,
       evaluate: {
         name: 'evaluate.cornerstoneTool',
@@ -477,7 +477,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
-      label: 'Capture',
+      label: 'Descargar imagen',
       commands: 'showDownloadViewportModal',
       evaluate: [
         'evaluate.action',
@@ -503,7 +503,7 @@ const toolbarButtons: Button[] = [
     props: {
       type: 'tool',
       icon: 'tool-crosshair',
-      label: 'Crosshairs',
+      label: 'Punto de mira',
       commands: {
         commandName: 'setToolActiveToolbar',
         commandOptions: {
