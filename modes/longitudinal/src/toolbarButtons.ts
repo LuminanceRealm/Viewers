@@ -358,7 +358,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-ellipse',
-      label: 'Elipsn',
+      label: 'Elipse',
       tooltip: 'Ellipse ROI',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
