@@ -48,7 +48,13 @@ window.config = {
     thumbnail: 1,
     // Prefetch number is dependent on the http protocol. For http 2 or
     // above, the number of requests can be go a lot higher.
-    prefetch: 33,
+    prefetch: 17,
+  },
+  studyPrefetcher: {
+    enabled: true,
+    displaySetsCount: 2,
+    maxNumPrefetchRequests: 5,
+    order: 'closest',
   },
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomjson',
