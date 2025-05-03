@@ -24,11 +24,15 @@ export default {
       condition: ({ referenceInstance }) =>
         !!(referenceInstance?.PatientSex && referenceInstance?.PatientAge),
       contentF: ({ referenceInstance, formatters: { formatDate } }) => {
-        const parts = [`${referenceInstance.PatientAge} ${referenceInstance.PatientSex}`];
-        if (referenceInstance.PatientBirthDate) {
-          parts[0] += ` (${formatDate(referenceInstance.PatientBirthDate)})`;
+        let text = `${referenceInstance.PatientAge} ${referenceInstance.PatientSex}`;
+        const dobValue = referenceInstance.PatientBirthDate;
+        if (dobValue) {
+          const dob = formatDate(dobValue);
+          if (dob && dob.toLowerCase() !== 'invalid date') {
+            text += ` (${dob})`;
+          }
         }
-        return parts[0];
+        return text;
       },
     },
   ],
@@ -156,7 +160,7 @@ export default {
           referenceInstance?.InversionTime ||
           referenceInstance?.AcquisitionTime
         ),
-      contentF: ({ referenceInstance, formatters: { formatTime } }) => {
+      contentF: ({ referenceInstance }) => {
         const parts = [];
         if (referenceInstance.RepetitionTime) {
           parts.push(`TR:${referenceInstance.RepetitionTime}ms`);
