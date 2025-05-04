@@ -57,6 +57,14 @@ export default {
         `${formatDate(referenceInstance.StudyDate)} ${formatTime(referenceInstance.StudyTime)}`,
     },
     {
+      id: 'StudyDescription',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Study description',
+      condition: ({ referenceInstance }) => !!referenceInstance?.StudyDescription,
+      contentF: ({ referenceInstance }) => referenceInstance.StudyDescription,
+    },
+    {
       id: 'SeriesDescription',
       inheritsFrom: 'ohif.overlayItem',
       label: '',
@@ -96,9 +104,19 @@ export default {
       id: 'ImageLaterality',
       inheritsFrom: 'ohif.overlayItem',
       label: '',
-      title: 'Lateralidad',
+      title: 'Lat',
       condition: ({ referenceInstance }) => !!referenceInstance?.ImageLaterality,
-      contentF: ({ referenceInstance }) => referenceInstance.ImageLaterality,
+      contentF: ({ referenceInstance }) => {
+        const lat = referenceInstance.ImageLaterality.toUpperCase();
+        switch (lat) {
+          case 'L':
+            return 'Lat: L ←';
+          case 'R':
+            return 'Lat: R →';
+          default:
+            return `Lat: ${lat}`;
+        }
+      },
     },
     {
       id: 'ManufacturerModelName',
