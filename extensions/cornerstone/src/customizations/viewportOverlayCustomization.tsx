@@ -98,13 +98,16 @@ export default {
     {
       id: 'SeqParams',
       inheritsFrom: 'ohif.overlayItem',
-      label: 'SEQ: ',
+      label: '',
       title: 'Seq Params',
       condition: ({ referenceInstance }) =>
         !!(
           referenceInstance?.PixelBandwidth ||
           referenceInstance?.MagnificationFactor ||
-          referenceInstance?.ReceiveCoilName
+          referenceInstance?.ReceiveCoilName ||
+          referenceInstance?.AcquisitionDuration ||
+          referenceInstance?.ConvolutionKernel ||
+          referenceInstance?.SpecificAbsorptionRate
         ),
       contentF: ({ referenceInstance }) => {
         const parts = [];
@@ -116,6 +119,15 @@ export default {
         }
         if (referenceInstance.ReceiveCoilName) {
           parts.push(referenceInstance.ReceiveCoilName);
+        }
+        if (referenceInstance.AcquisitionDuration) {
+          parts.push(`Dur:${referenceInstance.AcquisitionDuration}`);
+        }
+        if (referenceInstance.ConvolutionKernel) {
+          parts.push(`Ker:${referenceInstance.ConvolutionKernel}`);
+        }
+        if (referenceInstance.SpecificAbsorptionRate) {
+          parts.push(`SAR:${referenceInstance.SpecificAbsorptionRate}`);
         }
         return parts.join(' ');
       },
@@ -187,15 +199,29 @@ export default {
         (!!referenceInstance?.PixelSpacing &&
           referenceInstance?.Columns &&
           referenceInstance?.Rows) ||
-        !!referenceInstance?.NumberOfFrames,
+        !!referenceInstance?.NumberOfFrames ||
+        !!referenceInstance?.SpacingBetweenSlices ||
+        !!referenceInstance?.ReconstructionDiameter,
       contentF: ({ referenceInstance }) => {
         const parts = [];
         const ps = referenceInstance.PixelSpacing;
-        const { Columns: cols, Rows: rows, NumberOfFrames: frames } = referenceInstance;
+        const {
+          Columns: cols,
+          Rows: rows,
+          NumberOfFrames: frames,
+          SpacingBetweenSlices: sbs,
+          ReconstructionDiameter: rd,
+        } = referenceInstance;
         if (ps && cols && rows) {
           const fovX = (ps[0] * cols).toFixed(1);
           const fovY = (ps[1] * rows).toFixed(1);
           parts.push(`FoV:${fovX}×${fovY}mm`);
+        }
+        if (sbs) {
+          parts.push(`Gap:${sbs}mm`);
+        }
+        if (rd) {
+          parts.push(`RD:${rd}mm`);
         }
         if (frames) {
           parts.push(`Frames:${frames}`);
@@ -229,7 +255,7 @@ export default {
       },
     },
     {
-      id: 'RM',
+      id: 'MRI',
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'MRI',
