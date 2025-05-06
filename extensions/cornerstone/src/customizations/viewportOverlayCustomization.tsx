@@ -103,31 +103,27 @@ export default {
       condition: ({ referenceInstance }) =>
         !!(
           referenceInstance?.PixelBandwidth ||
-          referenceInstance?.MagnificationFactor ||
           referenceInstance?.ReceiveCoilName ||
+          referenceInstance?.TransmitCoilName ||
           referenceInstance?.AcquisitionDuration ||
-          referenceInstance?.ConvolutionKernel ||
-          referenceInstance?.SpecificAbsorptionRate
+          referenceInstance?.SAR
         ),
       contentF: ({ referenceInstance }) => {
         const parts = [];
         if (referenceInstance.PixelBandwidth) {
           parts.push(`BW:${referenceInstance.PixelBandwidth}`);
         }
-        if (referenceInstance.MagnificationFactor) {
-          parts.push(`MF:${referenceInstance.MagnificationFactor.toFixed(2)}`);
-        }
         if (referenceInstance.ReceiveCoilName) {
           parts.push(referenceInstance.ReceiveCoilName);
+        }
+        if (referenceInstance.TransmitCoilName) {
+          parts.push(`Tx:${referenceInstance.TransmitCoilName}`);
         }
         if (referenceInstance.AcquisitionDuration) {
           parts.push(`Dur:${referenceInstance.AcquisitionDuration}`);
         }
-        if (referenceInstance.ConvolutionKernel) {
-          parts.push(`Ker:${referenceInstance.ConvolutionKernel}`);
-        }
-        if (referenceInstance.SpecificAbsorptionRate) {
-          parts.push(`SAR:${referenceInstance.SpecificAbsorptionRate}`);
+        if (referenceInstance.SAR) {
+          parts.push(`SAR:${referenceInstance.SAR}`);
         }
         return parts.join(' ');
       },
