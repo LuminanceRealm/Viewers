@@ -44,7 +44,7 @@ module.exports = {
       secondary: {
         light: '#3a3f99',
         main: '#2b166b',
-        dark: '#041c4a',
+        dark: '#000',
         active: '#1f1f27',
       },
 
@@ -62,7 +62,7 @@ module.exports = {
       bkg: {
         low: '#050615',
         med: '#090C29',
-        full: '#041C4A',
+        full: '#0000',
       },
       info: {
         primary: '#FFFFFF',
