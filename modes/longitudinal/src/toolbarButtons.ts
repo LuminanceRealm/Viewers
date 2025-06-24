@@ -521,8 +521,8 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'EyeVisible',
-      label: 'Ocultar/Mostar información',
-      tooltip: 'Ocultar/Mostar información',
+      label: 'Ocultar/Mostar datos',
+      tooltip: 'Ocultar/Mostar datos',
       commands: 'toggleViewportOverlay',
     },
   },
