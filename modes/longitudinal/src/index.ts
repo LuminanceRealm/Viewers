@@ -112,6 +112,7 @@ function modeFactory({ modeConfiguration }) {
         'Angle',
         'CobbAngle',
         'CalibrationLine',
+        'ShowViewportOverlay',
         'Capture',
       ]);
 

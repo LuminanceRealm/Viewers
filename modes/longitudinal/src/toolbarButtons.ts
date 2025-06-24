@@ -516,6 +516,16 @@ const toolbarButtons: Button[] = [
       },
     },
   },
+  {
+    id: 'ShowViewportOverlay',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'EyeVisible',
+      label: 'Ocultar/Mostar información',
+      tooltip: 'Ocultar/Mostar información',
+      commands: 'toggleViewportOverlay',
+    },
+  },
   // {
   //   id: 'Undo',
   //   uiType: 'ohif.toolButton',

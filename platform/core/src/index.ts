@@ -35,6 +35,7 @@ import {
   WorkflowStepsService,
   StudyPrefetcherService,
   MultiMonitorService,
+  ViewportOverlayService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -90,6 +91,7 @@ const OHIF = {
   useActiveViewportDisplaySets,
   WorkflowStepsService,
   StudyPrefetcherService,
+  ViewportOverlayService,
 };
 
 export {
@@ -139,6 +141,7 @@ export {
   useSystem,
   useToolbar,
   useActiveViewportDisplaySets,
+  ViewportOverlayService,
 };
 
 export { OHIF };

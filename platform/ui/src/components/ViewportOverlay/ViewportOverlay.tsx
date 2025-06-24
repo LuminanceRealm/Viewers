@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
 
 import './ViewportOverlay.css';
@@ -21,6 +21,7 @@ export type ViewportOverlayProps = {
   bottomRight: React.ReactNode;
   bottomLeft: React.ReactNode;
   color?: string;
+  servicesManager: AppTypes.ServicesManager
 };
 
 const ViewportOverlay = ({
@@ -29,8 +30,29 @@ const ViewportOverlay = ({
   bottomRight,
   bottomLeft,
   color = 'text-primary-light',
+  servicesManager
 }: ViewportOverlayProps) => {
+  const { viewportOverlayService } = servicesManager.services
+  const [ show, setShow ] = useState(viewportOverlayService.getShow())
+
   const overlay = 'absolute pointer-events-none viewport-overlay';
+
+  useEffect(() => {
+    console.log('ViewportOverlay useEffect')
+    const updateShow = () => {
+      setShow(viewportOverlayService.getShow())
+    }
+
+    const { unsubscribe } = viewportOverlayService.subscribe(
+      viewportOverlayService.EVENTS.STATE_CHANGE,
+      updateShow
+    )
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
   return (
     <div
       className={classnames(
@@ -44,27 +66,27 @@ const ViewportOverlay = ({
         data-cy={'viewport-overlay-top-left'}
         className={classnames(overlay, classes.topLeft)}
       >
-        {topLeft}
+        {show && topLeft}
       </div>
       <div
         data-cy={'viewport-overlay-top-right'}
         className={classnames(overlay, classes.topRight)}
         style={{ transform: 'translateX(-8px)' }} // shift right side overlays by 4px for better alignment with ViewportActionCorners' icons
       >
-        {topRight}
+        {show && topRight}
       </div>
       <div
         data-cy={'viewport-overlay-bottom-right'}
         className={classnames(overlay, classes.bottomRight)}
         style={{ transform: 'translateX(-8px)' }} // shift right side overlays by 4px for better alignment with ViewportActionCorners' icons
       >
-        {bottomRight}
+        {show && bottomRight}
       </div>
       <div
         data-cy={'viewport-overlay-bottom-left'}
         className={classnames(overlay, classes.bottomLeft)}
       >
-        {bottomLeft}
+        {show && bottomLeft}
       </div>
     </div>
   );
