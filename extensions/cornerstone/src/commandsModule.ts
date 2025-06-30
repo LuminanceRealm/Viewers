@@ -54,6 +54,7 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
+    ViewportOverlayService,
   } = servicesManager.services;
 
   const { measurementServiceSource } = this;
@@ -1368,6 +1369,9 @@ function commandsModule({
     redo: () => {
       DefaultHistoryMemo.redo();
     },
+    toggleViewportOverlay: () => {
+      ViewportOverlayService.toggleShow()
+    }
   };
 
   const definitions = {
@@ -1633,6 +1637,9 @@ function commandsModule({
     },
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
+    },
+    toggleViewportOverlay: {
+      commandFn: actions.toggleViewportOverlay
     },
     undo: actions.undo,
     redo: actions.redo,

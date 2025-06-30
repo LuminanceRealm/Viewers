@@ -14,6 +14,7 @@ import PanelServiceType from '../services/PanelService';
 import UIDialogServiceType from '../services/UIDialogService';
 import UIViewportDialogServiceType from '../services/UIViewportDialogService';
 import StudyPrefetcherServiceType from '../services/StudyPrefetcherService';
+import ViewportOverlayServiceType from '../services/ViewportOverlayService'
 import type { MultiMonitorService } from '../services/MultiMonitorService';
 
 import ServicesManagerType from '../services/ServicesManager';
@@ -57,6 +58,7 @@ declare global {
     export type PanelService = PanelServiceType;
     export type StudyPrefetcherService = StudyPrefetcherServiceType;
     export type MultiMonitorService;
+    export type ViewportOverlayService = ViewportGridServiceType;
 
     export interface Managers {
       servicesManager?: ServicesManager;
@@ -81,6 +83,7 @@ declare global {
       panelService?: PanelServiceType;
       studyPrefetcherService?: StudyPrefetcherServiceType;
       multiMonitorService?: MultiMonitorService;
+      viewportOverlayService? = ViewportOverlayServiceType;
     }
 
     export interface Config {
