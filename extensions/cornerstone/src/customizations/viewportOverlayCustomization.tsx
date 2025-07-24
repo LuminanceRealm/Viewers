@@ -80,6 +80,14 @@ export default {
       condition: ({ referenceInstance }) => !!referenceInstance?.SequenceName,
       contentF: ({ referenceInstance }) => referenceInstance.SequenceName,
     },
+    {
+      id: 'OperatorsName',
+      inheritsFrom: 'ohif.overlayItem',
+      label: 'OP: ',
+      title: 'Operator',
+      condition: ({ referenceInstance }) => !!referenceInstance?.OperatorsName,
+      contentF: ({ referenceInstance }) => referenceInstance.OperatorsName,
+    },
   ],
 
   'viewportOverlay.bottomLeft': [
