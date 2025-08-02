@@ -29,7 +29,7 @@ import {
   callInputDialog,
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
-import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
+import toggleImageSliceSync, { useImageSliceSync } from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
@@ -43,6 +43,7 @@ const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
+  sync: useImageSliceSync,
 };
 
 const getLabelmapTools = ({ toolGroupService }) => {
@@ -82,6 +83,7 @@ function commandsModule({
     segmentationService,
     displaySetService,
     ViewportOverlayService,
+    studyPrefetcherService,
   } = servicesManager.services as AppTypes.Services;
 
   const { measurementServiceSource } = this;
@@ -105,6 +107,16 @@ function commandsModule({
       segmentationId,
       segmentIndex: activeSegmentIndex,
     };
+  }
+
+  function subscribeToDisplaySetService(fn) {
+    // console.log('SUBSCRIBE TO DISPLAY SET SERVICE');
+    const EVENT = studyPrefetcherService.EVENTS.DISPLAYSET_LOAD_COMPLETE
+    const { unsubscribe } = studyPrefetcherService.subscribe(EVENT, evt => {
+      // console.log('EVENT IS ACTIVATED');
+      // console.log(studyPrefetcherService.getToggleSync());
+      if (studyPrefetcherService.getToggleSync()) fn({ type: 'sync'})
+    })
   }
 
   const actions = {
@@ -1549,6 +1561,8 @@ function commandsModule({
       ViewportOverlayService.toggleShow()
     }
   };
+
+  subscribeToDisplaySetService(actions.toggleSynchronizer)
 
   const definitions = {
     // The command here is to show the viewer context menu, as being the

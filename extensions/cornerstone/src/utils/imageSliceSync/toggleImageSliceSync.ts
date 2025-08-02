@@ -7,13 +7,17 @@ export default function toggleImageSliceSync({
   viewports: providedViewports,
   syncId,
 }: withAppTypes) {
-  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
+  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService, studyPrefetcherService } =
     servicesManager.services;
 
   syncId ||= IMAGE_SLICE_SYNC_NAME;
+  studyPrefetcherService.setToggleSync()
 
   const viewports =
     providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
+
+  // console.log('viewports');
+  // console.log(viewports);
 
   // Todo: right now we don't have a proper way to define specific
   // viewports to add to synchronizers, and right now it is global or not
@@ -98,4 +102,33 @@ function getReconstructableStackViewports(
     }
   });
   return viewports;
+}
+
+export function useImageSliceSync({
+  servicesManager,
+  viewports: providedViewports,
+  syncId,
+}: withAppTypes) {
+  const { syncGroupService, viewportGridService, displaySetService, cornerstoneViewportService } =
+    servicesManager.services;
+
+  syncId ||= IMAGE_SLICE_SYNC_NAME;
+
+  const viewports =
+    providedViewports || getReconstructableStackViewports(viewportGridService, displaySetService);
+
+  // create synchronization group and add the viewports to it.
+  viewports.forEach(gridViewport => {
+    const { viewportId } = gridViewport.viewportOptions;
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!viewport) {
+      return;
+    }
+    syncGroupService.addViewportToSyncGroup(viewportId, viewport.getRenderingEngine().id, {
+      type: 'imageSlice',
+      id: syncId,
+      source: true,
+      target: true,
+    });
+  });
 }

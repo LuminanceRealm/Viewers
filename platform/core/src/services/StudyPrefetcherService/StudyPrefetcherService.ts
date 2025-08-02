@@ -149,6 +149,8 @@ class StudyPrefetcherService extends PubSubService {
     },
   };
 
+  toggleSync = true
+
   constructor({
     servicesManager,
     extensionManager,
@@ -177,6 +179,14 @@ class StudyPrefetcherService extends PubSubService {
   public onModeExit(): void {
     this._removeEventListeners();
     this._stopPrefetching();
+  }
+
+  public getToggleSync() {
+    return this.toggleSync
+  }
+
+  public setToggleSync() {
+    this.toggleSync = !this.toggleSync
   }
 
   private _addImageLoadingEventsListeners() {
