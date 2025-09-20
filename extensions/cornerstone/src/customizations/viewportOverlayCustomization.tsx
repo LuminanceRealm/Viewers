@@ -5,6 +5,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'ID: ',
       title: 'Patient ID',
+      color: '#cbcdd3',
       condition: ({ referenceInstance }) => !!referenceInstance?.PatientID,
       contentF: ({ referenceInstance }) => referenceInstance.PatientID,
     },
@@ -13,6 +14,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Patient',
+      color: '#5fbeaa',
       condition: ({ referenceInstance }) => !!referenceInstance?.PatientName,
       contentF: ({ referenceInstance }) => referenceInstance.PatientName,
     },
@@ -21,6 +23,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Sex/Age/DOB',
+      color: '#cbcdd3',
       condition: ({ referenceInstance }) =>
         !!(referenceInstance?.PatientSex && referenceInstance?.PatientAge),
       contentF: ({ referenceInstance, formatters: { formatDate } }) => {
@@ -40,6 +43,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Institution',
+      color: '#cbcdd3',
       condition: ({ referenceInstance }) => !!referenceInstance?.InstitutionName,
       contentF: ({ referenceInstance }) => referenceInstance.InstitutionName,
     },
@@ -51,6 +55,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Date/Time',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) =>
         !!(referenceInstance?.StudyDate && referenceInstance?.StudyTime),
       contentF: ({ referenceInstance, formatters: { formatDate, formatTime } }) =>
@@ -61,6 +66,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'ST: ',
       title: 'Study',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.StudyDescription,
       contentF: ({ referenceInstance }) => referenceInstance.StudyDescription,
     },
@@ -69,6 +75,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'SE: ',
       title: 'Series',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.SeriesDescription,
       contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
     },
@@ -77,6 +84,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'SQ: ',
       title: 'Sequence',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.SequenceName,
       contentF: ({ referenceInstance }) => referenceInstance.SequenceName,
     },
@@ -85,6 +93,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'OP: ',
       title: 'Operator',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.OperatorsName,
       contentF: ({ referenceInstance }) => referenceInstance.OperatorsName,
     },
@@ -95,11 +104,13 @@ export default {
       id: 'WindowLevel',
       inheritsFrom: 'ohif.overlayItem.windowLevel',
       label: '',
+      color: '#98a6ad',
     },
     {
       id: 'ZoomLevel',
       inheritsFrom: 'ohif.overlayItem.zoomLevel',
       label: '',
+      color: '#98a6ad',
       condition: props =>
         props.toolGroupService.getActiveToolForViewport(props.viewportId) === 'Zoom',
     },
@@ -108,6 +119,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Seq Params',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) =>
         !!(
           referenceInstance?.PixelBandwidth ||
@@ -141,6 +153,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'ORI: ',
       title: 'Orientation',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => Array.isArray(referenceInstance?.PatientOrientation),
       contentF: ({ referenceInstance }) => referenceInstance.PatientOrientation.join('>'),
     },
@@ -149,6 +162,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'POS: ',
       title: 'Position',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) =>
         Array.isArray(referenceInstance?.ImagePositionPatient) &&
         referenceInstance.ImagePositionPatient.length > 0,
@@ -162,6 +176,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'LAT: ',
       title: 'Laterality',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.ImageLaterality,
       contentF: ({ referenceInstance }) =>
         referenceInstance.ImageLaterality.toUpperCase() === 'L'
@@ -175,6 +190,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: 'DEV: ',
       title: 'Device',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.ManufacturerModelName,
       contentF: ({ referenceInstance }) => referenceInstance.ManufacturerModelName,
     },
@@ -185,12 +201,14 @@ export default {
       id: 'InstanceNumber',
       inheritsFrom: 'ohif.overlayItem.instanceNumber',
       label: 'IN: ',
+      color: '#98a6ad',
     },
     {
       id: 'SliceThickness',
       inheritsFrom: 'ohif.overlayItem',
       label: 'TH: ',
       title: 'Thickness',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) => !!referenceInstance?.SliceThickness,
       contentF: ({ referenceInstance }) => `${referenceInstance.SliceThickness}mm`,
     },
@@ -199,6 +217,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Calculated',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) =>
         (!!referenceInstance?.PixelSpacing &&
           referenceInstance?.Columns &&
@@ -238,6 +257,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Exposure',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) =>
         !!(
           referenceInstance?.KVP ||
@@ -263,6 +283,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'MRI',
+      color: '#98a6ad',
       condition: ({ referenceInstance }) =>
         !!(
           referenceInstance?.RepetitionTime ||

@@ -29,7 +29,7 @@ const ViewportOverlay = ({
   topRight,
   bottomRight,
   bottomLeft,
-  color = 'text-primary-light',
+  color = 'text-primary-active',
   servicesManager
 }: ViewportOverlayProps) => {
   const { viewportOverlayService } = servicesManager.services

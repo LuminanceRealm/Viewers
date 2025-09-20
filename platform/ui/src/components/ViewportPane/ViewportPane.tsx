@@ -68,7 +68,7 @@ function ViewportPane({
       className={classnames(
         'group/pane h-full w-full overflow-hidden rounded-md transition duration-300',
         {
-          'border-primary-light border-2': isActive,
+          'border-primary border-2': isActive,
           'border-2 border-transparent': !isActive,
         },
         className
@@ -82,7 +82,7 @@ function ViewportPane({
           'h-full w-full overflow-hidden rounded-md',
           {
             'border border-transparent': isActive,
-            'border-secondary-light group-hover/pane:border-primary-light/70 border': !isActive,
+            'border-secondary-light group-hover/pane:border-primary/70 border': !isActive,
           },
           className
         )}
