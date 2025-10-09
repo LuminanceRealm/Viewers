@@ -12,6 +12,17 @@ export const primaryAxial = {
   editableBy: {},
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
+  callbacks: {
+    onViewportDataInitialized: [
+      {
+        commandName: 'setToolActiveToolbar',
+        commandOptions: {
+          toolName: 'Crosshairs',
+          toolGroupIds: ['mpr'],
+        },
+      },
+    ],
+  },
   displaySetSelectors: {
     activeDisplaySet: {
       seriesMatchingRules: [
