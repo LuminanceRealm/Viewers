@@ -386,15 +386,22 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback }) => {
+    arrowTextCallback: async ({ callback, data }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
 
-      callInputDialogAutoComplete({
+      const measurement = data || {};
+
+      const result = await callInputDialogAutoComplete({
+        measurement,
         uiDialogService,
         labelConfig,
         renderContent,
       });
+
+      if (result && callback && typeof callback === 'function') {
+        callback(result.label || result);
+      }
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
