@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
@@ -45,17 +45,9 @@ const Thumbnail = ({
     },
   });
 
-  const [lastTap, setLastTap] = useState(0);
-
+  // On mobile a single tap loads the series (no double-tap required)
   const handleTouchEnd = e => {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    if (tapLength < 300 && tapLength > 0) {
-      onDoubleClick(e);
-    } else {
-      onClick(e);
-    }
-    setLastTap(currentTime);
+    onDoubleClick(e);
   };
 
   const renderThumbnailPreset = () => {
