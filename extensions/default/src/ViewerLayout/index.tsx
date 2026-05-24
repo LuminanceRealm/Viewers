@@ -170,7 +170,14 @@ function ViewerLayout({
             {/* TOOLBAR + GRID */}
             <ResizablePanel {...resizableViewportGridPanelProps}>
               <div className="flex h-full flex-1 flex-col">
-                <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
+                <div
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  onTouchStart={() => {
+                    if (window.innerWidth <= 768) {
+                      setLeftPanelClosed(true);
+                    }
+                  }}
+                >
                   <ViewportGridComp
                     servicesManager={servicesManager}
                     viewportComponents={viewportComponents}
