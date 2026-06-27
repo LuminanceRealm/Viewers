@@ -83,7 +83,7 @@ export function VolumeShift({
             style={{
               background: calculateBackground((shift - minShift) / (maxShift - minShift)),
               '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
+              '--thumb-outer-color': '#0A1126',
             }}
           />
         )}

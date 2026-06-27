@@ -63,7 +63,7 @@ export function VolumeRenderingQuality({
             style={{
               background: calculateBackground((quality - min) / (max - min)),
               '--thumb-inner-color': '#5acce6',
-              '--thumb-outer-color': '#090c29',
+              '--thumb-outer-color': '#0A1126',
             }}
           />
         )}

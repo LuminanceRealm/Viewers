@@ -138,7 +138,7 @@ const SegmentationConfig = ({
           setRenderFill={setRenderFill}
           setRenderOutline={setRenderOutline}
         />
-        <div className="mx-1 mb-[8px] h-[1px] bg-[#212456]"></div>
+        <div className="mx-1 mb-[8px] h-[1px] bg-[#26315C]"></div>
         <div
           onClick={() => setIsMinimized(!isMinimized)}
           className="flex cursor-pointer items-center pl-2 pb-[9px]"

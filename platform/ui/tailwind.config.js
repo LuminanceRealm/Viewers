@@ -14,7 +14,7 @@ module.exports = {
       xl: '1280px',
     },
     fontFamily: {
-      inter: ['Inter', 'sans-serif'],
+      inter: ['Montserrat', 'sans-serif'],
     },
     colors: {
       overlay: 'rgba(0, 0, 0, 0.8)',
@@ -30,9 +30,9 @@ module.exports = {
 
       primary: {
         light: '#5acce6',
-        main: '#5fbeaa',
-        dark: '#2a3038',
-        active: '#5fbeaa',
+        main: '#52AFE3',
+        dark: '#1A2750',
+        active: '#52AFE3',
       },
       inputfield: {
         main: '#3a3f99',
@@ -42,10 +42,10 @@ module.exports = {
       },
 
       secondary: {
-        light: '#4a525a',
-        main: '#393e46',
-        dark: '#1a1e24',
-        active: '#393e46',
+        light: '#26315C',
+        main: '#1A2750',
+        dark: '#050F26',
+        active: '#1A2750',
       },
 
       indigo: {
@@ -57,21 +57,21 @@ module.exports = {
         light: '#a19fad',
         main: '#fff',
         dark: '#726f7e',
-        active: '#5fbeaa',
+        active: '#52AFE3',
       },
       bkg: {
-        low: '#1a1e24',
-        med: '#2a3038',
-        full: '#393e46',
+        low: '#0A1126',
+        med: '#0F1734',
+        full: '#1A2750',
       },
       info: {
         primary: '#FFFFFF',
         secondary: '#7BB2CE',
       },
       actions: {
-        primary: '#5fbeaa',
-        highlight: '#5fbeaa',
-        hover: 'rgba(95, 190, 170, 0.2)',
+        primary: '#52AFE3',
+        highlight: '#52AFE3',
+        hover: 'rgba(82, 175, 227, 0.2)',
       },
       customgreen: {
         100: '#05D97C',

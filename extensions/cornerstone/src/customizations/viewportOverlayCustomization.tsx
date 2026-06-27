@@ -14,7 +14,7 @@ export default {
       inheritsFrom: 'ohif.overlayItem',
       label: '',
       title: 'Patient',
-      color: '#5fbeaa',
+      color: '#52AFE3',
       condition: ({ referenceInstance }) => !!referenceInstance?.PatientName,
       contentF: ({ referenceInstance }) => referenceInstance.PatientName,
     },
