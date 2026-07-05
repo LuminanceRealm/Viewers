@@ -94,23 +94,30 @@ function modeFactory({ modeConfiguration }) {
       // On desktop the most-used tools are flattened into the primary bar;
       // on mobile they stay inside the dropdowns to keep the bar compact.
       const isMobile = window.innerWidth <= 768;
-      const flattenedMeasurements = isMobile ? [] : ['Length', 'EllipticalROI', 'Angle'];
-      const flattenedMoreTools = isMobile ? [] : ['Reset'];
-
-      toolbarService.createButtonSection('primary', [
-        ...flattenedMeasurements,
-        'MeasurementTools',
-        'Zoom',
-        'Pan',
-        'WindowLevel',
-        ...flattenedMoreTools,
-        'MoreTools',
-        'Layout',
-      ]);
+      const flattenedMeasurements = isMobile ? [] : ['Length', 'EllipticalROI'];
+      // The first tool of a dropdown doubles as its quick-click button, so on
+      // desktop Angle leads the measurement dropdown instead of taking a bar slot
+      // (Reset already leads the More dropdown in both layouts).
+      const measurementDropdownLead = isMobile ? [] : ['Angle'];
 
       toolbarService.createButtonSection(
-        'measurementSection',
-        [
+        'primary',
+        isMobile
+          ? ['MeasurementTools', 'MoreTools', 'Zoom', 'Pan', 'WindowLevel', 'Layout']
+          : [
+              ...flattenedMeasurements,
+              'MeasurementTools',
+              'Zoom',
+              'Pan',
+              'WindowLevel',
+              'MoreTools',
+              'Layout',
+            ]
+      );
+
+      toolbarService.createButtonSection('measurementSection', [
+        ...measurementDropdownLead,
+        ...[
           'Length',
           'Bidirectional',
           'ArrowAnnotate',
@@ -125,31 +132,31 @@ function modeFactory({ modeConfiguration }) {
           'CalibrationLine',
           'ShowViewportOverlay',
           'Capture',
-        ].filter(tool => !flattenedMeasurements.includes(tool))
-      );
+        ].filter(
+          tool =>
+            !flattenedMeasurements.includes(tool) && !measurementDropdownLead.includes(tool)
+        ),
+      ]);
 
-      toolbarService.createButtonSection(
-        'moreToolsSection',
-        [
-          'Reset',
-          'rotate-right',
-          'flipHorizontal',
-          'ImageSliceSync',
-          'ReferenceLines',
-          'ImageOverlayViewer',
-          'StackScroll',
-          'invert',
-          'Probe',
-          'Cine',
-          'Magnify',
-          'TrackballRotate',
-          'Crosshairs',
-          'TagBrowser',
-          'AdvancedMagnify',
-          'UltrasoundDirectionalTool',
-          'WindowLevelRegion',
-        ].filter(tool => !flattenedMoreTools.includes(tool))
-      );
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ImageSliceSync',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Probe',
+        'Cine',
+        'Magnify',
+        'TrackballRotate',
+        'Crosshairs',
+        'TagBrowser',
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
+      ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
