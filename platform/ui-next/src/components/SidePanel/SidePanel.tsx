@@ -281,6 +281,7 @@ const SidePanel = ({
 
   const getCloseStateComponent = () => {
     const _childComponents = Array.isArray(tabs) ? tabs : [tabs];
+    const activeTabLabel = (_childComponents[activeTabIndex] ?? _childComponents[0])?.label;
     return (
       <>
         <div
@@ -334,6 +335,16 @@ const SidePanel = ({
             </Tooltip>
           ))}
         </div>
+        {activeTabLabel && (
+          <div className={classnames('mt-4 flex grow', side === 'left' ? 'justify-end pr-1' : 'justify-start pl-1')}>
+            <span
+              className="group-hover:text-primary-active select-none whitespace-nowrap text-[11px] font-semibold uppercase tracking-widest text-white/40 transition-colors duration-150"
+              style={{ writingMode: 'vertical-rl' }}
+            >
+              {activeTabLabel}
+            </span>
+          </div>
+        )}
       </>
     );
   };
@@ -457,8 +468,9 @@ const SidePanel = ({
 
   return (
     <div
-      className={classnames(className, baseClasses)}
+      className={classnames(className, baseClasses, !panelOpen && 'group cursor-pointer')}
       style={style}
+      onClick={panelOpen ? undefined : () => updatePanelOpen(true)}
     >
       {panelOpen ? (
         <>
