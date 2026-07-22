@@ -79,6 +79,20 @@ function createDicomJSONApi(dicomJsonConfig) {
       const response = await fetch(url);
       const data = await response.json();
 
+      // NUBIX: expose the featured instances, the manifest URL (its origin is
+      // the NUBIX API) and the StudyInstanceUID -> NUBIX study id map so the
+      // toggleFeaturedImage command can talk back to the API
+      window.nubixFeatured = {
+        manifestUrl: url,
+        list: Array.isArray(data.featured) ? data.featured : [],
+        studyIdByUID: data.studies.reduce((acc, study) => {
+          if (study.NubixStudyId) {
+            acc[study.StudyInstanceUID] = study.NubixStudyId;
+          }
+          return acc;
+        }, {}),
+      };
+
       let StudyInstanceUID;
       let SeriesInstanceUID;
       data.studies.forEach(study => {

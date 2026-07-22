@@ -338,7 +338,7 @@ const SidePanel = ({
         {activeTabLabel && (
           <div className={classnames('mt-4 flex grow', side === 'left' ? 'justify-end pr-1' : 'justify-start pl-1')}>
             <span
-              className="group-hover:text-primary-active select-none whitespace-nowrap text-[11px] font-semibold uppercase tracking-widest text-white/40 transition-colors duration-150"
+              className="group-hover:text-primary-active select-none whitespace-nowrap text-[11px] font-semibold uppercase tracking-widest text-white/70 transition-colors duration-150 md:text-white/40"
               style={{ writingMode: 'vertical-rl' }}
             >
               {activeTabLabel}

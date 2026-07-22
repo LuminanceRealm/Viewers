@@ -15,7 +15,7 @@ import {
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 
-import { Types as OhifTypes, utils } from '@ohif/core';
+import { Types as OhifTypes, utils, classes } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import {
   callInputDialogAutoComplete,
@@ -55,6 +55,7 @@ function commandsModule({
     hangingProtocolService,
     syncGroupService,
     ViewportOverlayService,
+    userAuthenticationService,
   } = servicesManager.services;
 
   const { measurementServiceSource } = this;
@@ -1378,7 +1379,90 @@ function commandsModule({
     },
     toggleViewportOverlay: () => {
       ViewportOverlayService.toggleShow()
-    }
+    },
+    // NUBIX: toggles the active image as "featured" against the NUBIX API.
+    // Only available when the viewer was opened with ?token= (logged-in
+    // sessions); the API validates the token server-side as well.
+    toggleFeaturedImage: async () => {
+      const notify = (message, type) =>
+        uiNotificationService.show({ title: 'Imagen destacada', message, type });
+
+      const store = (window as any).nubixFeatured;
+      const authHeader = userAuthenticationService.getAuthorizationHeader();
+      if (!store?.manifestUrl || !authHeader?.Authorization) {
+        notify('Disponible sólo desde una sesión con inicio de sesión', 'warning');
+        return;
+      }
+
+      const enabledElement = _getActiveViewportEnabledElement();
+      const imageId = enabledElement?.viewport?.getCurrentImageId?.();
+      const uids = imageId && classes.MetadataProvider.getUIDsFromImageID(imageId);
+      if (!uids?.SOPInstanceUID) {
+        notify('No se pudo identificar la imagen activa', 'error');
+        return;
+      }
+
+      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = uids;
+      const studyId = store.studyIdByUID?.[StudyInstanceUID];
+      if (!studyId) {
+        notify('No se pudo identificar el estudio activo', 'error');
+        return;
+      }
+
+      // The toggle is per instance (SOP UID): dicomjson imageIds never carry
+      // frame info, and the synthetic "Destacadas" series can only show whole
+      // instances anyway.
+      // Toggling from inside the synthetic "Destacadas" series must target
+      // the original series of the instance
+      const existing = (store.list || []).find(
+        entry => entry.sop_instance_uid === SOPInstanceUID
+      );
+      const seriesUid =
+        SeriesInstanceUID?.startsWith('FEATURED-') && existing
+          ? existing.series_instance_uid
+          : SeriesInstanceUID;
+
+      try {
+        const response = await fetch(
+          `${new URL(store.manifestUrl).origin}/api/v1/organization/study/${studyId}/featured-image`,
+          {
+            method: 'POST',
+            headers: { ...authHeader, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              series_instance_uid: seriesUid,
+              sop_instance_uid: SOPInstanceUID,
+            }),
+          }
+        );
+        if (response.status === 400) {
+          notify('Límite de imágenes destacadas alcanzado (máximo 10)', 'warning');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        // The API returns the featured list of the toggled study only; in
+        // multi-study sessions store.list combines every study, so patch the
+        // toggled entry locally instead of replacing the whole list.
+        const updated = await response.json();
+        const nowFeatured = updated.find(entry => entry.sop_instance_uid === SOPInstanceUID);
+        store.list = (store.list || []).filter(
+          entry => entry.sop_instance_uid !== SOPInstanceUID
+        );
+        if (nowFeatured) {
+          store.list.push(nowFeatured);
+        }
+        notify(
+          nowFeatured
+            ? 'Imagen destacada; la serie "Destacadas" se actualiza al recargar el visor'
+            : 'Imagen quitada de destacadas',
+          'success'
+        );
+      } catch (error) {
+        console.error(error);
+        notify('No se pudo actualizar la imagen destacada', 'error');
+      }
+    },
   };
 
   const definitions = {
@@ -1647,6 +1731,9 @@ function commandsModule({
     },
     toggleViewportOverlay: {
       commandFn: actions.toggleViewportOverlay
+    },
+    toggleFeaturedImage: {
+      commandFn: actions.toggleFeaturedImage,
     },
     undo: actions.undo,
     redo: actions.redo,

@@ -36,6 +36,19 @@ const toolbarButtons: Button[] = [
     },
   },
   // tool defs
+  // NUBIX: only registered in a button section when the viewer was opened
+  // with ?token= (logged-in sessions) — see index.ts onModeEnter
+  {
+    id: 'FeaturedImage',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'Pin',
+      label: 'Imagen destacada',
+      tooltip: 'Marcar/quitar imagen destacada',
+      commands: 'toggleFeaturedImage',
+      evaluate: 'evaluate.action',
+    },
+  },
   {
     id: 'Reset',
     uiType: 'ohif.toolButton',

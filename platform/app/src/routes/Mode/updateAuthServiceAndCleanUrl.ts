@@ -21,15 +21,9 @@ export function updateAuthServiceAndCleanUrl(
     }),
   });
 
-  // Create a URL object with the current location
-  const urlObj = new URL(window.location.origin + window.location.pathname + location.search);
-
-  // Remove the token from the URL object
-  urlObj.searchParams.delete('token');
-  const cleanUrl = urlObj.toString();
-
-  // Update the browser's history without the token
-  if (window.history && window.history.replaceState) {
-    window.history.replaceState(null, '', cleanUrl);
-  }
+  // NUBIX: keep the token in the URL (upstream strips it from history here).
+  // Refreshing or hand-editing the viewer URL must preserve the logged-in
+  // session, and the NUBIX token adds no new exposure: it is the study's
+  // internal_pin, which already travels visibly inside the ?url= manifest
+  // param in logged-in flows.
 }

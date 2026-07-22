@@ -82,7 +82,8 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, userAuthenticationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -99,6 +100,13 @@ function modeFactory({ modeConfiguration }) {
       // desktop Angle leads the measurement dropdown instead of taking a bar slot
       // (Reset already leads the More dropdown in both layouts).
       const measurementDropdownLead = isMobile ? [] : ['Angle'];
+
+      // NUBIX: the featured-image button only exists for logged-in sessions,
+      // i.e. when the viewer URL carried ?token= (Mode.tsx installs it as the
+      // Authorization header before onModeEnter runs). Public /reporte links
+      // never get a token, so the button is never registered for them.
+      const authHeader = userAuthenticationService.getAuthorizationHeader();
+      const featuredImageButton = authHeader && authHeader.Authorization ? ['FeaturedImage'] : [];
 
       toolbarService.createButtonSection(
         'primary',
@@ -131,6 +139,8 @@ function modeFactory({ modeConfiguration }) {
           'CobbAngle',
           'CalibrationLine',
           'ShowViewportOverlay',
+          // NUBIX: featured sits right above Capture in both layouts
+          ...featuredImageButton,
           'Capture',
         ].filter(
           tool =>
