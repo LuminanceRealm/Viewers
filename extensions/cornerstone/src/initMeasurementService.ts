@@ -34,6 +34,8 @@ const initMeasurementService = (
     LivewireContour,
     Probe,
     UltrasoundDirectional,
+    VertebralLabel,
+    CardiothoracicIndex,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -88,6 +90,22 @@ const initMeasurementService = (
     CircleROI.matchingCriteria,
     CircleROI.toAnnotation,
     CircleROI.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'CardiothoracicIndex',
+    CardiothoracicIndex.matchingCriteria,
+    CardiothoracicIndex.toAnnotation,
+    CardiothoracicIndex.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'VertebralLabel',
+    VertebralLabel.matchingCriteria,
+    VertebralLabel.toAnnotation,
+    VertebralLabel.toMeasurement
   );
 
   measurementService.addMapping(
@@ -360,7 +378,9 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
         data.label = label;
       }
 
-      if (metadata.toolName === 'ArrowAnnotate') {
+      // Tools that render their label as on-image text need it kept in sync
+      // when it is renamed from the measurement panel.
+      if (metadata.toolName === 'ArrowAnnotate' || metadata.toolName === 'VertebralLabel') {
         data.text = label;
       }
 

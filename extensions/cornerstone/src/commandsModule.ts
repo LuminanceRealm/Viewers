@@ -31,6 +31,8 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import VertebralLabelStartDialog from './components/VertebralLabelStartDialog';
+import { SPINE_LABELS, DEFAULT_START_LABEL } from './tools/VertebralLabelTool';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -404,6 +406,51 @@ function commandsModule({
         callback(result.label || result);
       }
     },
+    /**
+     * Opens the vertebral counting picker (starting vertebra + direction) and
+     * hands the choice back to the VertebralLabel tool.
+     */
+    vertebralLabelStartCallback: async ({ callback, defaultLabel, defaultDirection }) => {
+      const dialogId = 'dialog-vertebral-label-start';
+
+      const result = await new Promise<{ startLabel: string; direction: 'up' | 'down' } | null>(
+        resolve => {
+          uiDialogService.show({
+            id: dialogId,
+            title: 'Conteo vertebral',
+            content: VertebralLabelStartDialog,
+            shouldCloseOnEsc: true,
+            contentProps: {
+              onSave: resolve,
+              labels: SPINE_LABELS,
+              defaultLabel: defaultLabel || DEFAULT_START_LABEL,
+              defaultDirection: defaultDirection || 'up',
+            },
+          });
+        }
+      );
+
+      if (typeof callback === 'function') {
+        callback(result);
+      }
+    },
+
+    /**
+     * Free-text edit of an already placed vertebral label.
+     */
+    vertebralLabelEditCallback: async ({ callback, defaultValue }) => {
+      const value = await callInputDialog({
+        uiDialogService,
+        defaultValue,
+        title: 'Etiqueta vertebral',
+        placeholder: 'Ej. L4',
+      });
+
+      if (typeof callback === 'function') {
+        callback(value);
+      }
+    },
+
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
@@ -1605,6 +1652,12 @@ function commandsModule({
     },
     arrowTextCallback: {
       commandFn: actions.arrowTextCallback,
+    },
+    vertebralLabelStartCallback: {
+      commandFn: actions.vertebralLabelStartCallback,
+    },
+    vertebralLabelEditCallback: {
+      commandFn: actions.vertebralLabelEditCallback,
     },
     setViewportActive: {
       commandFn: actions.setViewportActive,

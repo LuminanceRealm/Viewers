@@ -42,6 +42,8 @@ import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ZoomTouchTool from './tools/ZoomTouchTool';
+import VertebralLabelTool from './tools/VertebralLabelTool';
+import CardiothoracicIndexTool from './tools/CardiothoracicIndexTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
@@ -91,6 +93,8 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(ZoomTouchTool);
+  addTool(VertebralLabelTool);
+  addTool(CardiothoracicIndexTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -144,6 +148,8 @@ const toolNames = {
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
+  VertebralLabel: VertebralLabelTool.toolName,
+  CardiothoracicIndex: CardiothoracicIndexTool.toolName,
 };
 
 export { toolNames };

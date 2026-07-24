@@ -137,6 +137,8 @@ function modeFactory({ modeConfiguration }) {
           'LivewireContour',
           'Angle',
           'CobbAngle',
+          'VertebralLabel',
+          'CardiothoracicIndex',
           'CalibrationLine',
           'ShowViewportOverlay',
           // NUBIX: featured sits right above Capture in both layouts

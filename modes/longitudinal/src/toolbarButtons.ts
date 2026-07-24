@@ -228,6 +228,40 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'CardiothoracicIndex',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-cardiothoracic-index',
+      label: 'Índice cardiotorácico',
+      tooltip: 'Índice cardiotorácico (ICT)',
+      commands: setToolActiveToolbar,
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video'],
+        },
+      ],
+    },
+  },
+  {
+    id: 'VertebralLabel',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-vertebral-count',
+      label: 'Conteo vertebral',
+      tooltip: 'Conteo vertebral',
+      commands: setToolActiveToolbar,
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video'],
+        },
+      ],
+    },
+  },
+  {
     id: 'CobbAngle',
     uiType: 'ohif.toolButton',
     props: {

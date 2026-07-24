@@ -12,6 +12,8 @@ import SplineROI from './SplineROI';
 import LivewireContour from './LivewireContour';
 import Probe from './Probe';
 import UltrasoundDirectional from './UltrasoundDirectional';
+import VertebralLabel from './VertebralLabel';
+import CardiothoracicIndex from './CardiothoracicIndex';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -48,6 +50,8 @@ const measurementServiceMappingsFactory = (
       LivewireContour: POLYLINE,
       Probe: POINT,
       UltrasoundDirectional: POLYLINE,
+      VertebralLabel: POINT,
+      CardiothoracicIndex: ANGLE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -187,6 +191,40 @@ const measurementServiceMappingsFactory = (
       matchingCriteria: [
         {
           valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+        },
+      ],
+    },
+    CardiothoracicIndex: {
+      toAnnotation: CardiothoracicIndex.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        CardiothoracicIndex.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.ANGLE,
+          points: 4,
+        },
+      ],
+    },
+    VertebralLabel: {
+      toAnnotation: VertebralLabel.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        VertebralLabel.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POINT,
+          points: 1,
         },
       ],
     },

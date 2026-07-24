@@ -12,6 +12,21 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
+/**
+ * Wires the vertebral counting tool to the dialogs that pick the starting
+ * vertebra / direction and that edit an already placed label.
+ */
+function vertebralLabelConfiguration(commandsManager) {
+  return {
+    promptStartCallback: callback => {
+      commandsManager.runCommand('vertebralLabelStartCallback', { callback });
+    },
+    promptEditCallback: (defaultValue, callback) => {
+      commandsManager.runCommand('vertebralLabelEditCallback', { callback, defaultValue });
+    },
+  };
+}
+
 function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
@@ -68,6 +83,11 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       // { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
+      {
+        toolName: toolNames.VertebralLabel,
+        configuration: vertebralLabelConfiguration(commandsManager),
+      },
+      { toolName: toolNames.CardiothoracicIndex },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.CalibrationLine },
       {
@@ -226,6 +246,11 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       // { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
+      {
+        toolName: toolNames.VertebralLabel,
+        configuration: vertebralLabelConfiguration(commandsManager),
+      },
+      { toolName: toolNames.CardiothoracicIndex },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },

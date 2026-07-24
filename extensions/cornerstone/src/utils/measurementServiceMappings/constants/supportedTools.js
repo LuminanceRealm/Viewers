@@ -12,6 +12,8 @@ const supportedTools = [
   'SplineROI',
   'LivewireContour',
   'UltrasoundDirectionalTool',
+  'VertebralLabel',
+  'CardiothoracicIndex',
   'SCOORD3DPoint',
 ];
 

@@ -12,6 +12,14 @@ export default {
       displayText: [],
       report: [],
     },
+    VertebralLabel: {
+      displayText: [],
+      report: [],
+    },
+    CardiothoracicIndex: {
+      displayText: [],
+      report: [],
+    },
     RectangleROi: {
       displayText: [],
       report: [],
