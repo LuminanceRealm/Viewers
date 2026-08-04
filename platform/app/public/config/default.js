@@ -75,6 +75,11 @@ window.config = {
       configuration: {
         friendlyName: 'dicom json',
         name: 'json',
+        // Sin comillas, el header Accept queda dentro de la lista segura de CORS y el
+        // navegador deja de mandar un preflight OPTIONS por cada archivo DICOM.
+        // Los archivos son objetos planos en S3/CloudFront, no un servidor DICOMweb
+        // que negocie multipart, asi que el valor del Accept es irrelevante aqui.
+        omitQuotationForMultipartRequest: true,
       },
     },
   ],

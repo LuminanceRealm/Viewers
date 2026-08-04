@@ -311,6 +311,10 @@ function createDicomJSONApi(dicomJsonConfig) {
       const url = query.get('url');
       return _store.studyInstanceUIDMap.get(url);
     },
+    // Sin esto, IWebApiDataSource cae a su defaultGetConfig() y devuelve un objeto
+    // fijo, descartando la configuracion del data source. Eso hacia que opciones
+    // como omitQuotationForMultipartRequest nunca llegaran a generateAcceptHeader.
+    getConfig: () => dicomJsonConfig,
   };
   return IWebApiDataSource.create(implementation);
 }
