@@ -9,6 +9,7 @@ import colorbarCustomization from './customizations/colorbarCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
+import dicomPrintModalCustomization from './customizations/dicomPrintModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
 import viewportActionMenuCustomizations from './customizations/viewportActionMenuCustomizations';
 
@@ -28,6 +29,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...windowLevelPresetsCustomization,
         ...miscCustomization,
         ...captureViewportModalCustomization,
+        ...dicomPrintModalCustomization,
         ...viewportDownloadWarningCustomization,
         ...viewportActionMenuCustomizations,
       },

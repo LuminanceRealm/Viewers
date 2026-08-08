@@ -31,6 +31,7 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import DicomPrintForm from './utils/DicomPrintForm';
 import VertebralLabelStartDialog from './components/VertebralLabelStartDialog';
 import { SPINE_LABELS, DEFAULT_START_LABEL } from './tools/VertebralLabelTool';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
@@ -659,6 +660,34 @@ function commandsModule({
         uiModalService.show({
           content: CornerstoneViewportDownloadForm,
           title: 'Descargar imagen',
+          contentProps: {
+            activeViewportId,
+            cornerstoneViewportService,
+          },
+          containerClassName: 'max-w-4xl p-4',
+        });
+      }
+    },
+    // impresión DICOM (Print SCU) — manda el viewport activo a una impresora
+    // de película o papel de la clínica a través del agente local NUBIX OS
+    showDicomPrintModal: () => {
+      const { activeViewportId } = viewportGridService.getState();
+
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
+        uiNotificationService.show({
+          title: 'Imprimir',
+          message: 'Esta imagen no se puede imprimir',
+          type: 'error',
+        });
+        return;
+      }
+
+      const { uiModalService } = servicesManager.services;
+
+      if (uiModalService) {
+        uiModalService.show({
+          content: DicomPrintForm,
+          title: 'Imprimir en impresora DICOM',
           contentProps: {
             activeViewportId,
             cornerstoneViewportService,
@@ -1646,6 +1675,9 @@ function commandsModule({
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
+    },
+    showDicomPrintModal: {
+      commandFn: actions.showDicomPrintModal,
     },
     toggleCine: {
       commandFn: actions.toggleCine,

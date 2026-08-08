@@ -168,6 +168,9 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
+        // NUBIX: impresión DICOM. El botón se muestra siempre; el modal avisa
+        // si la sesión no trae token o si la organización no tiene impresoras.
+        'Print',
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import html2canvas from 'html2canvas';
-import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
+import { getEnabledElement } from '@cornerstonejs/core';
 import { ToolGroupManager } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
 import { useSystem } from '@ohif/core/src';
+import {
+  disableOffscreenViewport,
+  enableOffscreenViewport,
+  loadActiveImage,
+  rasterizeViewport,
+  syncAnnotations,
+} from './viewportRasterizer';
 
 const DEFAULT_SIZE = 512;
-const MAX_TEXTURE_SIZE = 10000;
 const VIEWPORT_ID = 'cornerstone-viewport-download-form';
 
 const FILE_TYPE_OPTIONS = [
@@ -70,96 +75,25 @@ const CornerstoneViewportDownloadForm = ({
   }, []);
 
   const handleEnableViewport = (viewportElement: HTMLElement) => {
-    if (!viewportElement) {
-      return;
-    }
-
-    const { viewport } = getEnabledElement(activeViewportElement);
-
-    const viewportInput = {
-      viewportId: VIEWPORT_ID,
-      element: viewportElement,
-      type: viewport.type,
-      defaultOptions: {
-        background: viewport.defaultOptions.background,
-        orientation: viewport.defaultOptions.orientation,
-      },
-    };
-
-    renderingEngine.enableElement(viewportInput);
+    enableOffscreenViewport(renderingEngine, activeViewportElement, VIEWPORT_ID, viewportElement);
   };
 
   const handleDisableViewport = async () => {
-    renderingEngine.disableElement(VIEWPORT_ID);
+    disableOffscreenViewport(renderingEngine, VIEWPORT_ID);
   };
 
-  const handleLoadImage = async (width: number, height: number) => {
-    if (!activeViewportElement) {
-      return;
-    }
-
-    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
-    if (!activeViewportEnabledElement) {
-      return;
-    }
-
-    const { viewport } = activeViewportEnabledElement;
-    const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
-
-    try {
-      if (downloadViewport instanceof StackViewport) {
-        const imageId = viewport.getCurrentImageId();
-        const properties = viewport.getProperties();
-
-        await downloadViewport.setStack([imageId]);
-        downloadViewport.setProperties(properties);
-
-        return {
-          width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-          height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-        };
-      } else if (downloadViewport instanceof BaseVolumeViewport) {
-        const volumeIds = viewport.getAllVolumeIds();
-        downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
-
-        return {
-          width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-          height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-        };
-      }
-    } catch (error) {
-      console.error('Error loading image:', error);
-    }
-  };
+  const handleLoadImage = async (width: number, height: number) =>
+    loadActiveImage(
+      renderingEngine,
+      activeViewportElement,
+      VIEWPORT_ID,
+      width,
+      height,
+      DEFAULT_SIZE
+    );
 
   const handleToggleAnnotations = (show: boolean) => {
-    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
-    if (!activeViewportEnabledElement) {
-      return;
-    }
-
-    const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
-    if (!downloadViewport) {
-      return;
-    }
-
-    const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
-    const { id: downloadViewportId } = downloadViewport;
-
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
-    toolGroup.addViewport(downloadViewportId, renderingEngineId);
-
-    Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
-      if (show && toolName !== 'Crosshairs') {
-        try {
-          toolGroup.setToolEnabled(toolName);
-        } catch (error) {
-          console.debug('Error enabling tool:', error);
-        }
-      } else {
-        toolGroup.setToolDisabled(toolName);
-      }
-    });
+    syncAnnotations(renderingEngine, activeViewportElement, VIEWPORT_ID, show);
   };
 
   useEffect(() => {
@@ -172,16 +106,12 @@ const CornerstoneViewportDownloadForm = ({
   }, [viewportDimensions, showAnnotations]);
 
   const handleDownload = async (filename: string, fileType: string) => {
-    const divForDownloadViewport = document.querySelector(
-      `div[data-viewport-uid="${VIEWPORT_ID}"]`
-    );
+    const canvas = await rasterizeViewport(VIEWPORT_ID);
 
-    if (!divForDownloadViewport) {
-      console.debug('No viewport found for download');
+    if (!canvas) {
       return;
     }
 
-    const canvas = await html2canvas(divForDownloadViewport as HTMLElement);
     const link = document.createElement('a');
     link.download = `${filename}.${fileType}`;
     link.href = canvas.toDataURL(`image/${fileType}`, 1.0);
