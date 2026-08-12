@@ -639,6 +639,116 @@ export const ToolCapture = (props: IconProps) => (
   </svg>
 );
 
+export const ToolPrint = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <title>tool-print</title>
+    <g
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M8.5,11 L8.5,4.75 L19.5,4.75 L19.5,11"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M8.5,19 L6,19 C5.17157288,19 4.5,18.3284271 4.5,17.5 L4.5,12.5 C4.5,11.6715729 5.17157288,11 6,11 L22,11 C22.8284271,11 23.5,11.6715729 23.5,12.5 L23.5,17.5 C23.5,18.3284271 22.8284271,19 22,19 L19.5,19"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <rect
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        x="8.5"
+        y="16"
+        width="11"
+        height="7.25"
+        rx="1"
+      ></rect>
+    </g>
+  </svg>
+);
+
+export const ToolPrintSeries = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <title>tool-print-series</title>
+    <g
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M8.5,11 L8.5,4.75 L19.5,4.75 L19.5,11"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M8.5,19 L6,19 C5.17157288,19 4.5,18.3284271 4.5,17.5 L4.5,12.5 C4.5,11.6715729 5.17157288,11 6,11 L22,11 C22.8284271,11 23.5,11.6715729 23.5,12.5 L23.5,17.5 C23.5,18.3284271 22.8284271,19 22,19 L19.5,19"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      {/* stacked sheets coming out of the printer */}
+      <path
+        d="M11,23.25 L19.5,23.25 C20.0522847,23.25 20.5,22.8022847 20.5,22.25 L20.5,18"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <rect
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        x="6.5"
+        y="16"
+        width="11"
+        height="5.5"
+        rx="1"
+      ></rect>
+    </g>
+  </svg>
+);
+
 export const ToolCine = (props: IconProps) => (
   <svg
     width="28px"

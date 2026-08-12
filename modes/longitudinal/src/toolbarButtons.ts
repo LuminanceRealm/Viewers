@@ -35,6 +35,16 @@ const toolbarButtons: Button[] = [
       groupId: 'MoreTools',
     },
   },
+  // NUBIX: every way of getting an image out of the viewer lives in one split
+  // button — quick click prints the screen, the dropdown holds the rest.
+  {
+    id: 'ExportTools',
+    uiType: 'ohif.toolButtonList',
+    props: {
+      buttonSection: 'exportSection',
+      groupId: 'ExportTools',
+    },
+  },
   // tool defs
   // NUBIX: only registered in a button section when the viewer was opened
   // with ?token= (logged-in sessions) — see index.ts onModeEnter
@@ -526,6 +536,40 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: 'Descargar imagen',
       commands: 'showDownloadViewportModal',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
+    },
+  },
+  {
+    id: 'Print',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-print',
+      label: 'Imprimir pantalla',
+      tooltip: 'Imprimir en hoja lo que ves en pantalla',
+      commands: 'printVisibleViewports',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
+    },
+  },
+  {
+    id: 'PrintSeries',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-print-series',
+      label: 'Imprimir serie',
+      tooltip: 'Imprimir en hoja la serie completa del viewport activo',
+      commands: 'printActiveDisplaySet',
       evaluate: [
         'evaluate.action',
         {

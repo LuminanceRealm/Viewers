@@ -14,6 +14,16 @@ export default {
         });
       },
     },
+    {
+      id: 'printSeries',
+      label: 'Imprimir serie',
+      iconName: 'tool-print',
+      onClick: ({ commandsManager, displaySetInstanceUID }: withAppTypes) => {
+        commandsManager.runCommand('printDisplaySet', {
+          displaySetInstanceUID,
+        });
+      },
+    },
   ],
   'studyBrowser.sortFunctions': [
     {

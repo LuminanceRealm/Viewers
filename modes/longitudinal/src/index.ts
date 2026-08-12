@@ -108,6 +108,11 @@ function modeFactory({ modeConfiguration }) {
       const authHeader = userAuthenticationService.getAuthorizationHeader();
       const featuredImageButton = authHeader && authHeader.Authorization ? ['FeaturedImage'] : [];
 
+      // Everything that gets an image out of the viewer. On desktop these live
+      // in their own split button; on mobile there is no room for a third
+      // dropdown in the bar, so they go inside More tools instead.
+      const exportButtons = [...featuredImageButton, 'Print', 'PrintSeries', 'Capture'];
+
       toolbarService.createButtonSection(
         'primary',
         isMobile
@@ -119,9 +124,17 @@ function modeFactory({ modeConfiguration }) {
               'Pan',
               'WindowLevel',
               'MoreTools',
+              'ExportTools',
               'Layout',
             ]
       );
+
+      if (!isMobile) {
+        // The first entry is what the quick click runs: marking a featured image
+        // for logged-in sessions, and printing the screen on public links, where
+        // the featured button is not registered at all.
+        toolbarService.createButtonSection('exportSection', exportButtons);
+      }
 
       toolbarService.createButtonSection('measurementSection', [
         ...measurementDropdownLead,
@@ -141,12 +154,8 @@ function modeFactory({ modeConfiguration }) {
           'CardiothoracicIndex',
           'CalibrationLine',
           'ShowViewportOverlay',
-          // NUBIX: featured sits right above Capture in both layouts
-          ...featuredImageButton,
-          'Capture',
         ].filter(
-          tool =>
-            !flattenedMeasurements.includes(tool) && !measurementDropdownLead.includes(tool)
+          tool => !flattenedMeasurements.includes(tool) && !measurementDropdownLead.includes(tool)
         ),
       ]);
 
@@ -168,6 +177,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
+        ...(isMobile ? exportButtons : []),
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

@@ -31,6 +31,16 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import {
+  getPrintHeader,
+  captureVisibleViewports,
+  captureDisplaySetImages,
+  buildPrintDocument,
+  openPrintSheet,
+  getSeriesGrid,
+  PrintConfirmDialog,
+  MAX_PAGES_WITHOUT_CONFIRM,
+} from './utils/printSheet';
 import VertebralLabelStartDialog from './components/VertebralLabelStartDialog';
 import { SPINE_LABELS, DEFAULT_START_LABEL } from './tools/VertebralLabelTool';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
@@ -69,6 +79,55 @@ function commandsModule({
   function _getActiveViewportToolGroupId() {
     const viewport = _getActiveViewportEnabledElement();
     return toolGroupService.getToolGroupForViewport(viewport.id);
+  }
+
+  /**
+   * Renders a whole series offscreen and sends it to the browser print dialog.
+   * Window level is inherited from the on-screen viewport showing that series,
+   * so the sheet matches what the user was reading.
+   */
+  async function _printSeries({ displaySet, imageIds, columns, rows }) {
+    const { viewports } = viewportGridService.getState();
+
+    let properties;
+    for (const [viewportId, viewport] of viewports) {
+      if (viewport.displaySetInstanceUIDs?.includes(displaySet.displaySetInstanceUID)) {
+        const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        properties = csViewport?.getProperties?.();
+        break;
+      }
+    }
+
+    const capture = captureDisplaySetImages({
+      renderingEngine: cornerstoneViewportService.getRenderingEngine(),
+      imageIds,
+      properties,
+      // A 4x5 cell is about 40mm wide, so 512px is already above 300dpi there.
+      size: columns > 2 ? 512 : 1024,
+    });
+
+    uiNotificationService.show({
+      title: 'Imprimir serie',
+      message: 'Preparando hojas...',
+      type: 'info',
+      promise: capture,
+      promiseMessages: {
+        loading: 'Preparando hojas...',
+        success: 'Listo para imprimir',
+        error: 'No se pudo preparar la impresión',
+      },
+    });
+
+    const images = await capture;
+
+    await openPrintSheet(
+      buildPrintDocument({
+        header: getPrintHeader(displaySet),
+        images,
+        columns,
+        rows,
+      })
+    );
   }
 
   const actions = {
@@ -666,6 +725,131 @@ function commandsModule({
           containerClassName: 'max-w-4xl p-4',
         });
       }
+    },
+    /**
+     * Prints the current layout on a sheet: what you see is what you print.
+     * The sheet mirrors the grid, so no options are needed.
+     */
+    printVisibleViewports: async () => {
+      const { viewports, activeViewportId, layout } = viewportGridService.getState();
+      const { displaySetService } = servicesManager.services;
+
+      const viewportIds = Array.from(viewports.keys()).filter(viewportId =>
+        cornerstoneViewportService.getCornerstoneViewport(viewportId)
+      );
+
+      if (!viewportIds.length) {
+        uiNotificationService.show({
+          title: 'Imprimir',
+          message: 'No hay imágenes que imprimir',
+          type: 'error',
+        });
+        return;
+      }
+
+      const headerViewport = viewports.get(activeViewportId) ?? viewports.get(viewportIds[0]);
+      const displaySet = displaySetService.getDisplaySetByUID(
+        headerViewport?.displaySetInstanceUIDs?.[0]
+      );
+
+      const columns = Math.min(Math.max(layout?.numCols || 1, 1), viewportIds.length);
+      const rows = Math.max(Math.ceil(viewportIds.length / columns), 1);
+
+      try {
+        const images = await captureVisibleViewports(viewportIds);
+
+        if (!images.length) {
+          throw new Error('No viewport could be rasterized');
+        }
+
+        await openPrintSheet(
+          buildPrintDocument({
+            header: getPrintHeader(displaySet),
+            images,
+            columns,
+            rows,
+            orientation: columns > rows ? 'landscape' : 'portrait',
+          })
+        );
+      } catch (error) {
+        console.error('Print: could not print the current layout', error);
+        uiNotificationService.show({
+          title: 'Imprimir',
+          message: 'No se pudo preparar la impresión',
+          type: 'error',
+        });
+      }
+    },
+    /**
+     * Prints every image of a series, paginated with a fixed grid.
+     */
+    printDisplaySet: async ({ displaySetInstanceUID }) => {
+      const { displaySetService } = servicesManager.services;
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      const imageIds =
+        displaySet?.imageIds ??
+        displaySet?.images?.map(image => image.imageId).filter(Boolean) ??
+        [];
+
+      if (!imageIds.length) {
+        uiNotificationService.show({
+          title: 'Imprimir serie',
+          message: 'Esta serie no tiene imágenes que imprimir',
+          type: 'error',
+        });
+        return;
+      }
+
+      const { columns, rows } = getSeriesGrid(imageIds.length);
+      const pages = Math.ceil(imageIds.length / (columns * rows));
+
+      const print = async () => {
+        try {
+          await _printSeries({ displaySet, imageIds, columns, rows });
+        } catch (error) {
+          console.error('Print: could not print series', error);
+          uiNotificationService.show({
+            title: 'Imprimir serie',
+            message: 'No se pudo preparar la impresión',
+            type: 'error',
+          });
+        }
+      };
+
+      if (pages > MAX_PAGES_WITHOUT_CONFIRM) {
+        uiDialogService.show({
+          id: 'print-series-confirm',
+          title: 'Imprimir serie',
+          content: PrintConfirmDialog,
+          contentProps: {
+            message: `Esta serie tiene ${imageIds.length} imágenes: se imprimirán ${pages} hojas.`,
+            onConfirm: print,
+          },
+        });
+        return;
+      }
+
+      await print();
+    },
+    /**
+     * Toolbar entry point for printing a whole series: takes the one shown in
+     * the active viewport, so it needs no argument.
+     */
+    printActiveDisplaySet: () => {
+      const { viewports, activeViewportId } = viewportGridService.getState();
+      const displaySetInstanceUID = viewports.get(activeViewportId)?.displaySetInstanceUIDs?.[0];
+
+      if (!displaySetInstanceUID) {
+        uiNotificationService.show({
+          title: 'Imprimir serie',
+          message: 'No hay una serie activa que imprimir',
+          type: 'error',
+        });
+        return;
+      }
+
+      return actions.printDisplaySet({ displaySetInstanceUID });
     },
     rotateViewport: ({ rotation }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -1646,6 +1830,15 @@ function commandsModule({
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
+    },
+    printVisibleViewports: {
+      commandFn: actions.printVisibleViewports,
+    },
+    printDisplaySet: {
+      commandFn: actions.printDisplaySet,
+    },
+    printActiveDisplaySet: {
+      commandFn: actions.printActiveDisplaySet,
     },
     toggleCine: {
       commandFn: actions.toggleCine,
