@@ -22,6 +22,7 @@ import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 import { isImage } from './isImage';
 import isDisplaySetReconstructable from './isDisplaySetReconstructable';
+import getVolumeSubRange from './getVolumeSubRange';
 import sortInstancesByPosition from './sortInstancesByPosition';
 import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
@@ -78,6 +79,7 @@ const utils = {
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
+  getVolumeSubRange,
   debounce,
   roundNumber,
   downloadCSVReport,
@@ -110,6 +112,7 @@ export {
   isLowPriorityModality,
   isImage,
   isDisplaySetReconstructable,
+  getVolumeSubRange,
   sortInstancesByPosition,
   imageIdToURI,
   debounce,

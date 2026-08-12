@@ -15,6 +15,7 @@ describe('Top level exports', () => {
       'sortingCriteria',
       'splitComma',
       'getSplitParam',
+      'getVolumeSubRange',
       'isLowPriorityModality',
       'writeScript',
       'debounce',

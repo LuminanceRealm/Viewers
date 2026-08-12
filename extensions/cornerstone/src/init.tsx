@@ -33,6 +33,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
+import { setVolumeSliceLimitSource } from './utils/maxVolumeSlices';
 import { colormaps } from './utils/colormaps';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useLutPresentationStore } from './stores/useLutPresentationStore';
@@ -77,6 +78,11 @@ export default async function init({
   if (maxCacheSize) {
     cornerstone.cache.setMaxCacheSize(maxCacheSize);
   }
+
+  // Give CornerstoneCacheService a route to the GPU's 3D texture ceiling; it is
+  // built without appConfig. App.tsx probes it after this runs, so we hand over
+  // the object and let it be read on demand rather than copying the value now.
+  setVolumeSliceLimitSource(appConfig);
 
   initCornerstoneTools();
 

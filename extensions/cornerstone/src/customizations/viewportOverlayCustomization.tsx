@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default {
   'viewportOverlay.topLeft': [
     {
@@ -100,6 +102,45 @@ export default {
   ],
 
   'viewportOverlay.bottomLeft': [
+    {
+      // A series with more slices than the GPU's 3D texture depth cannot be
+      // uploaded whole, so the volume is rebuilt from a contiguous sub-range at
+      // native resolution. Spacing is untouched and measurements stay exact,
+      // but anatomy outside the range is simply absent — the reader has to know
+      // that for as long as they are looking at it, not just when it opened.
+      //
+      // It lives in the overlay stack rather than floating over the image so it
+      // flows with the other items instead of colliding with them, and is
+      // coloured as a caution to stand apart from the surrounding metadata.
+      id: 'VolumeSubRange',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Reconstrucción parcial',
+      color: '#f0a020',
+      condition: ({ displaySet }) => !!displaySet?.volumeSubRange,
+      contentF: ({ displaySet }) => {
+        const { start, end, total } = displaySet.volumeSubRange;
+
+        // A div rather than the usual span: the overlay truncates spans to a
+        // single line (CustomizableViewportOverlay.css), which in a 1x3 MPR
+        // layout cuts the text off before the slice numbers — the only part
+        // that carries information. Wrapping keeps them visible.
+        return (
+          <div
+            className="whitespace-normal"
+            style={{ color: '#f0a020' }}
+            title={
+              `Esta computadora no puede reconstruir los ${total} cortes de la serie. ` +
+              `Se reconstruyeron los cortes ${start + 1} al ${end} a resolución completa, ` +
+              `con espaciado nativo, por lo que las mediciones son exactas. El resto del ` +
+              `estudio no está incluido en esta reconstrucción.`
+            }
+          >
+            Parcial: cortes {start + 1}–{end} de {total}
+          </div>
+        );
+      },
+    },
     {
       id: 'WindowLevel',
       inheritsFrom: 'ohif.overlayItem.windowLevel',

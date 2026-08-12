@@ -1,8 +1,11 @@
-import { Types } from '@ohif/core';
+import { Types, utils } from '@ohif/core';
 import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
+import { getMaxVolumeSlices } from '../../utils/maxVolumeSlices';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+
+const { getVolumeSubRange } = utils;
 
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
@@ -17,6 +20,9 @@ class CornerstoneCacheService {
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
+  // Sub-ranges already announced, so an MPR layout does not stack one identical
+  // notification per viewport over the image.
+  warnedSubRanges: Set<string> = new Set();
   readonly servicesManager: AppTypes.ServicesManager;
 
   constructor(servicesManager: AppTypes.ServicesManager) {
@@ -46,7 +52,12 @@ class CornerstoneCacheService {
       cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
       cs3DViewportType === Enums.ViewportType.VOLUME_3D
     ) {
-      viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
+      viewportData = await this._getVolumeViewportData(
+        dataSource,
+        displaySets,
+        cs3DViewportType,
+        initialImageIndex
+      );
     } else if (cs3DViewportType === Enums.ViewportType.STACK) {
       // Everything else looks like a stack
       viewportData = await this._getStackViewportData(
@@ -224,7 +235,8 @@ class CornerstoneCacheService {
   private async _getVolumeViewportData(
     dataSource,
     displaySets,
-    viewportType: Enums.ViewportType
+    viewportType: Enums.ViewportType,
+    focusIndex?: number
   ): Promise<VolumeViewportData> {
     // Todo: Check the cache for multiple scenarios to see if we need to
     // decache the volume data from other viewports or not
@@ -278,16 +290,42 @@ class CornerstoneCacheService {
       // Parametric maps do not have image ids but they already have volume data
       // therefore a new volume should not be created.
       if (!isParametricMap && !isSeg && (!volumeImageIds || !volume)) {
-        volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
+        const allImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
+
+        // Add imageIds to the displaySet for volumes. This always holds the
+        // whole series: it doubles as the cache read by
+        // _getCornerstoneVolumeImageIds, so storing a sub-range here would make
+        // the next reconstruction slice a slice, and it is read across the app
+        // for things that have nothing to do with this viewport.
+        displaySet.imageIds = allImageIds;
+
+        // A series with more slices than the GPU's 3D texture depth cannot be
+        // uploaded at all — it fails with `texImage3D: depth out of range` and
+        // leaves the viewport blank. Reconstruct a contiguous sub-range at
+        // native resolution instead, so MPR works where it used to be blank.
+        const subRange = getVolumeSubRange({
+          numImages: allImageIds.length,
+          maxSlices: getMaxVolumeSlices(),
+          focusIndex,
+        });
+
+        volumeImageIds = subRange
+          ? allImageIds.slice(subRange.start, subRange.end)
+          : allImageIds;
+
+        // Recorded so the viewport can keep telling the reader that the
+        // reconstruction stops short of the full study.
+        displaySet.volumeSubRange = subRange ?? undefined;
+
+        if (subRange) {
+          this._warnAboutSubRange(displaySet, subRange);
+        }
 
         volume = await volumeLoader.createAndCacheVolume(volumeId, {
           imageIds: volumeImageIds,
         });
 
         this.volumeImageIds.set(displaySet.displaySetInstanceUID, volumeImageIds);
-
-        // Add imageIds to the displaySet for volumes
-        displaySet.imageIds = volumeImageIds;
       }
 
       volumeData.push({
@@ -304,6 +342,41 @@ class CornerstoneCacheService {
       viewportType,
       data: volumeData,
     };
+  }
+
+  /**
+   * Tells the reader, once per reconstruction, that the volume stops short of
+   * the full study. The persistent viewport label is what they will actually
+   * rely on — this is the up-front heads-up, deliberately spelling out the
+   * slice counts rather than calling it a "reduced" or "light" mode, since
+   * deciding whether that coverage is enough is a clinical judgement.
+   */
+  private _warnAboutSubRange(displaySet, subRange): void {
+    const { uiNotificationService } = this.servicesManager.services;
+
+    // An MPR layout builds the same volume for axial, sagittal and coronal, so
+    // without this the reader gets three copies of the same warning covering
+    // the image. Keyed by range too, so a genuinely different reconstruction of
+    // the same series is still announced.
+    const key = `${displaySet.displaySetInstanceUID}:${subRange.start}-${subRange.end}`;
+
+    if (this.warnedSubRanges.has(key)) {
+      return;
+    }
+
+    this.warnedSubRanges.add(key);
+
+    uiNotificationService?.show({
+      title: 'Reconstrucción parcial',
+      message:
+        `Esta serie tiene ${subRange.total} cortes y excede lo que esta ` +
+        `computadora puede reconstruir. Se reconstruyeron ${subRange.count} ` +
+        `cortes (del ${subRange.start + 1} al ${subRange.end}) a resolución ` +
+        `completa. Las mediciones son exactas, pero la reconstrucción no ` +
+        `abarca el estudio completo.`,
+      type: 'warning',
+      duration: 10000,
+    });
   }
 
   private _getCornerstoneStackImageIds(displaySet, dataSource): string[] {
