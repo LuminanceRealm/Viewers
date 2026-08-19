@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
-import { metaData, Enums, utilities } from '@cornerstonejs/core';
+import { metaData, Enums } from '@cornerstonejs/core';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay } from '@ohif/ui';
 import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { toWindowLevel } from '../../utils/windowLevel';
 
 import './CustomizableViewportOverlay.css';
 
@@ -230,7 +231,13 @@ function CustomizableViewportOverlay({
       }
 
       const { lower, upper } = range;
-      const { windowWidth, windowCenter } = utilities.windowLevel.toWindowLevel(lower, upper);
+      // La conversion depende de la VOILUTFunction: con SIGMOID el voiRange
+      // abarca 2.2974x la ventana, la formula lineal reportaria de mas.
+      const { windowWidth, windowCenter } = toWindowLevel(
+        lower,
+        upper,
+        eventDetail.detail.VOILUTFunction
+      );
 
       setVOI({ windowCenter, windowWidth });
     };

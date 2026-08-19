@@ -526,7 +526,13 @@ function commandsModule({
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       const viewport = renderingEngine.getViewport(viewportId);
 
-      const { lower, upper } = csUtils.windowLevel.toLowHighRange(windowWidthNum, windowCenterNum);
+      // El rango depende de la VOILUTFunction del viewport (SIGMOID no es lineal).
+      const { VOILUTFunction } = viewport.getProperties?.() ?? {};
+      const { lower, upper } = csUtils.windowLevel.toLowHighRange(
+        windowWidthNum,
+        windowCenterNum,
+        VOILUTFunction
+      );
 
       viewport.setProperties({
         voiRange: {

@@ -1,6 +1,5 @@
 import {
   PanTool,
-  WindowLevelTool,
   StackScrollTool,
   VolumeRotateTool,
   ZoomTool,
@@ -39,6 +38,7 @@ import {
 } from '@cornerstonejs/tools';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
+import WindowLevelTool from './tools/WindowLevelTool';
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ZoomTouchTool from './tools/ZoomTouchTool';
