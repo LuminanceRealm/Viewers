@@ -1,0 +1,31 @@
+diff --git a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
+index b6bd888..8faf2d4 100644
+--- a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
++++ b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
+@@ -9,11 +9,23 @@ export default function isColorConversionRequired(imageFrame) {
+     if (photometricInterpretation === 'PALETTE COLOR') {
+         return false;
+     }
+-    if (photometricInterpretation.endsWith('420')) {
++    // NUBIX: las dos ramas venian intercambiadas (el bug sigue en cornerstone3D/main).
++    //
++    // 4:2:2 submuestrea solo en horizontal: Y por pixel + Cb/Cr por par => 2 bytes/pixel.
++    // 4:2:0 submuestrea en horizontal y vertical => 1.5 bytes/pixel.
++    // Con las formulas cruzadas, un US nativo YBR_FULL_422 (que llega con
++    // rows*columns*2 bytes desde getUncompressedImageFrame) se comparaba contra
++    // 1.5*rows*columns, la funcion devolvia false, createImage no llamaba nunca a
++    // convertColorSpace, y los bytes YBR se subian a la textura como si fueran RGB:
++    // la imagen salia verde.
++    if (photometricInterpretation.endsWith('422')) {
++        // La segunda forma cubre columnas impares, donde getUncompressedImageFrame
++        // corta rows*columns*2 exactos y la formula con ceil/floor no coincide.
+         return (pixelDataLength ===
+-            (3 * Math.ceil(columns / 2) + Math.floor(columns / 2)) * rows);
++            (3 * Math.ceil(columns / 2) + Math.floor(columns / 2)) * rows ||
++            pixelDataLength === 2 * columns * rows);
+     }
+-    else if (photometricInterpretation.endsWith('422')) {
++    else if (photometricInterpretation.endsWith('420')) {
+         return (pixelDataLength ===
+             (3 * Math.ceil(columns / 2) + Math.floor(columns / 2)) *
+                 Math.ceil(rows / 2) +
