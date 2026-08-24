@@ -77,7 +77,10 @@
       "{projectRoot}/**/*",
       "sharedGlobals"
     ],
-    "sharedGlobals": [],
+    "sharedGlobals": [
+      "{workspaceRoot}/patches/**",
+      "{workspaceRoot}/.webpack/**"
+    ],
     "production": [
       "default"
     ]

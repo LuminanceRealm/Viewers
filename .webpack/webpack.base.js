@@ -93,6 +93,15 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     cache: {
       type: 'filesystem',
     },
+    // NUBIX: por defecto webpack considera node_modules inmutable (managedPaths) y lo
+    // instantanea por version, no por contenido. Con la cache de filesystem eso hace
+    // que las ediciones de patch-package NO entren al bundle: el build termina bien,
+    // emite un hash nuevo y sigue llevando el codigo sin parchear. Aqui se saca a
+    // @cornerstonejs/dicom-image-loader de esa lista para que se instantanee por
+    // contenido, que es el unico paquete con parches en patches/.
+    snapshot: {
+      managedPaths: [/^(.+?[\\/]node_modules[\\/])(?!@cornerstonejs[\\/]dicom-image-loader)/],
+    },
     module: {
       noParse: [/(dicomicc)/],
       rules: [

@@ -1,10 +1,157 @@
+diff --git a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/colorSpaceConverters/convertPALETTECOLOR.js b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/colorSpaceConverters/convertPALETTECOLOR.js
+index 1ac3024..7ec23ac 100644
+--- a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/colorSpaceConverters/convertPALETTECOLOR.js
++++ b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/colorSpaceConverters/convertPALETTECOLOR.js
+@@ -7,57 +7,47 @@ function convertLUTto8Bit(lut, shift) {
+     }
+     return cleanedLUT;
+ }
+-function fetchPaletteData(imageFrame, color, fallback) {
++// NUBIX: esta lectura era asincrona (Promise.all + .then) aunque el unico dato que
++// podia faltar viniera de un metaData.get sincrono. Ahora resuelve en el acto: el
++// proveedor de dicom-image-loader deja las LUT como arrays planos en el imageFrame,
++// y si no estan se consulta el metadata una vez. Una Promise se descarta, porque
++// este converter tiene que terminar antes de que createImage siga adelante.
++function fetchPaletteData(imageFrame, color) {
+     const data = imageFrame[`${color}PaletteColorLookupTableData`];
+-    if (data) {
+-        return Promise.resolve(data);
++    if (data && typeof data.then !== 'function') {
++        return data;
+     }
+     const result = metaData.get('imagePixelModule', imageFrame.imageId);
+-    if (result && typeof result.then === 'function') {
+-        return result.then((module) => module ? module[`${color}PaletteColorLookupTableData`] : fallback);
+-    }
+-    else {
+-        return Promise.resolve(result ? result[`${color}PaletteColorLookupTableData`] : fallback);
++    if (!result || typeof result.then === 'function') {
++        return undefined;
+     }
++    const fromMetadata = result[`${color}PaletteColorLookupTableData`];
++    return fromMetadata && typeof fromMetadata.then !== 'function'
++        ? fromMetadata
++        : undefined;
+ }
+ export default function (imageFrame, colorBuffer, useRGBA) {
+     const numPixels = imageFrame.columns * imageFrame.rows;
+     const pixelData = imageFrame.pixelData;
+-    Promise.all([
+-        fetchPaletteData(imageFrame, 'red', null),
+-        fetchPaletteData(imageFrame, 'green', null),
+-        fetchPaletteData(imageFrame, 'blue', null),
+-    ]).then(([rData, gData, bData]) => {
+-        if (!rData || !gData || !bData) {
+-            throw new Error('The image does not have a complete color palette. R, G, and B palette data are required.');
+-        }
+-        const len = rData.length;
+-        let palIndex = 0;
+-        let bufferIndex = 0;
+-        const start = imageFrame.redPaletteColorLookupTableDescriptor[1];
+-        const shift = imageFrame.redPaletteColorLookupTableDescriptor[2] === 8 ? 0 : 8;
+-        const rDataCleaned = convertLUTto8Bit(rData, shift);
+-        const gDataCleaned = convertLUTto8Bit(gData, shift);
+-        const bDataCleaned = convertLUTto8Bit(bData, shift);
+-        if (useRGBA) {
+-            for (let i = 0; i < numPixels; ++i) {
+-                let value = pixelData[palIndex++];
+-                if (value < start) {
+-                    value = 0;
+-                }
+-                else if (value > start + len - 1) {
+-                    value = len - 1;
+-                }
+-                else {
+-                    value -= start;
+-                }
+-                colorBuffer[bufferIndex++] = rDataCleaned[value];
+-                colorBuffer[bufferIndex++] = gDataCleaned[value];
+-                colorBuffer[bufferIndex++] = bDataCleaned[value];
+-                colorBuffer[bufferIndex++] = 255;
+-            }
+-            return;
+-        }
++    // NUBIX: convertColorSpace se llama de forma sincrona desde createImage, que
++    // inmediatamente despues calcula getMinMax y monta el VoxelManager sobre este
++    // mismo buffer. Con la version asincrona original esos calculos corrian sobre un
++    // buffer todavia vacio. Toda la aritmetica de abajo se conserva intacta.
++    const rData = fetchPaletteData(imageFrame, 'red');
++    const gData = fetchPaletteData(imageFrame, 'green');
++    const bData = fetchPaletteData(imageFrame, 'blue');
++    if (!rData || !gData || !bData) {
++        throw new Error('The image does not have a complete color palette. R, G, and B palette data are required.');
++    }
++    const len = rData.length;
++    let palIndex = 0;
++    let bufferIndex = 0;
++    const start = imageFrame.redPaletteColorLookupTableDescriptor[1];
++    const shift = imageFrame.redPaletteColorLookupTableDescriptor[2] === 8 ? 0 : 8;
++    const rDataCleaned = convertLUTto8Bit(rData, shift);
++    const gDataCleaned = convertLUTto8Bit(gData, shift);
++    const bDataCleaned = convertLUTto8Bit(bData, shift);
++    if (useRGBA) {
+         for (let i = 0; i < numPixels; ++i) {
+             let value = pixelData[palIndex++];
+             if (value < start) {
+@@ -72,6 +62,23 @@ export default function (imageFrame, colorBuffer, useRGBA) {
+             colorBuffer[bufferIndex++] = rDataCleaned[value];
+             colorBuffer[bufferIndex++] = gDataCleaned[value];
+             colorBuffer[bufferIndex++] = bDataCleaned[value];
++            colorBuffer[bufferIndex++] = 255;
+         }
+-    });
++        return;
++    }
++    for (let i = 0; i < numPixels; ++i) {
++        let value = pixelData[palIndex++];
++        if (value < start) {
++            value = 0;
++        }
++        else if (value > start + len - 1) {
++            value = len - 1;
++        }
++        else {
++            value -= start;
++        }
++        colorBuffer[bufferIndex++] = rDataCleaned[value];
++        colorBuffer[bufferIndex++] = gDataCleaned[value];
++        colorBuffer[bufferIndex++] = bDataCleaned[value];
++    }
+ }
+diff --git a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js
+index 9cc5809..7684c47 100644
+--- a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js
++++ b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js
+@@ -100,6 +100,12 @@ function createImage(imageId, pixelData, transferSyntax, options = {}) {
+                     imageFrame.imageData = imageData;
+                     imageFrame.pixelData = imageData.data;
+                     imageFrame.pixelDataLength = imageData.data.length;
++                    // NUBIX: tras convertir, el buffer tiene 3 componentes (o 4 con
++                    // useRGBA), pero samplesPerPixel seguia siendo el del DICOM. En
++                    // PALETTE COLOR eso vale 1 por definicion, y como mas abajo se
++                    // copia tal cual a numberOfComponents, StackViewport recibia un
++                    // solo canal y pintaba en gris una imagen ya convertida a color.
++                    imageFrame.samplesPerPixel = useRGBA ? 4 : 3;
+                 }
+                 else if (!useRGBA &&
+                     imageFrame.pixelDataLength === 4 * rows * columns) {
 diff --git a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
-index b6bd888..8faf2d4 100644
+index b6bd888..4fd8d65 100644
 --- a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
 +++ b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
-@@ -9,11 +9,23 @@ export default function isColorConversionRequired(imageFrame) {
-     if (photometricInterpretation === 'PALETTE COLOR') {
+@@ -6,14 +6,32 @@ export default function isColorConversionRequired(imageFrame) {
+     if (pixelDataLength === 4 * columns * rows) {
          return false;
+     }
++    // NUBIX: aqui se devolvia siempre false, con lo que convertColorSpace nunca se
++    // llamaba para PALETTE COLOR y convertPALETTECOLOR quedaba como codigo muerto:
++    // los indices de la paleta se subian a la textura como si fueran grises. Ahora
++    // se pide la conversion cuando la tabla de color esta disponible. Si no lo esta
++    // se mantiene el false original, porque convertPALETTECOLOR lanzaria y no hay
++    // nadie capturando ese error.
+     if (photometricInterpretation === 'PALETTE COLOR') {
+-        return false;
++        return imageFrame.redPaletteColorLookupTableData !== undefined;
      }
 -    if (photometricInterpretation.endsWith('420')) {
 +    // NUBIX: las dos ramas venian intercambiadas (el bug sigue en cornerstone3D/main).

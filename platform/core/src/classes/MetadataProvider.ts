@@ -8,6 +8,21 @@ import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 import formatPN from '../utils/formatPN';
 
+// Valores admitidos para PhotometricInterpretation (0028,0004) segun DICOM PS3.3
+// C.7.6.3.1.2. Cualquier otra cosa solo puede venir de un dato corrupto.
+const VALID_PHOTOMETRIC_INTERPRETATIONS = new Set([
+  'MONOCHROME1',
+  'MONOCHROME2',
+  'PALETTE COLOR',
+  'RGB',
+  'YBR_FULL',
+  'YBR_FULL_422',
+  'YBR_PARTIAL_422',
+  'YBR_PARTIAL_420',
+  'YBR_ICT',
+  'YBR_RCT',
+]);
+
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
   // Can be used to store custom metadata for a specific type.
@@ -157,9 +172,48 @@ class MetadataProvider {
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
+        // Los valores CS de DICOM vienen rellenados con espacios a longitud par.
+        const photometricInterpretation =
+          typeof instance.PhotometricInterpretation === 'string'
+            ? instance.PhotometricInterpretation.trim()
+            : instance.PhotometricInterpretation;
+
+        // NUBIX: cuando lo que trae el manifiesto no sirve para describir los pixeles,
+        // devolvemos undefined en vez de un modulo a medias. `metaData.get` sigue
+        // bajando por prioridad y responde el proveedor propio de dicom-image-loader
+        // (wadouri/metaData/getImagePixelModule.js), que lee el dataset ya parseado:
+        // el archivo es la fuente autoritativa y siempre esta en cache en el momento
+        // en que se pide esto para renderizar (loadImage solo llama a createImage
+        // dentro del .then del dataset).
+        //
+        // Dos casos, los dos observados en produccion:
+        //
+        // 1. PALETTE COLOR sin tabla de color. El manifiesto de NUBIX nunca ha emitido
+        //    los tags Red/Green/BluePaletteColorLookupTableData, asi que sin ceder el
+        //    turno Cornerstone pinta los indices crudos como escala de grises: la
+        //    imagen parece un ecografo normal pero con la curva de tono equivocada.
+        //
+        // 2. PhotometricInterpretation que no existe en DICOM. El ingest truncaba el
+        //    valor en el primer caracter no alfanumerico hasta agosto de 2026, dejando
+        //    'YBR' en vez de 'YBR_FULL_422' y 'PALETTE' en vez de 'PALETTE COLOR'. No
+        //    hubo backfill, asi que los estudios anteriores siguen con el valor roto y
+        //    solo el archivo puede decir cual era.
+        //
+        // La condicion se deja estrecha a proposito: un MONOCHROME2 bien formado nunca
+        // cede. makeVolumeMetadata (@cornerstonejs/core) desestructura este modulo sin
+        // guarda y puede pedirlo antes de que haya imagen descargada, asi que ceder de
+        // forma general romperia la reconstruccion de volumenes en CT y MR.
+        if (
+          !VALID_PHOTOMETRIC_INTERPRETATIONS.has(photometricInterpretation) ||
+          (photometricInterpretation === 'PALETTE COLOR' &&
+            instance.RedPaletteColorLookupTableData === undefined)
+        ) {
+          return;
+        }
+
         metadata = {
           samplesPerPixel: toNumber(instance.SamplesPerPixel),
-          photometricInterpretation: instance.PhotometricInterpretation,
+          photometricInterpretation,
           rows: toNumber(instance.Rows),
           columns: toNumber(instance.Columns),
           bitsAllocated: toNumber(instance.BitsAllocated),
