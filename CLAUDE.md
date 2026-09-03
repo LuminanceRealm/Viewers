@@ -103,3 +103,60 @@ Para confirmar qué hay arriba:
 ```bash
 curl -sS https://beta-visor.nubix.cloud/index.html | grep -o 'app\.bundle\.[a-f0-9]*\.js'
 ```
+
+## Score de calcio coronario (`extensions/calcium-score`)
+
+Extensión propia, cargada sólo por el modo longitudinal. No hay nada de Agatston en cornerstone3D;
+el motor (`src/utils/agatston.ts`) es nuestro y tiene pruebas jest (`.test.ts`, por eso el
+`jest.config.js` de la extensión amplía el `testMatch`).
+
+Decisiones que no se ven en el código:
+
+- **Una segmentación por serie**, con id `calcium-score:<displaySetInstanceUID>`; así el panel la
+  reencuentra al cambiar de viewport. Segmentos 1–4 son TCI/DA/Cx/CD; el **5 es "candidatos"**:
+  todo lo que pasa de 130 HU, pintado tenue. El clic mueve componentes conexas 3D entre 5 y la
+  arteria activa. Las HU se leen del `getPixelData()` de la imagen CT en caché, no del manifiesto.
+- Trabaja sobre el **labelmap stack** (una imagen derivada por corte), que es lo que crea
+  `createLabelmapForDisplaySet`. En MPR el labelmap se convierte a volumen y la herramienta
+  rechaza el clic a propósito: el score se asigna en la vista 2D.
+- Los avisos (kVp ≠ 120, incremento ≠ 3 mm, descripción con "angio/contraste") **no bloquean**.
+  El manifiesto no trae `ContrastBolusAgent`, así que el contraste sólo se detecta por texto.
+
+Para probarla en local con un manifiesto real hay dos trampas: la API no manda CORS para
+`localhost`, y en `http://localhost` la app pide el CDN por `http://`, que CloudFront rechaza con
+403. En Playwright: `--disable-web-security` y un `page.route` que reescriba
+`http://cdn.nubix.cloud` a `https://`. En producción (https) no pasa.
+
+## CPR de coronarias (`extensions/coronary-cpr`)
+
+Reformateo curvo con `vtkImageCPRMapper` de vtk.js, renderizado en un `vtkGenericRenderWindow`
+propio dentro del **panel derecho** (tira vertical), fuera del pipeline de cornerstone. Se eligió
+el panel y no el grid porque OHIF elige el componente de un viewport sólo por `SOPClassHandlerId`
+y meterlo en el grid exigiría display sets sintéticos.
+
+Decisiones que no se ven en el código:
+
+- **Volumen propio y recortado.** `utils/volumeSampler.ts` lee HU de las imágenes en caché y
+  construye un `vtkImageData` Float32 sólo del cubo que envuelve el trazado (± ancho/2 + margen).
+  No se reutiliza el volumen de cornerstone porque en este fork puede ser un **sub-rango**
+  (`displaySet.volumeSubRange`) y porque el mapper sube el volumen entero a una textura 3D sin
+  comprobar `MAX_3D_TEXTURE_SIZE`. Exige WebGL2; sin él, el panel lo dice en texto.
+- **Contrato del mapper** (idéntico en vtk.js 32.1.1 y 32.9.0): el actor ocupa x ∈ [0, ancho],
+  y ∈ [0, alto] con el **primer punto de la centerline arriba**; sólo lee la primera polyline; la
+  orientación va como array `Orientation` de quats por punto; `useStraightenedMode()` /
+  `useStretchedMode()` se llaman **después** de `setImageData` y `setCenterlineData`. Hay que
+  importar `Rendering/Profiles/Volume` o no se dibuja nada.
+- **Geometría propia** (`utils/centerlineGeometry.ts`, con jest): Catmull-Rom centrípeta a 0.5 mm y
+  marcos de rotación mínima (doble reflexión). El quat de cada muestra es la matriz con columnas
+  (u, v, t): `t` = tangente = `normalDirection` del mapper, `u` = dirección de muestreo. Girar la
+  vista = rotar (u, v) alrededor de `t`.
+- **El store zustand es la única fuente de verdad** de los puntos; la herramienta
+  (`AnnotationDisplayTool`, no `AnnotationTool`) sólo dibuja y edita. No se usa
+  `annotation.state` porque `filterAnnotationsForDisplay` sólo mira el primer punto y el plano de
+  creación, inútil para una polilínea 3D.
+- **Imán al lumen** (`utils/snapToLumen.ts`): centroide de la componente conexa con 150–650 HU en
+  un disco de 2.5 mm del plano del viewport; si no hay contraste, se queda el clic.
+- **Saltar de corte** en viewports stack va por `csUtils.jumpToSlice`, no por
+  `viewport.jumpToWorld`: este último cambia la imagen pero no emite los eventos de scroll que
+  actualizan el overlay `I:`.
+- Fuera de alcance a propósito: camino mínimo entre dos puntos y detección automática del vaso.

@@ -255,6 +255,57 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    // NUBIX: el id coincide con el nombre de la herramienta de clic de la
+    // extensión calcium-score; el segundo comando prepara la serie y abre el panel.
+    id: 'CalciumScore',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-calcium-score',
+      label: 'Score de calcio',
+      tooltip: 'Score de calcio coronario (Agatston)',
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: { toolGroupIds: ['default'] },
+        },
+        { commandName: 'calciumScoreActivate' },
+      ],
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.modality.supported',
+          supportedModalities: ['CT'],
+          disabledText: 'Sólo disponible en tomografía',
+        },
+      ],
+    },
+  },
+  {
+    // NUBIX: reformateo curvo de coronarias (extensión coronary-cpr).
+    id: 'CoronaryCPR',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-coronary-cpr',
+      label: 'CPR coronario',
+      tooltip: 'Reformateo curvo de coronarias',
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: { toolGroupIds: ['default', 'mpr'] },
+        },
+        { commandName: 'coronaryCprActivate' },
+      ],
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.modality.supported',
+          supportedModalities: ['CT'],
+          disabledText: 'Sólo disponible en tomografía',
+        },
+      ],
+    },
+  },
+  {
     id: 'VertebralLabel',
     uiType: 'ohif.toolButton',
     props: {

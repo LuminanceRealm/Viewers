@@ -61,6 +61,16 @@
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-calcium-score",
+      "default": false,
+      "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-coronary-cpr",
+      "default": false,
+      "version": "3.0.0"
     }
   ],
   "modes": [

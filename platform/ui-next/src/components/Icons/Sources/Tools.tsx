@@ -3734,3 +3734,63 @@ export const ToolCardiothoracicIndex = (props: IconProps) => (
     </g>
   </svg>
 );
+
+/** NUBIX: score de calcio coronario. Corazón con tres calcificaciones puntuales. */
+export const ToolCalciumScore = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M12 20.2S4 15.1 4 9.6C4 7.1 5.9 5.2 8.3 5.2c1.5 0 2.9.8 3.7 2 .8-1.2 2.2-2 3.7-2 2.4 0 4.3 1.9 4.3 4.4 0 5.5-8 10.6-8 10.6Z"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="9.2"
+      cy="10"
+      r="1.1"
+      fill="currentColor"
+    />
+    <circle
+      cx="13.6"
+      cy="12.6"
+      r="1.1"
+      fill="currentColor"
+    />
+    <circle
+      cx="11.2"
+      cy="15.2"
+      r="0.9"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+/** NUBIX: CPR coronario. Un vaso curvo que se estira en una tira recta. */
+export const ToolCoronaryCpr = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <g
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 5c2.5 0 3 3.5 5.5 3.5S12.5 5 15 5" />
+      <path d="M4 10c2.5 0 3 3.5 5.5 3.5S12.5 10 15 10" />
+      <path d="M17.5 4v16" />
+      <path d="M20.5 4v16" />
+      <path d="M17.5 8h3M17.5 12h3M17.5 16h3" />
+    </g>
+  </svg>
+);

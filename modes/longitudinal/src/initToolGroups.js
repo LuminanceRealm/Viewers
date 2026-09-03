@@ -1,4 +1,6 @@
 import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
+import { toolNames as CalciumToolNames } from '@ohif/extension-calcium-score';
+import { toolNames as CprToolNames } from '@ohif/extension-coronary-cpr';
 
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
@@ -88,6 +90,18 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         configuration: vertebralLabelConfiguration(commandsManager),
       },
       { toolName: toolNames.CardiothoracicIndex },
+      {
+        toolName: CalciumToolNames.CalciumScore,
+        configuration: {
+          onRejected: message => commandsManager.runCommand('calciumScoreNotify', { message }),
+        },
+      },
+      {
+        toolName: CprToolNames.CoronaryCPR,
+        configuration: {
+          onRejected: message => commandsManager.runCommand('coronaryCprNotify', { message }),
+        },
+      },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.CalibrationLine },
       {
@@ -251,6 +265,12 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         configuration: vertebralLabelConfiguration(commandsManager),
       },
       { toolName: toolNames.CardiothoracicIndex },
+      {
+        toolName: CprToolNames.CoronaryCPR,
+        configuration: {
+          onRejected: message => commandsManager.runCommand('coronaryCprNotify', { message }),
+        },
+      },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
