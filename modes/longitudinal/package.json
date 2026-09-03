@@ -42,6 +42,7 @@
     "@ohif/extension-default": "3.10.0-beta.121",
     "@ohif/extension-dicom-pdf": "3.10.0-beta.121",
     "@ohif/extension-calcium-score": "3.10.0-beta.121",
+    "@ohif/extension-breast-kinetics": "3.10.0-beta.121",
     "@ohif/extension-coronary-cpr": "3.10.0-beta.121",
     "@ohif/extension-dicom-video": "3.10.0-beta.121",
     "@ohif/extension-measurement-tracking": "3.10.0-beta.121"

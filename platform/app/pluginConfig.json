@@ -71,6 +71,11 @@
       "packageName": "@ohif/extension-coronary-cpr",
       "default": false,
       "version": "3.0.0"
+    },
+    {
+      "packageName": "@ohif/extension-breast-kinetics",
+      "default": false,
+      "version": "3.0.0"
     }
   ],
   "modes": [

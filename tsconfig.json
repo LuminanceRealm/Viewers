@@ -27,6 +27,7 @@
       "@ohif/extension-dicom-pdf": ["./extensions/dicom-pdf/src"],
       "@ohif/extension-calcium-score": ["./extensions/calcium-score/src"],
       "@ohif/extension-coronary-cpr": ["./extensions/coronary-cpr/src"],
+      "@ohif/extension-breast-kinetics": ["./extensions/breast-kinetics/src"],
       "@state": ["./platform/app/src/state"]
     }
   },

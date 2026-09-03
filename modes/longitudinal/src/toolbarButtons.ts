@@ -306,6 +306,31 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    // NUBIX: curvas cinéticas de resonancia dinámica (extensión breast-kinetics).
+    id: 'BreastKinetics',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-breast-kinetics',
+      label: 'Curvas cinéticas',
+      tooltip: 'Curvas cinéticas tiempo-intensidad (resonancia dinámica)',
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: { toolGroupIds: ['default'] },
+        },
+        { commandName: 'breastKineticsActivate' },
+      ],
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.modality.supported',
+          supportedModalities: ['MR', 'CT'],
+          disabledText: 'Sólo disponible en resonancia',
+        },
+      ],
+    },
+  },
+  {
     id: 'VertebralLabel',
     uiType: 'ohif.toolButton',
     props: {

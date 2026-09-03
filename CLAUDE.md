@@ -160,3 +160,39 @@ Decisiones que no se ven en el código:
   `viewport.jumpToWorld`: este último cambia la imagen pero no emite los eventos de scroll que
   actualizan el overlay `I:`.
 - Fuera de alcance a propósito: camino mínimo entre dos puntos y detección automática del vaso.
+
+## Curvas cinéticas de mama (`extensions/breast-kinetics`)
+
+Curvas tiempo-intensidad para resonancia dinámica. Mismo patrón que las herramientas cardíacas:
+extensión propia, panel derecho, herramienta `AnnotationDisplayTool` sobre un store zustand.
+
+Decisiones que no se ven en el código:
+
+- **Las fases se detectan por geometría**, no por tags temporales: el manifiesto no emite
+  `TriggerTime` ni `TemporalPositionIdentifier`, así que `isDynamicVolume` nunca se activa. Dos
+  formas de llegar, ambas soportadas: (a) **una sola serie con todas las fases** (Philips
+  Ingenia, estudio 800587: "Perfusion_Axial" = 6 × 150 cortes, y "sSubtraction" = 4 × 150); se
+  parte agrupando por `ImagePositionPatient` repetida y ordenando por `InstanceNumber` dentro de
+  cada posición; (b) series separadas del mismo estudio con `FrameOfReferenceUID` (que vive en
+  `instances[i]`, no en el display set), filas/columnas, spacing, orientación, número de cortes y
+  posición del primer y último corte iguales. Se prueba primero (a). Las derivadas (`ImageType`
+  DERIVED o descripción SUB/MIP) quedan desactivadas por defecto pero se pueden activar.
+- **La hora de cada fase se lee del archivo DICOM**, nunca del manifiesto: la API guarda ahí la
+  hora del estudio, igual para todas las imágenes. Se usa `wadouri.dataSetCacheManager.get(url)`
+  sobre el corte ya cargado (`x00080032`, respaldo `x00080033` y `x00181060`). Si el archivo no la
+  trae o son iguales, el eje es por índice de fase y el panel lo avisa.
+- Se carga **un solo corte por fase** por ROI (el más cercano a su centro), no la serie.
+- Fórmulas fijas (ACR BI-RADS): realce inicial = (S₁−S₀)/S₀ con cortes 50 % y 100 %; tardío =
+  (Sₙ−S₁)/S₁ con umbral ±10 % para tipo I/II/III. Sin tres fases o con S₀ ≤ 0 no se clasifica.
+- El aviso de movimiento es un ajuste de parche 24×24 px por suma de diferencias absolutas
+  respecto a la fase basal; con > 3 mm se marca la fase en la gráfica y se avisa. No se corrige.
+- La gráfica es SVG propia (guía dataviz: línea 2 px, marcadores con anillo, rejilla hairline,
+  crosshair + tooltip, leyenda sólo con ≥ 2 ROIs, un solo eje en realce %).
+- Probado con el estudio de mama real 800587: 6 fases detectadas dentro de la serie y horas de
+  adquisición reales leídas del archivo (0, 106, 172, 238, 304, 370 s). Falta la validación
+  clínica de un radiólogo.
+- `csUtils.worldToImageCoords` devuelve **[columna, fila]** (distancia a lo largo de rowCosines
+  primero); el muestreo trabaja en [fila, columna]. Un despiste aquí muestrea el punto transpuesto.
+- Para probar en local con estudios grandes hay que levantar el dev server con
+  `--server-type https` (`yarn run dev --server-type https`) en vez de reenviar el CDN con un
+  `page.route`: con 900 imágenes en prefetch el proxy de Playwright se cae por tiempo.

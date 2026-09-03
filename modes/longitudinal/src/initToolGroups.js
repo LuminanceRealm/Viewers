@@ -1,6 +1,7 @@
 import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
 import { toolNames as CalciumToolNames } from '@ohif/extension-calcium-score';
 import { toolNames as CprToolNames } from '@ohif/extension-coronary-cpr';
+import { toolNames as KineticsToolNames } from '@ohif/extension-breast-kinetics';
 
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
@@ -100,6 +101,12 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: CprToolNames.CoronaryCPR,
         configuration: {
           onRejected: message => commandsManager.runCommand('coronaryCprNotify', { message }),
+        },
+      },
+      {
+        toolName: KineticsToolNames.BreastKinetics,
+        configuration: {
+          onRejected: message => commandsManager.runCommand('breastKineticsNotify', { message }),
         },
       },
       { toolName: toolNames.Magnify },

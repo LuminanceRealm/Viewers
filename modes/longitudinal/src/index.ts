@@ -60,6 +60,10 @@ const coronaryCpr = {
   panel: '@ohif/extension-coronary-cpr.panelModule.coronaryCpr',
 };
 
+const breastKinetics = {
+  panel: '@ohif/extension-breast-kinetics.panelModule.breastKinetics',
+};
+
 const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
@@ -78,6 +82,7 @@ const extensionDependencies = {
   '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-calcium-score': '^3.0.0',
   '@ohif/extension-coronary-cpr': '^3.0.0',
+  '@ohif/extension-breast-kinetics': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -164,6 +169,7 @@ function modeFactory({ modeConfiguration }) {
           'CardiothoracicIndex',
           'CalciumScore',
           'CoronaryCPR',
+          'BreastKinetics',
           'CalibrationLine',
           'ShowViewportOverlay',
         ].filter(
@@ -274,6 +280,7 @@ function modeFactory({ modeConfiguration }) {
                 cornerstone.segmentation,
                 calcium.panel,
                 coronaryCpr.panel,
+                breastKinetics.panel,
               ],
               rightPanelClosed: true,
               rightPanelResizable: true,

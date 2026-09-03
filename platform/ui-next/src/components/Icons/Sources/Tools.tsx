@@ -3794,3 +3794,30 @@ export const ToolCoronaryCpr = (props: IconProps) => (
     </g>
   </svg>
 );
+
+/** NUBIX: curvas cinéticas. Una curva de realce con lavado sobre ejes. */
+export const ToolBreastKinetics = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <g
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 4v16h16" />
+      <path d="M6.5 17.5c1.5-5 2.5-8.5 4-8.5s2.5 3 4 3.5 2.5-.5 4.5-1.5" />
+      <circle
+        cx="10.5"
+        cy="9"
+        r="1"
+        fill="currentColor"
+      />
+    </g>
+  </svg>
+);
