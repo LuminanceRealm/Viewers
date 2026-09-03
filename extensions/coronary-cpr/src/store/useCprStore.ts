@@ -8,8 +8,10 @@ import {
   MIN_WIDTH_MM,
   Vec3,
 } from '../constants';
+import { CprMeasurement, MeasurementKind, POINTS_REQUIRED } from '../utils/measurements';
 
 export type CprMode = 'straightened' | 'stretched';
+export type MeasureMode = 'none' | MeasurementKind;
 
 export interface SeriesCprState {
   /** Puntos de control por arteria (id 1–4), en coordenadas mundo y en orden ostium → distal. */
@@ -27,6 +29,13 @@ export interface SeriesCprState {
   ready: boolean;
   /** Última incidencia visible para el usuario (WebGL, textura, etc.). */
   error: string | null;
+  /** Mediciones hechas sobre la tira, en coordenadas mundo. */
+  measurements: CprMeasurement[];
+  nextMeasurementId: number;
+  /** Herramienta de medición activa en la tira. */
+  measureMode: MeasureMode;
+  /** Puntos ya marcados de la medición en curso. */
+  pendingPoints: Vec3[];
 }
 
 interface CprStoreState {
@@ -41,6 +50,10 @@ interface CprStoreState {
   setWidth: (uid: string, widthMm: number) => void;
   rotate: (uid: string, deltaDeg: number) => void;
   setWindowLevel: (uid: string, window: number, level: number) => void;
+  setMeasureMode: (uid: string, mode: MeasureMode) => void;
+  /** Añade un punto a la medición en curso; la cierra cuando está completa. */
+  addMeasurePoint: (uid: string, point: Vec3) => void;
+  removeMeasurement: (uid: string, id: number) => void;
 }
 
 export function emptySeriesState(): SeriesCprState {
@@ -56,6 +69,10 @@ export function emptySeriesState(): SeriesCprState {
     snapEnabled: true,
     ready: false,
     error: null,
+    measurements: [],
+    nextMeasurementId: 1,
+    measureMode: 'none',
+    pendingPoints: [],
   };
 }
 
@@ -85,7 +102,8 @@ export const useCprStore = create<CprStoreState>()((set, get) => {
 
     update: (uid, patch) => patchSeries(uid, () => patch),
 
-    setActiveArtery: (uid, arteryId) => patchSeries(uid, () => ({ activeArtery: arteryId })),
+    setActiveArtery: (uid, arteryId) =>
+      patchSeries(uid, () => ({ activeArtery: arteryId, pendingPoints: [] })),
 
     addPoint: (uid, arteryId, point, index) =>
       patchSeries(uid, s => {
@@ -117,6 +135,8 @@ export const useCprStore = create<CprStoreState>()((set, get) => {
       patchSeries(uid, s => ({
         arteries: { ...s.arteries, [arteryId]: [] },
         cursorDistance: null,
+        measurements: s.measurements.filter(m => m.arteryId !== arteryId),
+        pendingPoints: [],
       })),
 
     setWidth: (uid, widthMm) =>
@@ -127,5 +147,35 @@ export const useCprStore = create<CprStoreState>()((set, get) => {
 
     setWindowLevel: (uid, window, level) =>
       patchSeries(uid, () => ({ window: Math.max(1, window), level })),
+
+    setMeasureMode: (uid, mode) =>
+      patchSeries(uid, () => ({ measureMode: mode, pendingPoints: [] })),
+
+    addMeasurePoint: (uid, point) =>
+      patchSeries(uid, s => {
+        if (s.measureMode === 'none') {
+          return {};
+        }
+        const pending = [...s.pendingPoints, point];
+        if (pending.length < POINTS_REQUIRED[s.measureMode]) {
+          return { pendingPoints: pending };
+        }
+        const measurement: CprMeasurement = {
+          id: s.nextMeasurementId,
+          kind: s.measureMode,
+          arteryId: s.activeArtery,
+          points: pending,
+        };
+        // Una medición por activación: al completarla, el clic vuelve a ser "saltar al corte".
+        return {
+          measurements: [...s.measurements, measurement],
+          nextMeasurementId: s.nextMeasurementId + 1,
+          pendingPoints: [],
+          measureMode: 'none',
+        };
+      }),
+
+    removeMeasurement: (uid, id) =>
+      patchSeries(uid, s => ({ measurements: s.measurements.filter(m => m.id !== id) })),
   };
 });

@@ -159,7 +159,23 @@ Decisiones que no se ven en el código:
 - **Saltar de corte** en viewports stack va por `csUtils.jumpToSlice`, no por
   `viewport.jumpToWorld`: este último cambia la imagen pero no emite los eventos de scroll que
   actualizan el overlay `I:`.
-- Fuera de alcance a propósito: camino mínimo entre dos puntos y detección automática del vaso.
+- **Mediciones sobre la tira** (`utils/measurements.ts`, con jest): regla y estenosis (referencia +
+  mínimo → %). Se guardan en **coordenadas mundo** y se proyectan a la tira en cada render
+  (`projectToStrip`: muestra más cercana + descomposición en u/v), así siguen a la anatomía al
+  girar o cambiar el ancho y se atenúan si quedan fuera del plano. Las longitudes son 3D reales.
+  Las distancias para proyectar se piden al mapper (`getOrientedCenterline().getDistancesToFirstPoint()`)
+  para respetar la métrica del modo (recto/estirado). Una medición por activación de la
+  herramienta; al completarla el clic vuelve a "saltar al corte".
+- Fuera de alcance a propósito: camino mínimo entre dos puntos, detección automática del vaso y
+  vista transversal perpendicular al vaso (sería el siguiente paso natural para ROIs con HU).
+
+## Etiqueta beta
+
+Las tres herramientas clínicas (score de calcio, CPR, curvas cinéticas) se muestran como **beta**
+mientras no se validen contra una estación de trabajo: sufijo "· beta" en el botón
+(`modes/longitudinal/src/toolbarButtons.ts`), aviso en la primera línea de cada panel y en los CSV,
+y recuadro en el manual. Todo sale de `IS_BETA` / `BETA_NOTICE` en el `constants.ts` de cada
+extensión; quitar el beta = ponerlo en `false`, quitar el sufijo del botón y regenerar el manual.
 
 ## Curvas cinéticas de mama (`extensions/breast-kinetics`)
 

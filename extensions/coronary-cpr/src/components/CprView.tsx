@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // Registra el override OpenGL del mapper CPR; sin este import no se dibuja nada.
 import '@kitware/vtk.js/Rendering/Profiles/Volume';
 import vtkGenericRenderWindow from '@kitware/vtk.js/Rendering/Misc/GenericRenderWindow';
@@ -6,9 +6,17 @@ import vtkImageSlice from '@kitware/vtk.js/Rendering/Core/ImageSlice';
 import vtkImageCPRMapper from '@kitware/vtk.js/Rendering/Core/ImageCPRMapper';
 import type vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 
-import { ROTATION_STEP_DEG, Vec3 } from '../constants';
-import type { CprMode } from '../store/useCprStore';
+import { ROTATION_STEP_DEG, Vec3, arteryCss, arteryById } from '../constants';
+import type { CprMode, MeasureMode } from '../store/useCprStore';
 import { buildCenterlinePolyData, OrientedCenterline } from '../utils/buildCenterlinePolyData';
+import {
+  CprMeasurement,
+  lengthMm,
+  projectToStrip,
+  stenosis,
+  StripGeometry,
+  stripToWorld,
+} from '../utils/measurements';
 
 export interface CprViewProps {
   imageData: vtkImageData | null;
@@ -18,7 +26,11 @@ export interface CprViewProps {
   window: number;
   level: number;
   cursorDistance: number | null;
+  measurements?: CprMeasurement[];
+  measureMode?: MeasureMode;
+  pendingPoints?: Vec3[];
   onPick?: (distance: number, world: Vec3) => void;
+  onMeasurePoint?: (world: Vec3) => void;
   onWindowLevel?: (window: number, level: number) => void;
   onRotate?: (deltaDeg: number) => void;
   onError?: (message: string) => void;
@@ -27,10 +39,15 @@ export interface CprViewProps {
 interface CameraLayout {
   /** Altura del CPR en mm (distancia total de la centerline). */
   heightMm: number;
+  widthMm: number;
   /** Medio alto visible en unidades de modelo. */
   parallelScale: number;
+  cssWidth: number;
   cssHeight: number;
 }
+
+/** Más allá de esto un punto de medición se dibuja atenuado por estar fuera del plano. */
+const OFF_PLANE_DIM_MM = 1.5;
 
 export function hasWebGL2(): boolean {
   try {
@@ -45,7 +62,9 @@ export function hasWebGL2(): boolean {
  * Tira CPR: un `vtkImageSlice` con `vtkImageCPRMapper` en un render window
  * propio de vtk.js, independiente del motor de cornerstone. El plano del actor
  * ocupa x ∈ [0, ancho], y ∈ [0, alto] con el primer punto de la centerline
- * arriba; la cámara es paralela y se encuadra para que quepa todo.
+ * arriba; la cámara es paralela y se encuadra para que quepa todo. Las
+ * mediciones viven en coordenadas mundo y se proyectan sobre la tira en cada
+ * render, así siguen a la anatomía al girar o cambiar el ancho.
  */
 export default function CprView(props: CprViewProps) {
   const {
@@ -56,7 +75,11 @@ export default function CprView(props: CprViewProps) {
     window: colorWindow,
     level: colorLevel,
     cursorDistance,
+    measurements = [],
+    measureMode = 'none',
+    pendingPoints = [],
     onPick,
+    onMeasurePoint,
     onWindowLevel,
     onRotate,
     onError,
@@ -68,6 +91,7 @@ export default function CprView(props: CprViewProps) {
   const mapperRef = useRef<ReturnType<typeof vtkImageCPRMapper.newInstance> | null>(null);
   const actorAddedRef = useRef(false);
   const [layout, setLayout] = useState<CameraLayout | null>(null);
+  const [stripGeometry, setStripGeometry] = useState<StripGeometry | null>(null);
   const [unsupported, setUnsupported] = useState<string | null>(null);
 
   const dragRef = useRef<{
@@ -106,7 +130,13 @@ export default function CprView(props: CprViewProps) {
     camera.setParallelScale(parallelScale);
     camera.setClippingRange(0.01, 2);
 
-    setLayout({ heightMm: h, parallelScale, cssHeight: rect.height });
+    setLayout({
+      heightMm: h,
+      widthMm: w,
+      parallelScale,
+      cssWidth: rect.width,
+      cssHeight: rect.height,
+    });
   }, []);
 
   // Montaje del render window.
@@ -181,6 +211,7 @@ export default function CprView(props: CprViewProps) {
         actorAddedRef.current = false;
       }
       setLayout(null);
+      setStripGeometry(null);
       render();
       return;
     }
@@ -189,8 +220,15 @@ export default function CprView(props: CprViewProps) {
       mapper.setImageData(imageData);
       mapper.setCenterlineData(buildCenterlinePolyData(centerline));
       mapper.setWidth(widthMm);
+      let uniformOrientation: [number, number, number, number] | null = null;
       if (mode === 'stretched') {
-        mapper.setUniformOrientation(Array.from(centerline.orientations.subarray(0, 4)));
+        uniformOrientation = Array.from(centerline.orientations.subarray(0, 4)) as [
+          number,
+          number,
+          number,
+          number,
+        ];
+        mapper.setUniformOrientation(uniformOrientation);
         mapper.useStretchedMode();
       } else {
         mapper.useStraightenedMode();
@@ -199,6 +237,14 @@ export default function CprView(props: CprViewProps) {
         renderer.addActor(actor);
         actorAddedRef.current = true;
       }
+      // Distancias con la métrica del modo actual, para proyectar mediciones.
+      const distances = Array.from(mapper.getOrientedCenterline().getDistancesToFirstPoint());
+      setStripGeometry({
+        points: centerline.points,
+        orientations: centerline.orientations,
+        distances,
+        uniformOrientation,
+      });
       fitCamera();
       render();
     } catch (error) {
@@ -218,34 +264,130 @@ export default function CprView(props: CprViewProps) {
     render();
   }, [colorWindow, colorLevel, render]);
 
-  // --- Interacción ---------------------------------------------------------
+  // --- Conversión tira ↔ pantalla --------------------------------------------
 
-  const distanceAtClientY = useCallback(
-    (clientY: number): number | null => {
+  /** Coordenadas de modelo (x ∈ [0,w], y ∈ [0,h]) de un punto de pantalla. */
+  const modelAtClient = useCallback(
+    (clientX: number, clientY: number): { x: number; y: number } | null => {
       const container = containerRef.current;
       if (!container || !layout) {
         return null;
       }
       const rect = container.getBoundingClientRect();
-      const t = (clientY - rect.top) / rect.height; // 0 arriba, 1 abajo
-      const yModel = layout.heightMm / 2 + (0.5 - t) * 2 * layout.parallelScale;
-      const distance = layout.heightMm - yModel;
+      const aspect = rect.width / Math.max(rect.height, 1);
+      const tx = (clientX - rect.left) / rect.width - 0.5;
+      const ty = 0.5 - (clientY - rect.top) / rect.height;
+      return {
+        x: layout.widthMm / 2 + tx * 2 * layout.parallelScale * aspect,
+        y: layout.heightMm / 2 + ty * 2 * layout.parallelScale,
+      };
+    },
+    [layout]
+  );
+
+  /** Posición CSS (px dentro del contenedor) de un punto de la tira. */
+  const cssOfStrip = useCallback(
+    (distance: number, lateral: number): { left: number; top: number } | null => {
+      if (!layout) {
+        return null;
+      }
+      const aspect = layout.cssWidth / Math.max(layout.cssHeight, 1);
+      const yModel = layout.heightMm - distance;
+      const tx = lateral / (2 * layout.parallelScale * aspect);
+      const ty = (yModel - layout.heightMm / 2) / (2 * layout.parallelScale);
+      return {
+        left: (0.5 + tx) * layout.cssWidth,
+        top: (0.5 - ty) * layout.cssHeight,
+      };
+    },
+    [layout]
+  );
+
+  const worldAtClient = useCallback(
+    (clientX: number, clientY: number): { world: Vec3; distance: number } | null => {
+      const mapper = mapperRef.current;
+      const model = modelAtClient(clientX, clientY);
+      if (!mapper || !model || !layout) {
+        return null;
+      }
+      const distance = layout.heightMm - model.y;
       if (distance < 0 || distance > layout.heightMm) {
         return null;
       }
-      return distance;
+      const { position, orientation } = mapper.getCenterlinePositionAndOrientation(distance);
+      if (!position) {
+        return null;
+      }
+      const quat = (stripGeometry?.uniformOrientation ??
+        (orientation ? Array.from(orientation) : [0, 0, 0, 1])) as [number, number, number, number];
+      const lateral = model.x - layout.widthMm / 2;
+      return {
+        world: stripToWorld([position[0], position[1], position[2]], quat, lateral),
+        distance,
+      };
     },
-    [layout]
+    [modelAtClient, layout, stripGeometry]
   );
 
   const cursorTop = (() => {
     if (cursorDistance === null || !layout) {
       return null;
     }
-    const yModel = layout.heightMm - cursorDistance;
-    const t = 0.5 - (yModel - layout.heightMm / 2) / (2 * layout.parallelScale);
-    return `${(t * 100).toFixed(3)}%`;
+    const css = cssOfStrip(cursorDistance, 0);
+    return css ? `${css.top}px` : null;
   })();
+
+  // Mediciones proyectadas sobre la tira.
+  const overlay = useMemo(() => {
+    if (!stripGeometry || !layout) {
+      return { items: [], pending: [] as { left: number; top: number }[] };
+    }
+    const project = (p: Vec3) => {
+      const strip = projectToStrip(p, stripGeometry);
+      if (!strip) {
+        return null;
+      }
+      const css = cssOfStrip(strip.distance, strip.lateral);
+      return css ? { ...css, offPlane: strip.offPlane } : null;
+    };
+    const items = measurements
+      .map(m => {
+        const pts = m.points.map(project);
+        if (pts.some(p => !p)) {
+          return null;
+        }
+        const dim = pts.some(p => (p as { offPlane: number }).offPlane > OFF_PLANE_DIM_MM);
+        const color = arteryCss(arteryById(m.arteryId)?.color ?? [200, 200, 200, 255]);
+        let label = '';
+        if (m.kind === 'length') {
+          const l = lengthMm(m.points);
+          label = l === null ? '' : `${l.toFixed(1)} mm`;
+        } else {
+          const s = stenosis(m.points);
+          label = s?.percent === null || !s ? '' : `${s.percent.toFixed(0)} %`;
+        }
+        return {
+          id: m.id,
+          kind: m.kind,
+          points: pts as { left: number; top: number }[],
+          dim,
+          color,
+          label,
+        };
+      })
+      .filter(Boolean) as {
+      id: number;
+      kind: string;
+      points: { left: number; top: number }[];
+      dim: boolean;
+      color: string;
+      label: string;
+    }[];
+    const pending = pendingPoints.map(project).filter(Boolean) as { left: number; top: number }[];
+    return { items, pending };
+  }, [measurements, pendingPoints, stripGeometry, layout, cssOfStrip]);
+
+  // --- Interacción ---------------------------------------------------------
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) {
@@ -280,15 +422,15 @@ export default function CprView(props: CprViewProps) {
     if (!drag || drag.moved) {
       return;
     }
-    const distance = distanceAtClientY(e.clientY);
-    const mapper = mapperRef.current;
-    if (distance === null || !mapper || !onPick) {
+    const hit = worldAtClient(e.clientX, e.clientY);
+    if (!hit) {
       return;
     }
-    const { position } = mapper.getCenterlinePositionAndOrientation(distance);
-    if (position) {
-      onPick(distance, [position[0], position[1], position[2]]);
+    if (measureMode !== 'none') {
+      onMeasurePoint?.(hit.world);
+      return;
     }
+    onPick?.(hit.distance, hit.world);
   };
 
   // La rueda se registra a mano para poder hacer preventDefault (React la marca pasiva).
@@ -316,8 +458,32 @@ export default function CprView(props: CprViewProps) {
     );
   }
 
+  const segment = (
+    a: { left: number; top: number },
+    b: { left: number; top: number },
+    color: string,
+    key: string,
+    dim: boolean
+  ) => (
+    <line
+      key={key}
+      x1={a.left}
+      y1={a.top}
+      x2={b.left}
+      y2={b.top}
+      stroke={color}
+      strokeWidth={2}
+      strokeLinecap="round"
+      opacity={dim ? 0.35 : 1}
+    />
+  );
+
   return (
-    <div className="relative h-full w-full select-none overflow-hidden bg-black">
+    <div
+      className={`relative h-full w-full select-none overflow-hidden bg-black ${
+        measureMode !== 'none' ? 'cursor-crosshair' : ''
+      }`}
+    >
       <div
         ref={containerRef}
         className="h-full w-full"
@@ -343,6 +509,65 @@ export default function CprView(props: CprViewProps) {
           className="pointer-events-none absolute right-0 left-0 border-t border-dashed border-cyan-300/80"
           style={{ top: cursorTop }}
         />
+      )}
+      {layout && (overlay.items.length > 0 || overlay.pending.length > 0) && (
+        <svg
+          className="pointer-events-none absolute inset-0"
+          width={layout.cssWidth}
+          height={layout.cssHeight}
+        >
+          {overlay.items.map(item => {
+            const [a, b, c, d] = item.points;
+            const mid = item.kind === 'stenosis' && c && d ? c : a;
+            return (
+              <g key={item.id}>
+                {segment(a, b, item.color, `${item.id}-ref`, item.dim)}
+                {item.kind === 'stenosis' &&
+                  c &&
+                  d &&
+                  segment(c, d, item.color, `${item.id}-min`, item.dim)}
+                {item.points.map((p, i) => (
+                  <circle
+                    key={i}
+                    cx={p.left}
+                    cy={p.top}
+                    r={3}
+                    fill={item.color}
+                    stroke="#000"
+                    strokeWidth={1}
+                    opacity={item.dim ? 0.35 : 1}
+                  />
+                ))}
+                {item.label && (
+                  <text
+                    x={Math.min(layout.cssWidth - 4, Math.max(mid.left, b.left) + 6)}
+                    y={mid.top - 6}
+                    fill="#fff"
+                    fontSize={11}
+                    paintOrder="stroke"
+                    stroke="#000"
+                    strokeWidth={3}
+                    opacity={item.dim ? 0.5 : 1}
+                  >
+                    {item.label}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+          {overlay.pending.map((p, i) => (
+            <circle
+              key={`pending-${i}`}
+              cx={p.left}
+              cy={p.top}
+              r={4}
+              fill="none"
+              stroke="#67e8f9"
+              strokeWidth={2}
+            />
+          ))}
+          {overlay.pending.length === 1 && measureMode !== 'none' && null}
+        </svg>
       )}
     </div>
   );

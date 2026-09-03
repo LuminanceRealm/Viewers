@@ -2,7 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSystem } from '@ohif/core';
 import { Button, Icons, useViewportGrid } from '@ohif/ui-next';
 
-import { ARTERIES, CANDIDATE_INDEX, HU_THRESHOLD, segmentationIdForDisplaySet } from '../constants';
+import {
+  ARTERIES,
+  BETA_NOTICE,
+  CANDIDATE_INDEX,
+  HU_THRESHOLD,
+  segmentationIdForDisplaySet,
+} from '../constants';
 import { riskCategory } from '../utils/agatston';
 import type { CalciumScoreReport } from '../commandsModule';
 
@@ -111,6 +117,7 @@ export default function PanelCalciumScore() {
   if (!segmentation) {
     return (
       <div className="flex flex-col gap-3 p-3 text-sm text-white">
+        <p className="text-xs leading-snug text-amber-400">{BETA_NOTICE}</p>
         <p className="text-muted-foreground leading-snug">
           Resalta todo lo que supera {HU_THRESHOLD} HU y permite asignar cada calcificación a una
           arteria con un clic. Requiere una tomografía cardíaca sin contraste, idealmente a 120 kVp
@@ -134,6 +141,7 @@ export default function PanelCalciumScore() {
 
   return (
     <div className="flex flex-col gap-3 p-3 text-sm text-white">
+      <p className="text-[11px] leading-snug text-amber-400">{BETA_NOTICE}</p>
       <p className="text-muted-foreground leading-snug">
         Elige la arteria y haz clic sobre cada calcificación resaltada. Un segundo clic la quita.
       </p>

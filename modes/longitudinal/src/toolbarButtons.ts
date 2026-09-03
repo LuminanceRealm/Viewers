@@ -261,7 +261,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-calcium-score',
-      label: 'Score de calcio',
+      label: 'Score de calcio · beta',
       tooltip: 'Score de calcio coronario (Agatston)',
       commands: [
         {
@@ -286,7 +286,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-coronary-cpr',
-      label: 'CPR coronario',
+      label: 'CPR coronario · beta',
       tooltip: 'Reformateo curvo de coronarias',
       commands: [
         {
@@ -311,7 +311,7 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-breast-kinetics',
-      label: 'Curvas cinéticas',
+      label: 'Curvas cinéticas · beta',
       tooltip: 'Curvas cinéticas tiempo-intensidad (resonancia dinámica)',
       commands: [
         {

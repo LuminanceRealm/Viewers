@@ -3,7 +3,7 @@ import { useSystem } from '@ohif/core';
 import { Button, useViewportGrid } from '@ohif/ui-next';
 
 import KineticsChart, { ChartSeries } from '../components/KineticsChart';
-import { MAX_RADIUS_MM, MIN_RADIUS_MM, MOTION_WARN_MM, roiColor } from '../constants';
+import { BETA_NOTICE, MAX_RADIUS_MM, MIN_RADIUS_MM, MOTION_WARN_MM, roiColor } from '../constants';
 import { emptyStudyState, phaseKey, useKineticsStore } from '../store/useKineticsStore';
 import { CURVE_TYPE_LABELS, INITIAL_LABELS, computeKinetics } from '../utils/kinetics';
 import { orderPhases, timeAxis } from '../utils/phaseMatching';
@@ -147,6 +147,7 @@ export default function PanelBreastKinetics() {
   if (!studyUid || !study.ready) {
     return (
       <div className="flex flex-col gap-3 p-3 text-sm text-white">
+        <p className="text-xs leading-snug text-amber-400">{BETA_NOTICE}</p>
         <p className="text-muted-foreground leading-snug">
           Curvas cinéticas de resonancia dinámica: marca una región sobre la lesión y el panel
           grafica su intensidad en cada fase, con realce inicial, comportamiento tardío y tipo
@@ -169,6 +170,7 @@ export default function PanelBreastKinetics() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-2 overflow-y-auto p-2 text-sm text-white">
+      <p className="text-[11px] leading-snug text-amber-400">{BETA_NOTICE}</p>
       <section>
         <div className="text-muted-foreground mb-1 flex items-center justify-between text-xs">
           <span>Fases ({orderedPhases.length} activas)</span>

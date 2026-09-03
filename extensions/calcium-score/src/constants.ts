@@ -55,3 +55,13 @@ export const ARTERY_INDICES = ARTERIES.map(a => a.segmentIndex);
 export function arteryByIndex(segmentIndex: number): ArteryDefinition | undefined {
   return ARTERIES.find(a => a.segmentIndex === segmentIndex);
 }
+
+/**
+ * Mientras las herramientas no estén validadas contra una estación de trabajo,
+ * se muestran como beta en el botón, el panel y los archivos exportados.
+ * Quitar el "beta" = poner esto en false y regenerar el manual.
+ */
+export const IS_BETA = true;
+export const BETA_NOTICE = IS_BETA
+  ? 'Herramienta en evaluación (beta): sus resultados son de apoyo y no sustituyen a la estación de trabajo.'
+  : '';

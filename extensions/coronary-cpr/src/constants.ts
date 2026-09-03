@@ -57,3 +57,13 @@ export const ROTATION_STEP_DEG = 5;
 
 /** Un punto se considera "en el corte" si dista menos de esto del plano del viewport. */
 export const IN_PLANE_TOLERANCE_MM = 1.0;
+
+/**
+ * Mientras las herramientas no estén validadas contra una estación de trabajo,
+ * se muestran como beta en el botón, el panel y los archivos exportados.
+ * Quitar el "beta" = poner esto en false y regenerar el manual.
+ */
+export const IS_BETA = true;
+export const BETA_NOTICE = IS_BETA
+  ? 'Herramienta en evaluación (beta): sus resultados son de apoyo y no sustituyen a la estación de trabajo.'
+  : '';

@@ -1,6 +1,6 @@
 import { cache, imageLoader, utilities as csUtils } from '@cornerstonejs/core';
 
-import { TOOL_NAME } from './constants';
+import { BETA_NOTICE, TOOL_NAME } from './constants';
 import { id as extensionId } from './id';
 import { phaseKey, PhaseState, useKineticsStore } from './store/useKineticsStore';
 import { readImageTime } from './utils/imageTimes';
@@ -199,7 +199,11 @@ const commandsModule = ({ servicesManager, commandsManager }: withAppTypes) => {
         notify('No hay ROIs que exportar.');
         return;
       }
-      const lines: string[] = ['Curvas cinéticas (tiempo-intensidad)', `Estudio,${studyLabel}`, ''];
+      const lines: string[] = ['Curvas cinéticas (tiempo-intensidad)'];
+      if (BETA_NOTICE) {
+        lines.push(BETA_NOTICE);
+      }
+      lines.push(`Estudio,${studyLabel}`, '');
       rows.forEach(row => {
         lines.push(`${row.roiLabel},radio ${row.radiusMm} mm`);
         lines.push(['Fase', ...row.phaseLabels].join(','));

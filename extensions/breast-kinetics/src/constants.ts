@@ -13,8 +13,8 @@ export function roiColor(index: number): string {
   return ROI_COLORS[index % ROI_COLORS.length];
 }
 
-export const DEFAULT_RADIUS_MM = 5;
-export const MIN_RADIUS_MM = 2;
+export const DEFAULT_RADIUS_MM = 3;
+export const MIN_RADIUS_MM = 1;
 export const MAX_RADIUS_MM = 15;
 
 /** Umbrales BI-RADS (ACR MRI lexicon) para clasificar la curva. */
@@ -35,3 +35,13 @@ export const GEOMETRY_SPACING_TOL_MM = 1e-3;
 
 /** Un punto se considera "en el corte" si dista menos de esto del plano del viewport. */
 export const IN_PLANE_TOLERANCE_MM = 1.0;
+
+/**
+ * Mientras las herramientas no estén validadas contra una estación de trabajo,
+ * se muestran como beta en el botón, el panel y los archivos exportados.
+ * Quitar el "beta" = poner esto en false y regenerar el manual.
+ */
+export const IS_BETA = true;
+export const BETA_NOTICE = IS_BETA
+  ? 'Herramienta en evaluación (beta): sus resultados son de apoyo y no sustituyen a la estación de trabajo.'
+  : '';

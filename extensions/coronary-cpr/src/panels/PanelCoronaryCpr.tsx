@@ -6,6 +6,7 @@ import type vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import CprView, { hasWebGL2 } from '../components/CprView';
 import {
   ARTERIES,
+  BETA_NOTICE,
   CROP_MARGIN_MM,
   MAX_WIDTH_MM,
   MIN_WIDTH_MM,
@@ -13,10 +14,12 @@ import {
   TOOL_NAME,
   Vec3,
   WL_PRESETS,
+  arteryById,
   arteryCss,
 } from '../constants';
 import { emptySeriesState, useCprStore } from '../store/useCprStore';
 import { buildOrientedCenterline } from '../utils/centerlineGeometry';
+import { lengthMm, POINTS_REQUIRED, stenosis } from '../utils/measurements';
 import { boxAroundPoints, boxContains, getVolumeSampler, IJKBox } from '../utils/volumeSampler';
 
 /** Holgura extra del recorte para no reconstruirlo con cada punto nuevo. */
@@ -37,6 +40,9 @@ export default function PanelCoronaryCpr() {
   const rotate = useCprStore(s => s.rotate);
   const setWidth = useCprStore(s => s.setWidth);
   const setWindowLevel = useCprStore(s => s.setWindowLevel);
+  const setMeasureMode = useCprStore(s => s.setMeasureMode);
+  const addMeasurePoint = useCprStore(s => s.addMeasurePoint);
+  const removeMeasurement = useCprStore(s => s.removeMeasurement);
 
   const [busy, setBusy] = useState(false);
   const webgl2 = useMemo(() => hasWebGL2(), []);
@@ -49,6 +55,11 @@ export default function PanelCoronaryCpr() {
   const centerline = useMemo(
     () => buildOrientedCenterline(activePoints, RESAMPLE_STEP_MM, series.angleDeg),
     [activePoints, series.angleDeg]
+  );
+
+  const visibleMeasurements = useMemo(
+    () => series.measurements.filter(m => m.arteryId === series.activeArtery),
+    [series.measurements, series.activeArtery]
   );
 
   // Recorte del volumen alrededor del trazado; se rehace sólo si el trazado se
@@ -119,6 +130,10 @@ export default function PanelCoronaryCpr() {
     },
     [uid, update, commandsManager]
   );
+  const onMeasurePoint = useCallback(
+    (world: Vec3) => uid && addMeasurePoint(uid, world),
+    [uid, addMeasurePoint]
+  );
   const onWindowLevel = useCallback(
     (w: number, l: number) => uid && setWindowLevel(uid, w, l),
     [uid, setWindowLevel]
@@ -129,9 +144,20 @@ export default function PanelCoronaryCpr() {
     [uid, update]
   );
 
+  const exportCsv = () => {
+    if (!uid) {
+      return;
+    }
+    commandsManager.run('coronaryCprExportCSV', {
+      uid,
+      seriesLabel: displaySet?.SeriesDescription ?? '',
+    });
+  };
+
   if (!uid || !series.ready) {
     return (
       <div className="flex flex-col gap-3 p-3 text-sm text-white">
+        <p className="text-xs leading-snug text-amber-400">{BETA_NOTICE}</p>
         <p className="text-muted-foreground leading-snug">
           Reformateo curvo de coronarias sobre angio-CT. Traza la arteria con clics en la imagen y
           el panel la muestra estirada en un plano.
@@ -156,8 +182,44 @@ export default function PanelCoronaryCpr() {
       active ? 'bg-primary/30 ring-primary ring-1' : 'bg-secondary-dark hover:bg-accent'
     }`;
 
+  const measureButton = (kind: 'length' | 'stenosis', label: string) => {
+    const active = series.measureMode === kind;
+    return (
+      <button
+        type="button"
+        className={`rounded px-2 py-0.5 text-xs ${
+          active ? 'bg-primary/30 ring-primary ring-1' : 'bg-secondary-dark hover:bg-accent'
+        }`}
+        disabled={!centerline}
+        onClick={() => setMeasureMode(uid, active ? 'none' : kind)}
+      >
+        {label}
+      </button>
+    );
+  };
+
+  const pendingHint = (() => {
+    if (series.measureMode === 'none') {
+      return null;
+    }
+    const need = POINTS_REQUIRED[series.measureMode] - series.pendingPoints.length;
+    if (series.measureMode === 'length') {
+      return need === 2
+        ? 'Regla: marca el primer punto en la tira.'
+        : 'Regla: marca el segundo punto.';
+    }
+    const steps = [
+      'Estenosis: marca el diámetro de referencia (1 de 2).',
+      'Estenosis: marca el diámetro de referencia (2 de 2).',
+      'Estenosis: marca el diámetro mínimo (1 de 2).',
+      'Estenosis: marca el diámetro mínimo (2 de 2).',
+    ];
+    return steps[4 - need] ?? null;
+  })();
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-2 p-2 text-sm text-white">
+      <p className="text-[11px] leading-snug text-amber-400">{BETA_NOTICE}</p>
       <div className="grid grid-cols-4 gap-1">
         {ARTERIES.map(artery => {
           const count = (series.arteries[artery.id] ?? []).length;
@@ -244,7 +306,11 @@ export default function PanelCoronaryCpr() {
             window={series.window}
             level={series.level}
             cursorDistance={series.cursorDistance}
+            measurements={visibleMeasurements}
+            measureMode={series.measureMode}
+            pendingPoints={series.pendingPoints}
             onPick={onPick}
+            onMeasurePoint={onMeasurePoint}
             onWindowLevel={onWindowLevel}
             onRotate={onRotate}
             onError={onError}
@@ -258,6 +324,61 @@ export default function PanelCoronaryCpr() {
       </div>
 
       <div className="flex flex-col gap-1.5 text-xs">
+        <div className="flex items-center gap-1">
+          <span className="text-muted-foreground w-12">Medir</span>
+          {measureButton('length', 'Regla')}
+          {measureButton('stenosis', 'Estenosis')}
+          {series.measureMode !== 'none' && (
+            <button
+              type="button"
+              className="text-muted-foreground ml-auto hover:text-white"
+              onClick={() => setMeasureMode(uid, 'none')}
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
+        {pendingHint && <p className="text-[11px] text-cyan-300">{pendingHint}</p>}
+        {visibleMeasurements.length > 0 && (
+          <ul
+            className="flex flex-col gap-0.5"
+            data-cy="cpr-measurements"
+          >
+            {visibleMeasurements.map(m => {
+              const color = arteryCss(arteryById(m.arteryId)?.color ?? [200, 200, 200, 255]);
+              let text = '';
+              if (m.kind === 'length') {
+                const l = lengthMm(m.points);
+                text = l === null ? '' : `Regla · ${l.toFixed(1)} mm`;
+              } else {
+                const s = stenosis(m.points);
+                text = s
+                  ? `Estenosis · ${s.percent === null ? '–' : `${s.percent.toFixed(0)} %`} (ref ${s.referenceMm.toFixed(1)} mm, mín ${s.minimalMm.toFixed(1)} mm)`
+                  : '';
+              }
+              return (
+                <li
+                  key={m.id}
+                  className="bg-secondary-dark flex items-center gap-2 rounded px-1.5 py-0.5"
+                >
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="flex-1 tabular-nums">{text}</span>
+                  <button
+                    type="button"
+                    className="text-muted-foreground hover:text-white"
+                    title="Quitar medición"
+                    onClick={() => removeMeasurement(uid, m.id)}
+                  >
+                    ✕
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground w-12">Ancho</span>
           <input
@@ -313,11 +434,20 @@ export default function PanelCoronaryCpr() {
             ))}
           </span>
         </div>
-        <div className="text-muted-foreground flex justify-between">
+        <div className="text-muted-foreground flex items-center justify-between">
           <span>
             W {Math.round(series.window)} · L {Math.round(series.level)}
           </span>
           {centerline && <span>{centerline.lengthMm.toFixed(0)} mm de vaso</span>}
+          {series.measurements.length > 0 && (
+            <button
+              type="button"
+              className="hover:text-white"
+              onClick={exportCsv}
+            >
+              Descargar CSV
+            </button>
+          )}
         </div>
       </div>
     </div>

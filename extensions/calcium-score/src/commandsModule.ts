@@ -3,6 +3,7 @@ import { segmentation as csToolsSegmentation, Enums as csToolsEnums } from '@cor
 
 import {
   ARTERIES,
+  BETA_NOTICE,
   CANDIDATE_COLOR,
   CANDIDATE_INDEX,
   HU_THRESHOLD,
@@ -79,6 +80,9 @@ function toCSV(report: CalciumScoreReport, displaySet): string {
   const lines: string[] = [];
   const category = riskCategory(report.result.total.score);
   lines.push('Score de calcio coronario (Agatston)');
+  if (BETA_NOTICE) {
+    lines.push(BETA_NOTICE);
+  }
   lines.push(`Serie,${JSON.stringify(displaySet?.SeriesDescription ?? '')}`);
   lines.push(`Incremento de corte (mm),${report.sliceIncrementMm.toFixed(2)}`);
   lines.push(

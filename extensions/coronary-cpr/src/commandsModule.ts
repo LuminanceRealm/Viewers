@@ -5,7 +5,8 @@ import {
   utilities as csUtils,
 } from '@cornerstonejs/core';
 
-import { TOOL_NAME, Vec3 } from './constants';
+import { ARTERIES, BETA_NOTICE, TOOL_NAME, Vec3 } from './constants';
+import { lengthMm, stenosis } from './utils/measurements';
 import { id as extensionId } from './id';
 import { useCprStore } from './store/useCprStore';
 import { createVolumeSampler, getVolumeSampler } from './utils/volumeSampler';
@@ -161,6 +162,48 @@ const commandsModule = ({ servicesManager, commandsManager }: withAppTypes) => {
           }
         }
       });
+    },
+
+    /** CSV con las mediciones hechas sobre la tira (longitudes reales en 3D). */
+    coronaryCprExportCSV: ({ uid, seriesLabel }: { uid: string; seriesLabel: string }) => {
+      const series = useCprStore.getState().bySeries[uid];
+      if (!series?.measurements.length) {
+        notify('No hay mediciones que exportar.');
+        return;
+      }
+      const lines: string[] = ['CPR coronario: mediciones'];
+      if (BETA_NOTICE) {
+        lines.push(BETA_NOTICE);
+      }
+      lines.push(`Serie,${JSON.stringify(seriesLabel)}`, '');
+      lines.push('Arteria,Tipo,Valor,Referencia (mm),Mínimo (mm)');
+      series.measurements.forEach(m => {
+        const artery = ARTERIES.find(a => a.id === m.arteryId)?.short ?? '';
+        if (m.kind === 'length') {
+          const l = lengthMm(m.points);
+          lines.push([artery, 'Regla', l === null ? '' : `${l.toFixed(1)} mm`, '', ''].join(','));
+        } else {
+          const s = stenosis(m.points);
+          lines.push(
+            [
+              artery,
+              'Estenosis',
+              s?.percent == null ? '' : `${s.percent.toFixed(0)} %`,
+              s ? s.referenceMm.toFixed(1) : '',
+              s ? s.minimalMm.toFixed(1) : '',
+            ].join(',')
+          );
+        }
+      });
+      const blob = new Blob(['\uFEFF', lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cpr-mediciones-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     },
 
     coronaryCprNotify: ({ message }: { message: string }) => notify(message, 'info'),
