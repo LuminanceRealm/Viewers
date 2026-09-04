@@ -11,6 +11,7 @@ import {
 } from '../constants';
 import { riskCategory } from '../utils/agatston';
 import type { CalciumScoreReport } from '../commandsModule';
+import printScoreReport from '../utils/printScore';
 
 function rgba([r, g, b, a]: number[]): string {
   return `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)})`;
@@ -33,6 +34,7 @@ export default function PanelCalciumScore() {
   const [revision, setRevision] = useState(0);
   const [report, setReport] = useState<CalciumScoreReport | undefined>();
   const [busy, setBusy] = useState(false);
+  const [printing, setPrinting] = useState(false);
   const computeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Se relee en cada revisión: el viewport puede cambiar de serie sin cambiar de id.
@@ -103,6 +105,20 @@ export default function PanelCalciumScore() {
       setBusy(false);
     }
   }, [commandsManager, activeViewportId]);
+
+  const exportPdf = async () => {
+    if (!report) {
+      return;
+    }
+    setPrinting(true);
+    try {
+      await printScoreReport({ displaySet, report, viewportIds: [activeViewportId] });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPrinting(false);
+    }
+  };
 
   const setArtery = (segmentIndex: number) => {
     commandsManager.run('calciumScoreSetArtery', { segmentationId, segmentIndex });
@@ -241,9 +257,31 @@ export default function PanelCalciumScore() {
         <Button
           variant="secondary"
           size="sm"
+          disabled={!report || printing}
+          onClick={exportPdf}
+          title="Abre la hoja de impresión; desde ahí se guarda como PDF"
+        >
+          {printing ? 'Preparando…' : 'PDF'}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={() => commandsManager.run('calciumScoreDownloadCSV', { segmentationId })}
         >
-          Descargar CSV
+          CSV
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() =>
+            commandsManager.run('calciumScoreShow3D', {
+              segmentationId,
+              viewportId: activeViewportId,
+            })
+          }
+          title="Muestra las calcificaciones como superficie sobre el volumen"
+        >
+          Ver en 3D
         </Button>
         <Button
           variant="ghost"

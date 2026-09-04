@@ -3,6 +3,9 @@ export { default as captureVisibleViewports } from './captureVisibleViewports';
 export { default as captureDisplaySetImages } from './captureDisplaySetImages';
 export { default as buildPrintDocument } from './buildPrintDocument';
 export { default as openPrintSheet } from './openPrintSheet';
+export { default as buildReportDocument } from './buildReportDocument';
+export type { ReportSection, ReportDocumentOptions } from './buildReportDocument';
+export { default as rasterizeSvg } from './rasterizeSvg';
 export { default as PrintConfirmDialog } from './PrintConfirmDialog';
 
 /** Sheets beyond this count require an explicit confirmation from the user. */

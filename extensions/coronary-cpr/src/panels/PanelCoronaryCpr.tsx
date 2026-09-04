@@ -3,7 +3,8 @@ import { useSystem } from '@ohif/core';
 import { Button, Slider, useViewportGrid } from '@ohif/ui-next';
 import type vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 
-import CprView, { hasWebGL2 } from '../components/CprView';
+import CprView, { CprViewHandle, hasWebGL2 } from '../components/CprView';
+import printCprReport from '../utils/printCpr';
 import {
   ARTERIES,
   BETA_NOTICE,
@@ -48,6 +49,8 @@ export default function PanelCoronaryCpr() {
   const webgl2 = useMemo(() => hasWebGL2(), []);
   const [imageData, setImageData] = useState<vtkImageData | null>(null);
   const cropRef = useRef<{ box: IJKBox; widthMm: number } | null>(null);
+  const viewRef = useRef<CprViewHandle | null>(null);
+  const [printing, setPrinting] = useState(false);
 
   const activePointsRaw = series.arteries[series.activeArtery];
   const activePoints = useMemo(() => activePointsRaw ?? [], [activePointsRaw]);
@@ -143,6 +146,28 @@ export default function PanelCoronaryCpr() {
     (message: string) => uid && update(uid, { error: message }),
     [uid, update]
   );
+
+  const exportPdf = async () => {
+    if (!uid) {
+      return;
+    }
+    setPrinting(true);
+    try {
+      const stripImage = (await viewRef.current?.captureStrip()) ?? null;
+      await printCprReport({
+        displaySet,
+        series,
+        stripImage,
+        vesselLengthMm: centerline?.lengthMm ?? null,
+        viewportIds: [activeViewportId],
+      });
+    } catch (error) {
+      console.error(error);
+      update(uid, { error: 'No se pudo preparar el PDF.' });
+    } finally {
+      setPrinting(false);
+    }
+  };
 
   const exportCsv = () => {
     if (!uid) {
@@ -299,6 +324,7 @@ export default function PanelCoronaryCpr() {
           </div>
         ) : centerline ? (
           <CprView
+            ref={viewRef}
             imageData={imageData}
             centerline={centerline}
             widthMm={series.widthMm}
@@ -439,15 +465,28 @@ export default function PanelCoronaryCpr() {
             W {Math.round(series.window)} · L {Math.round(series.level)}
           </span>
           {centerline && <span>{centerline.lengthMm.toFixed(0)} mm de vaso</span>}
-          {series.measurements.length > 0 && (
-            <button
-              type="button"
-              className="hover:text-white"
-              onClick={exportCsv}
-            >
-              Descargar CSV
-            </button>
-          )}
+          <span className="flex gap-2">
+            {centerline && (
+              <button
+                type="button"
+                className="hover:text-white"
+                disabled={printing}
+                onClick={exportPdf}
+                title="Abre la hoja de impresión; desde ahí se guarda como PDF"
+              >
+                {printing ? 'Preparando…' : 'PDF'}
+              </button>
+            )}
+            {series.measurements.length > 0 && (
+              <button
+                type="button"
+                className="hover:text-white"
+                onClick={exportCsv}
+              >
+                CSV
+              </button>
+            )}
+          </span>
         </div>
       </div>
     </div>

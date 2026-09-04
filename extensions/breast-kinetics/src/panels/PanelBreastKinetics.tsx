@@ -9,6 +9,7 @@ import { CURVE_TYPE_LABELS, INITIAL_LABELS, computeKinetics } from '../utils/kin
 import { orderPhases, timeAxis } from '../utils/phaseMatching';
 import { sampleRois, StudySamples } from '../utils/sampleRois';
 import type { CsvRow } from '../commandsModule';
+import printKineticsReport from '../utils/printKinetics';
 
 function formatClock(seconds: number | null): string {
   if (seconds === null) {
@@ -36,6 +37,7 @@ export default function PanelBreastKinetics() {
   const [busy, setBusy] = useState(false);
   const [samples, setSamples] = useState<StudySamples | null>(null);
   const [sampling, setSampling] = useState(false);
+  const [printing, setPrinting] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fases activas en orden temporal.
@@ -125,6 +127,29 @@ export default function PanelBreastKinetics() {
       }),
     [samples, study.rois, kineticsByRoi, times]
   );
+
+  const exportPdf = async () => {
+    setPrinting(true);
+    try {
+      const chartSvg = document.querySelector(
+        '[data-cy="kinetics-chart"] svg'
+      ) as SVGSVGElement | null;
+      await printKineticsReport({
+        displaySet,
+        phases: orderedPhases,
+        times,
+        rois: study.rois,
+        samples,
+        kineticsByRoi,
+        chartSvg,
+        viewportIds: [activeViewportId],
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setPrinting(false);
+    }
+  };
 
   const exportCsv = () => {
     const rows: CsvRow[] = (samples?.results ?? []).map(r => {
@@ -360,9 +385,18 @@ export default function PanelBreastKinetics() {
             <Button
               size="sm"
               variant="secondary"
+              disabled={!samples || printing}
+              onClick={exportPdf}
+              title="Abre la hoja de impresión; desde ahí se guarda como PDF"
+            >
+              {printing ? 'Preparando…' : 'PDF'}
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
               onClick={exportCsv}
             >
-              Descargar CSV
+              CSV
             </Button>
           </div>
         </>

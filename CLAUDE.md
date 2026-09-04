@@ -178,6 +178,18 @@ Decisiones que no se ven en el código:
 - Fuera de alcance a propósito: camino mínimo entre dos puntos, detección automática del vaso y
   vista transversal perpendicular al vaso (sería el siguiente paso natural para ROIs con HU).
 
+## Exportar a PDF y no persistir
+
+Arturo no quiere estado persistente por estudio (ni API ni `localStorage`): lo trabajado se
+exporta como **hoja de impresión** (`utils.printSheet.buildReportDocument` en
+`extensions/cornerstone/src/utils/printSheet/`, abierta con `openPrintSheet`; el usuario guarda
+PDF desde el diálogo del navegador). Trampa: la tira CPR es un canvas WebGL con
+`preserveDrawingBuffer:false`, así que `html2canvas` la saca en negro; `CprView` expone
+`captureStrip()` que usa `captureNextImage` de vtk.js justo tras un render y compone encima el
+SVG de mediciones. La gráfica de curvas (SVG) se rasteriza con `rasterizeSvg`. "Ver en 3D" del
+score sólo aplica el protocolo `only3D` y añade la segmentación al viewport: polySeg la convierte a
+superficie sin código propio.
+
 ## Etiqueta beta
 
 Las tres herramientas clínicas (score de calcio, CPR, curvas cinéticas) se muestran como **beta**

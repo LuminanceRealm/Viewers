@@ -1,4 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 // Registra el override OpenGL del mapper CPR; sin este import no se dibuja nada.
 import '@kitware/vtk.js/Rendering/Profiles/Volume';
 import vtkGenericRenderWindow from '@kitware/vtk.js/Rendering/Misc/GenericRenderWindow';
@@ -49,6 +57,11 @@ interface CameraLayout {
 /** Más allá de esto un punto de medición se dibuja atenuado por estar fuera del plano. */
 const OFF_PLANE_DIM_MM = 1.5;
 
+export interface CprViewHandle {
+  /** PNG (data URL) de la tira con las mediciones encima, o null si no hay imagen. */
+  captureStrip: () => Promise<string | null>;
+}
+
 export function hasWebGL2(): boolean {
   try {
     const canvas = document.createElement('canvas');
@@ -66,7 +79,7 @@ export function hasWebGL2(): boolean {
  * mediciones viven en coordenadas mundo y se proyectan sobre la tira en cada
  * render, así siguen a la anatomía al girar o cambiar el ancho.
  */
-export default function CprView(props: CprViewProps) {
+const CprView = forwardRef<CprViewHandle, CprViewProps>(function CprView(props, ref) {
   const {
     imageData,
     centerline,
@@ -86,6 +99,7 @@ export default function CprView(props: CprViewProps) {
   } = props;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<SVGSVGElement | null>(null);
   const grwRef = useRef<ReturnType<typeof vtkGenericRenderWindow.newInstance> | null>(null);
   const actorRef = useRef<ReturnType<typeof vtkImageSlice.newInstance> | null>(null);
   const mapperRef = useRef<ReturnType<typeof vtkImageCPRMapper.newInstance> | null>(null);
@@ -450,6 +464,61 @@ export default function CprView(props: CprViewProps) {
     return () => container.removeEventListener('wheel', onWheel);
   }, [onRotate]);
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      captureStrip: async () => {
+        const grw = grwRef.current;
+        if (!grw || !actorAddedRef.current || !layout) {
+          return null;
+        }
+        // El canvas WebGL no conserva el buffer: hay que capturar justo tras un render.
+        const glWindow = grw.getApiSpecificRenderWindow() as unknown as {
+          captureNextImage: (format: string) => Promise<string>;
+        };
+        const pending = glWindow.captureNextImage('image/png');
+        grw.getRenderWindow().render();
+        const base = await pending;
+
+        const scale = 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(layout.cssWidth * scale);
+        canvas.height = Math.round(layout.cssHeight * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return base;
+        }
+        const draw = (src: string) =>
+          new Promise<void>(resolve => {
+            const img = new Image();
+            img.onload = () => {
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = src;
+          });
+        await draw(base);
+        const svg = overlayRef.current;
+        if (svg) {
+          const clone = svg.cloneNode(true) as SVGSVGElement;
+          clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+          const markup = new XMLSerializer().serializeToString(clone);
+          const url = URL.createObjectURL(
+            new Blob([markup], { type: 'image/svg+xml;charset=utf-8' })
+          );
+          try {
+            await draw(url);
+          } finally {
+            URL.revokeObjectURL(url);
+          }
+        }
+        return canvas.toDataURL('image/png');
+      },
+    }),
+    [layout]
+  );
+
   if (unsupported) {
     return (
       <div className="flex h-full w-full items-center justify-center p-3 text-center text-xs text-amber-400">
@@ -512,6 +581,7 @@ export default function CprView(props: CprViewProps) {
       )}
       {layout && (overlay.items.length > 0 || overlay.pending.length > 0) && (
         <svg
+          ref={overlayRef}
           className="pointer-events-none absolute inset-0"
           width={layout.cssWidth}
           height={layout.cssHeight}
@@ -571,4 +641,6 @@ export default function CprView(props: CprViewProps) {
       )}
     </div>
   );
-}
+});
+
+export default CprView;

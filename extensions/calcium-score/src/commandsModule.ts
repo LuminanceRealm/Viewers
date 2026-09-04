@@ -358,6 +358,39 @@ const commandsModule = ({ servicesManager, commandsManager }: withAppTypes) => {
       });
     },
 
+    /**
+     * Cambia al layout "Sólo 3D" y asegura que la segmentación del score esté en
+     * el viewport 3D: el SegmentationService la convierte a superficie (polySeg).
+     */
+    calciumScoreShow3D: async ({ segmentationId }: { segmentationId: string }) => {
+      if (!getCalciumSegmentationRefs(segmentationId)) {
+        notifyError('Primero inicia el score de calcio en esta serie.');
+        return;
+      }
+      commandsManager.run('setHangingProtocol', { protocolId: 'only3D' });
+      // El grid tarda un instante en montar el viewport 3D.
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const { viewports } = viewportGridService.getState();
+      for (const [viewportId] of viewports) {
+        const already = segmentationService
+          .getSegmentationRepresentations(viewportId)
+          .some(r => r.segmentationId === segmentationId);
+        if (!already) {
+          try {
+            await segmentationService.addSegmentationRepresentation(viewportId, {
+              segmentationId,
+              type: csToolsEnums.SegmentationRepresentations.Labelmap,
+            });
+          } catch (error) {
+            console.warn(
+              'calciumScoreShow3D: no se pudo añadir la segmentación al viewport',
+              error
+            );
+          }
+        }
+      }
+    },
+
     calciumScoreRemove: ({ segmentationId }: { segmentationId: string }) => {
       segmentationService.remove(segmentationId);
     },
