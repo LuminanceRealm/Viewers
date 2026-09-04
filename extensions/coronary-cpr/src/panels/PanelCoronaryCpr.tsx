@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSystem } from '@ohif/core';
-import { Button, useViewportGrid } from '@ohif/ui-next';
+import { Button, Slider, useViewportGrid } from '@ohif/ui-next';
 import type vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 
 import CprView, { hasWebGL2 } from '../components/CprView';
@@ -381,27 +381,27 @@ export default function PanelCoronaryCpr() {
         )}
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground w-12">Ancho</span>
-          <input
-            type="range"
+          <Slider
             min={MIN_WIDTH_MM}
             max={MAX_WIDTH_MM}
             step={5}
-            value={series.widthMm}
-            onChange={e => setWidth(uid, Number(e.target.value))}
+            value={[series.widthMm]}
+            onValueChange={([widthMm]) => setWidth(uid, widthMm)}
             className="flex-1"
+            aria-label="Ancho del plano curvo en milímetros"
           />
           <span className="w-12 text-right tabular-nums">{series.widthMm} mm</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground w-12">Giro</span>
-          <input
-            type="range"
+          <Slider
             min={0}
             max={355}
             step={5}
-            value={series.angleDeg}
-            onChange={e => update(uid, { angleDeg: Number(e.target.value) })}
+            value={[series.angleDeg]}
+            onValueChange={([angleDeg]) => update(uid, { angleDeg })}
             className="flex-1"
+            aria-label="Giro del plano curvo en grados"
           />
           <span className="w-12 text-right tabular-nums">{series.angleDeg}°</span>
         </div>

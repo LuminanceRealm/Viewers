@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSystem } from '@ohif/core';
-import { Button, useViewportGrid } from '@ohif/ui-next';
+import { Button, Slider, useViewportGrid } from '@ohif/ui-next';
 
 import KineticsChart, { ChartSeries } from '../components/KineticsChart';
 import { BETA_NOTICE, MAX_RADIUS_MM, MIN_RADIUS_MM, MOTION_WARN_MM, roiColor } from '../constants';
@@ -226,24 +226,21 @@ export default function PanelBreastKinetics() {
         >
           Marcar ROI
         </Button>
-        <label className="text-muted-foreground flex flex-1 items-center gap-2 text-xs">
-          Radio
-          <input
-            type="range"
+        <div className="text-muted-foreground flex flex-1 items-center gap-2 text-xs">
+          <span title="Radio de la ROI activa">Radio</span>
+          <Slider
             min={MIN_RADIUS_MM}
             max={MAX_RADIUS_MM}
             step={1}
-            value={study.radiusMm}
-            onChange={e =>
-              commandsManager.run('breastKineticsSetRadius', {
-                studyUid,
-                radiusMm: Number(e.target.value),
-              })
+            value={[study.radiusMm]}
+            onValueChange={([radiusMm]) =>
+              commandsManager.run('breastKineticsSetRadius', { studyUid, radiusMm })
             }
             className="flex-1"
+            aria-label="Radio de la ROI en milímetros"
           />
-          <span className="w-10 text-right tabular-nums text-white">{study.radiusMm} mm</span>
-        </label>
+          <span className="w-12 text-right tabular-nums text-white">{study.radiusMm} mm</span>
+        </div>
       </section>
 
       {study.rois.length === 0 ? (

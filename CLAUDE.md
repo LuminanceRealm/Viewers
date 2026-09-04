@@ -104,6 +104,15 @@ Para confirmar qué hay arriba:
 curl -sS https://beta-visor.nubix.cloud/index.html | grep -o 'app\.bundle\.[a-f0-9]*\.js'
 ```
 
+Si ese hash no coincide con el de `platform/app/dist`, CloudFront está sirviendo un `index.html`
+viejo (`curl -sI` muestra `x-cache: Hit from cloudfront` con `age` de horas); la recarga forzada no
+lo arregla porque la copia vieja está en el borde, no en el navegador. Se invalida así (la
+distribución de beta es `E20ODCS5XAHVIH`):
+
+```bash
+aws cloudfront create-invalidation --distribution-id E20ODCS5XAHVIH --paths "/index.html" "/sw.js" "/manifest.json"
+```
+
 ## Score de calcio coronario (`extensions/calcium-score`)
 
 Extensión propia, cargada sólo por el modo longitudinal. No hay nada de Agatston en cornerstone3D;
