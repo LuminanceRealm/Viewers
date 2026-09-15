@@ -123,9 +123,13 @@ descarga el archivo, lo parsea con `dicom-parser`, extrae `(0042,0011)` (quitand
 relleno par de OB) y devuelve una URL de Blob cacheada por instancia
 (`DicomJSONDataSource/getEncapsulatedDocumentURL.js`). Probado con
 `test-files/tst/tst-pdf-mri/bbmri-pdf.dcm` (MR + DOC en el mismo estudio) sirviéndolo con un
-manifiesto local. La miniatura de documentos devuelve `undefined` a propósito: no hay endpoint de
-render y el navegador de estudios pone su icono. Lo que la API haga con estudios de tipo `DOC` es
-otra conversación.
+manifiesto local. La miniatura es un **icono SVG en data URL** con la etiqueta del formato
+(`getDocumentThumbnailURL`); los dos navegadores de estudios (`PanelStudyBrowser` y
+`PanelStudyBrowserTracking`) muestran como tarjeta cualquier display set "sin imagen" que traiga
+`thumbnailSrc`, en vez de la fila de texto. En **iOS** (y en navegadores sin visor integrado,
+`navigator.pdfViewerEnabled === false`) el `<object>` pinta la primera página minúscula, así que el
+viewport ofrece "Abrir PDF" en pestaña nueva con el lector del sistema. Lo que la API haga con
+estudios de tipo `DOC` es otra conversación.
 
 ## Score de calcio coronario (`extensions/calcium-score`)
 

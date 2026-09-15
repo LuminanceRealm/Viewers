@@ -3,7 +3,10 @@ import OHIF from '@ohif/core';
 import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
-import getEncapsulatedDocumentURL from './getEncapsulatedDocumentURL';
+import getEncapsulatedDocumentURL, {
+  getDocumentThumbnailURL,
+  isEncapsulatedDocument,
+} from './getEncapsulatedDocumentURL';
 import getDirectURL from '../utils/getDirectURL';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
@@ -191,9 +194,11 @@ function createDicomJSONApi(dicomJsonConfig) {
           return getEncapsulatedDocumentURL(params.instance, params.defaultType);
         }
         if (params?.instance?.url && params.tag === 'Absent') {
-          // Miniaturas de documentos: no hay endpoint de render; el navegador de
-          // estudios usa su icono por defecto.
-          return undefined;
+          // Miniaturas: no hay endpoint de render. Para documentos se devuelve un
+          // icono con el formato; para lo demás, nada.
+          return isEncapsulatedDocument(params.instance)
+            ? getDocumentThumbnailURL(params.instance)
+            : undefined;
         }
         return getDirectURL(dicomJsonConfig, params);
       },

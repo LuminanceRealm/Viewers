@@ -608,6 +608,11 @@ function _mapDisplaySets(
 }
 
 function _getComponentType(ds) {
+  // NUBIX: un documento (PDF encapsulado) trae su propio icono de miniatura;
+  // se muestra como tarjeta en vez de fila sin imagen.
+  if (ds?.thumbnailSrc && typeof ds.thumbnailSrc === 'string' && !ds?.unsupported) {
+    return 'thumbnailTracked';
+  }
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     return 'thumbnailNoImage';
   }

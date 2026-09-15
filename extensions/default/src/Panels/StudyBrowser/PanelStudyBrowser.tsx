@@ -403,6 +403,11 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
 const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
 function _getComponentType(ds) {
+  // NUBIX: un documento (PDF encapsulado) trae su propio icono de miniatura;
+  // se muestra como tarjeta en vez de fila sin imagen.
+  if (ds?.thumbnailSrc && typeof ds.thumbnailSrc === 'string' && !ds?.unsupported) {
+    return 'thumbnail';
+  }
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
     // TODO probably others.
     return 'thumbnailNoImage';
