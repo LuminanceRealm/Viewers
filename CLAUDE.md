@@ -113,6 +113,20 @@ distribución de beta es `E20ODCS5XAHVIH`):
 aws cloudfront create-invalidation --distribution-id E20ODCS5XAHVIH --paths "/index.html" "/sw.js" "/manifest.json"
 ```
 
+## PDF encapsulado (DOC)
+
+La extensión `dicom-pdf` de OHIF ya reconoce `1.2.840.10008.5.1.4.1.1.104.1` y el modo longitudinal
+la carga, pero su `pdfUrl` pide a la fuente de datos el bulkdata de `EncapsulatedDocument`, que sólo
+existe en DICOMweb. Con el manifiesto JSON (archivos completos en CloudFront) eso devolvía una URL
+sin sentido y el viewport quedaba vacío. `DicomJSONDataSource.retrieve.directURL` lo intercepta:
+descarga el archivo, lo parsea con `dicom-parser`, extrae `(0042,0011)` (quitando el byte nulo de
+relleno par de OB) y devuelve una URL de Blob cacheada por instancia
+(`DicomJSONDataSource/getEncapsulatedDocumentURL.js`). Probado con
+`test-files/tst/tst-pdf-mri/bbmri-pdf.dcm` (MR + DOC en el mismo estudio) sirviéndolo con un
+manifiesto local. La miniatura de documentos devuelve `undefined` a propósito: no hay endpoint de
+render y el navegador de estudios pone su icono. Lo que la API haga con estudios de tipo `DOC` es
+otra conversación.
+
 ## Score de calcio coronario (`extensions/calcium-score`)
 
 Extensión propia, cargada sólo por el modo longitudinal. No hay nada de Agatston en cornerstone3D;

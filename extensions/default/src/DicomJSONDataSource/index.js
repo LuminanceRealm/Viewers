@@ -3,6 +3,7 @@ import OHIF from '@ohif/core';
 import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
+import getEncapsulatedDocumentURL from './getEncapsulatedDocumentURL';
 import getDirectURL from '../utils/getDirectURL';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
@@ -183,6 +184,17 @@ function createDicomJSONApi(dicomJsonConfig) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
       directURL: params => {
+        // NUBIX: el manifiesto apunta a archivos DICOM completos en el CDN, no a un
+        // servidor DICOMweb que sirva etiquetas sueltas. Un PDF encapsulado se
+        // extrae del propio archivo (0042,0011) y se entrega como URL de Blob.
+        if (params?.instance?.url && params.tag === 'EncapsulatedDocument') {
+          return getEncapsulatedDocumentURL(params.instance, params.defaultType);
+        }
+        if (params?.instance?.url && params.tag === 'Absent') {
+          // Miniaturas de documentos: no hay endpoint de render; el navegador de
+          // estudios usa su icono por defecto.
+          return undefined;
+        }
         return getDirectURL(dicomJsonConfig, params);
       },
       series: {
