@@ -35,6 +35,7 @@
     "dcmjs": "*",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
+    "pdfjs-dist": "^4.10.38",
     "prop-types": "^15.6.2",
     "react": "^18.3.1"
   },

@@ -111,6 +111,11 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/${APP_CONFIG}`,
             to: `${DIST_DIR}/app-config.js`,
           },
+          // Worker de pdf.js para el visor de PDF encapsulado (iOS/Android)
+          {
+            from: '../../../node_modules/pdfjs-dist/build/pdf.worker.min.mjs',
+            to: `${DIST_DIR}/pdf.worker.min.mjs`,
+          },
           // Copy Dicom Microscopy Viewer build files
           {
             from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',

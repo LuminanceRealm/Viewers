@@ -127,9 +127,15 @@ manifiesto local. La miniatura es un **icono SVG en data URL** con la etiqueta d
 (`getDocumentThumbnailURL`); los dos navegadores de estudios (`PanelStudyBrowser` y
 `PanelStudyBrowserTracking`) muestran como tarjeta cualquier display set "sin imagen" que traiga
 `thumbnailSrc`, en vez de la fila de texto. En **iOS** (y en navegadores sin visor integrado,
-`navigator.pdfViewerEnabled === false`) el `<object>` pinta la primera página minúscula, así que el
-viewport ofrece "Abrir PDF" en pestaña nueva con el lector del sistema. Lo que la API haga con
-estudios de tipo `DOC` es otra conversación.
+`navigator.pdfViewerEnabled === false`) el `<object>` pinta la primera página minúscula, así que
+ahí el viewport pagina el documento con **pdf.js** (`dicom-pdf/src/viewports/PdfPages.tsx`: un
+canvas por página, ancho del viewport, zoom por pasos, enlace "Abrir" por si acaso). En escritorio
+se conserva el visor nativo del navegador, que trae búsqueda e impresión. `pdfjs-dist` se importa
+de forma diferida (chunk aparte) y su worker se copia a la raíz del `dist` como
+`pdf.worker.min.mjs` desde `webpack.pwa.js`; si falta, pdf.js no abre nada. Al añadir la
+dependencia no usar `yarn add`: reescribe medio `yarn.lock` y sube `prettier-plugin-tailwindcss` a
+una versión ESM que rompe prettier; se añade la línea a `platform/app/package.json` y se corre
+`yarn install`. Lo que la API haga con estudios de tipo `DOC` es otra conversación.
 
 ## Score de calcio coronario (`extensions/calcium-score`)
 
