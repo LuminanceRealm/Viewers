@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -162,36 +162,6 @@ export default function PanelStudyBrowserTracking({
   useEffect(() => {
     setActiveTabName(studyMode);
   }, [studyMode]);
-
-  // NUBIX: en teléfono el riel de series arranca cerrado para que el estudio se
-  // vea como imagen desde el primer momento, y se abre solo cuando de verdad hay
-  // algo que elegir: más de una serie del estudio actual. Con una sola serie el
-  // panel no aporta nada y estorba. Se hace una vez por montaje; `activatePanel`
-  // respeta el cierre manual, así que nunca se le reabre en la cara al usuario.
-  const seriesPanelAutoOpened = useRef(false);
-
-  useEffect(() => {
-    if (seriesPanelAutoOpened.current || window.innerWidth > MOBILE_MAX_WIDTH) {
-      return;
-    }
-
-    const seriesOfCurrentStudies = displaySets.filter(ds =>
-      StudyInstanceUIDs.includes(ds.StudyInstanceUID)
-    );
-
-    if (seriesOfCurrentStudies.length < 2) {
-      return;
-    }
-
-    const seriesPanelId = _getSeriesPanelId(panelService);
-
-    if (!seriesPanelId) {
-      return;
-    }
-
-    seriesPanelAutoOpened.current = true;
-    panelService.activatePanel(seriesPanelId, true);
-  }, [displaySets, StudyInstanceUIDs, panelService]);
 
   // ~~ studyDisplayList
   useEffect(() => {

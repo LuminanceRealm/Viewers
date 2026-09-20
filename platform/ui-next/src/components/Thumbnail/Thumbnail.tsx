@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
+
+// Márgenes para tomar un toque como elección y no como arrastre de la lista.
+const TAP_MAX_MOVE_PX = 10;
+const TAP_MAX_DURATION_MS = 600;
 
 /**
  * Display a thumbnail for a display set.
@@ -45,8 +49,36 @@ const Thumbnail = ({
     },
   });
 
-  // On mobile a single tap loads the series (no double-tap required)
+  // En táctil un solo toque abre la serie, sin doble toque. Pero hay que
+  // distinguirlo del arrastre con el que se recorre la lista de miniaturas: si no,
+  // cualquier intento de desplazarse termina abriendo la serie donde quedó el dedo
+  // (y en teléfono, además, cerrando el panel). Se considera toque sólo si el dedo
+  // casi no se movió y no se quedó demasiado tiempo encima.
+  const touchStartRef = useRef(null);
+
+  const handleTouchStart = e => {
+    const touch = e.changedTouches?.[0];
+
+    touchStartRef.current = touch
+      ? { x: touch.clientX, y: touch.clientY, startedAt: Date.now() }
+      : null;
+  };
+
   const handleTouchEnd = e => {
+    const start = touchStartRef.current;
+    const touch = e.changedTouches?.[0];
+    touchStartRef.current = null;
+
+    if (!start || !touch) {
+      return;
+    }
+
+    const moved = Math.hypot(touch.clientX - start.x, touch.clientY - start.y);
+
+    if (moved > TAP_MAX_MOVE_PX || Date.now() - start.startedAt > TAP_MAX_DURATION_MS) {
+      return;
+    }
+
     onDoubleClick(e);
   };
 
@@ -258,6 +290,7 @@ const Thumbnail = ({
       data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       role="button"
     >

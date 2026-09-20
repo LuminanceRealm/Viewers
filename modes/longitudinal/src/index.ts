@@ -97,8 +97,14 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService, userAuthenticationService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        userAuthenticationService,
+        displaySetService,
+        panelService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -197,6 +203,23 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevelRegion',
         ...(isMobile ? exportButtons : []),
       ]);
+
+      if (isMobile) {
+        // En teléfono el riel de series arranca contraído para que el estudio se vea
+        // como imagen, y se abre solo cuando hay más de una serie que elegir; con una
+        // sola no aporta nada. Esto vive aquí y no en el panel porque `SidePanel` no
+        // monta el contenido de la pestaña mientras el riel está contraído: el efecto
+        // nunca correría. `SidePanelWithServices`, en cambio, sí está montado y
+        // escuchando ACTIVATE_PANEL, y respeta el cierre manual del usuario, así que
+        // no pasa nada por pedirlo en cada lote de display sets.
+        _activatePanelTriggersSubscriptions.push(
+          displaySetService.subscribe(displaySetService.EVENTS.DISPLAY_SETS_ADDED, () => {
+            if (displaySetService.getActiveDisplaySets().length > 1) {
+              panelService.activatePanel(tracked.thumbnailList, true);
+            }
+          })
+        );
+      }
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.

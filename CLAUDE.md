@@ -231,11 +231,17 @@ mismo riel de 280 px las parte en dos filas de iconos de 40 px.
   pantalla; a 160 cabe una columna y la imagen conserva más de la mitad. Eso también hace cómodo
   el toque sobre la imagen que cierra los paneles: si la imagen mide 110 px, el blanco al que hay
   que atinar es diminuto y el mismo toque inicia un desplazamiento.
-- **El panel se abre solo si hay más de una serie**, desde `PanelStudyBrowserTracking` y no desde
-  el modo: cuando los display sets llegan, `onModeEnter` ya corrió y el evento se perdería. Va por
-  `panelService.activatePanel(id, true)`, que encadena hasta expandir el panel redimensionable, y
-  `SidePanelWithServices` respeta `closedManually`, así que no se le reabre en la cara al usuario.
-  Con una sola serie —la mayoría en teléfono— el panel no aporta nada y se queda contraído.
+- **El panel se abre solo si hay más de una serie**, y eso vive en `onModeEnter` del modo, no en
+  el panel: **`SidePanel` no monta el contenido de la pestaña mientras el riel está contraído**, así
+  que un efecto dentro de `PanelStudyBrowserTracking` nunca correría (se intentó; no abría nada).
+  El que sí está montado y escuchando `ACTIVATE_PANEL` es `SidePanelWithServices`. El modo se
+  suscribe a `DISPLAY_SETS_ADDED` y pide `panelService.activatePanel(id, true)` mientras haya más
+  de un display set; pedirlo en cada lote es inofensivo porque `SidePanelWithServices` respeta
+  `closedManually`. Con una sola serie —la mayoría en teléfono— el panel se queda contraído.
+- **Un toque en la miniatura no es siempre una elección.** `Thumbnail` abre la serie con un solo
+  toque (sin doble toque), y por eso mide el desplazamiento entre `touchstart` y `touchend`: sin
+  ese filtro, recorrer la lista de miniaturas abría la serie donde quedara el dedo y —con el
+  cierre automático— cerraba el panel a media pasada. Umbrales: 10 px y 600 ms.
 - **Elegir una serie cierra el panel** (`panelService.closePanel`, añadido en `PanelService`): el
   panel no sabe de qué lado lo puso el modo, así que el servicio resuelve la posición y emite la
   opción `leftPanelClosed`/`rightPanelClosed` que `ViewerLayout` ya escuchaba en `PANELS_CHANGED`.
