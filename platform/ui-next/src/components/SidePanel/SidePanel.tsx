@@ -58,7 +58,9 @@ const closeIconWidth = 30;
 const gridHorizontalPadding = 10;
 const tabSpacerWidth = 2;
 
-const baseClasses = 'bg-black border-black justify-start box-content flex flex-col';
+// Sin `justify-*`: lo decide el estado. Contraída, la tira centra su contenido
+// (ver getCloseStateComponent); abierta, el contenido va desde arriba.
+const baseClasses = 'bg-black border-black box-content flex flex-col';
 
 const openStateIconName = {
   left: 'SidePanelCloseLeft',
@@ -336,7 +338,12 @@ const SidePanel = ({
           ))}
         </div>
         {activeTabLabel && (
-          <div className={classnames('mt-4 flex grow', side === 'left' ? 'justify-end pr-1' : 'justify-start pl-1')}>
+          <div
+            className={classnames(
+              'mt-4 flex',
+              side === 'left' ? 'justify-end pr-1' : 'justify-start pl-1'
+            )}
+          >
             <span
               className="group-hover:text-primary-active select-none whitespace-nowrap text-[11px] font-semibold uppercase tracking-widest text-white/70 transition-colors duration-150 md:text-white/40"
               style={{ writingMode: 'vertical-rl' }}
@@ -468,7 +475,11 @@ const SidePanel = ({
 
   return (
     <div
-      className={classnames(className, baseClasses, !panelOpen && 'group cursor-pointer')}
+      className={classnames(
+        className,
+        baseClasses,
+        panelOpen ? 'justify-start' : 'group cursor-pointer justify-center'
+      )}
       style={style}
       onClick={panelOpen ? undefined : () => updatePanelOpen(true)}
     >

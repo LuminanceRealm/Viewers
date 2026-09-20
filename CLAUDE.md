@@ -247,6 +247,10 @@ mismo riel de 280 px las parte en dos filas de iconos de 40 px.
   opción `leftPanelClosed`/`rightPanelClosed` que `ViewerLayout` ya escuchaba en `PANELS_CHANGED`.
   El componente se ubica a sí mismo buscando su módulo por nombre (`seriesList`) entre los dos
   rieles; por eso funciona igual volteado.
+- **La tira contraída se abre tocándola en cualquier punto**: el `onClick` está en el contenedor
+  de `SidePanel`, la flecha es sólo el indicador. Por eso el grupo (flecha, iconos y etiqueta
+  vertical) va **centrado** y no pegado arriba, que hacía pensar que sólo respondía ahí; en
+  teléfono, además, el medio es lo que alcanza el pulgar. Abierta, el contenido sigue desde arriba.
 - **El tour guiado sólo existe en escritorio** (`onboardingCustomization.ts`). En teléfono las
   miniaturas ya están a la vista cuando hay algo que elegir, así que el paso sólo interpondría un
   velo modal sobre la primera interacción. En escritorio apunta a `[data-cy="seriesList-btn"]`,
