@@ -173,8 +173,13 @@ function ViewerLayout({
                 <div
                   className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
                   onTouchStart={() => {
+                    // En teléfono, tocar la imagen cierra los paneles: cualquiera
+                    // de los dos abierto tapa casi todo el estudio. Se cierran los
+                    // dos lados porque el modo puede voltear la disposición y
+                    // poner las series a la derecha.
                     if (window.innerWidth <= 768) {
                       setLeftPanelClosed(true);
+                      setRightPanelClosed(true);
                     }
                   }}
                 >

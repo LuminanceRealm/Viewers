@@ -270,18 +270,30 @@ function modeFactory({ modeConfiguration }) {
           //defaultViewerRouteInit
         },*/
         layoutTemplate: () => {
+          // En teléfono la disposición se voltea completa: el navegador de
+          // series pasa a la derecha, que es donde cae el pulgar, y los paneles
+          // de trabajo a la izquierda. Voltear en bloque (y no sólo mover las
+          // series) evita amontonar seis pestañas en un mismo riel de 280 px.
+          const isMobile = window.innerWidth <= 768;
+          const seriesPanels = [tracked.thumbnailList];
+          const toolPanels = [
+            tracked.measurements,
+            cornerstone.segmentation,
+            calcium.panel,
+            coronaryCpr.panel,
+            breastKinetics.panel,
+          ];
+
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: isMobile ? toolPanels : seriesPanels,
+              // En móvil ambos rieles arrancan colapsados: el panel abierto
+              // taparía casi toda la imagen. En escritorio se conserva el
+              // comportamiento de siempre (series abiertas, trabajo cerrado).
+              leftPanelClosed: isMobile,
               leftPanelResizable: true,
-              rightPanels: [
-                tracked.measurements,
-                cornerstone.segmentation,
-                calcium.panel,
-                coronaryCpr.panel,
-                breastKinetics.panel,
-              ],
+              rightPanels: isMobile ? seriesPanels : toolPanels,
               rightPanelClosed: true,
               rightPanelResizable: true,
               viewports: [

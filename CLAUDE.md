@@ -214,6 +214,39 @@ SVG de mediciones. La gráfica de curvas (SVG) se rasteriza con `rasterizeSvg`. 
 score sólo aplica el protocolo `only3D` y añade la segmentación al viewport: polySeg la convierte a
 superficie sin código propio.
 
+## Disposición en teléfono (≤ 768 px)
+
+El umbral es `window.innerWidth <= 768` y se repite en cuatro sitios que deben moverse juntos:
+`modes/longitudinal/src/index.ts` (barra de herramientas y `layoutTemplate`),
+`ViewerLayout/index.tsx`, `ViewerLayout/constants/panels.ts` y
+`PanelStudyBrowserTracking.tsx`.
+
+En teléfono la disposición se **voltea completa**: el navegador de series pasa al riel derecho,
+donde alcanza el pulgar, y los paneles de trabajo (mediciones, segmentación, score, CPR, curvas)
+al izquierdo. Se voltea en bloque y no sólo el navegador porque juntar las seis pestañas en un
+mismo riel de 280 px las parte en dos filas de iconos de 40 px.
+
+- **El riel de series mide 160 px en móvil** (`panels.ts`). Las miniaturas son de 135 px, así que
+  a 280 px la rejilla acomoda dos columnas y el panel abierto se come tres cuartas partes de la
+  pantalla; a 160 cabe una columna y la imagen conserva más de la mitad. Eso también hace cómodo
+  el toque sobre la imagen que cierra los paneles: si la imagen mide 110 px, el blanco al que hay
+  que atinar es diminuto y el mismo toque inicia un desplazamiento.
+- **El panel se abre solo si hay más de una serie**, desde `PanelStudyBrowserTracking` y no desde
+  el modo: cuando los display sets llegan, `onModeEnter` ya corrió y el evento se perdería. Va por
+  `panelService.activatePanel(id, true)`, que encadena hasta expandir el panel redimensionable, y
+  `SidePanelWithServices` respeta `closedManually`, así que no se le reabre en la cara al usuario.
+  Con una sola serie —la mayoría en teléfono— el panel no aporta nada y se queda contraído.
+- **Elegir una serie cierra el panel** (`panelService.closePanel`, añadido en `PanelService`): el
+  panel no sabe de qué lado lo puso el modo, así que el servicio resuelve la posición y emite la
+  opción `leftPanelClosed`/`rightPanelClosed` que `ViewerLayout` ya escuchaba en `PANELS_CHANGED`.
+  El componente se ubica a sí mismo buscando su módulo por nombre (`seriesList`) entre los dos
+  rieles; por eso funciona igual volteado.
+- **El tour guiado sólo existe en escritorio** (`onboardingCustomization.ts`). En teléfono las
+  miniaturas ya están a la vista cuando hay algo que elegir, así que el paso sólo interpondría un
+  velo modal sobre la primera interacción. En escritorio apunta a `[data-cy="seriesList-btn"]`,
+  que es el botón del propio panel —existe abierto (la etiqueta "Estudios") y colapsado (el icono
+  del riel)— y no al encabezado de un lado concreto.
+
 ## Etiqueta beta
 
 Las tres herramientas clínicas (score de calcio, CPR, curvas cinéticas) se muestran como **beta**

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -18,6 +18,26 @@ const DIALOG_ID = {
   UNTRACK_SERIES: 'untrack-series',
   REJECT_REPORT: 'ds-reject-sr',
 };
+
+// Umbral de teléfono, el mismo que usan el modo longitudinal y ViewerLayout.
+const MOBILE_MAX_WIDTH = 768;
+
+/**
+ * NUBIX: el panel se ubica a sí mismo entre los rieles laterales. El modo lo pone
+ * a la izquierda en escritorio y a la derecha en teléfono, y el componente no
+ * recibe esa información, así que la busca por el nombre de su propio módulo.
+ */
+function _getSeriesPanelId(panelService) {
+  for (const position of ['left', 'right']) {
+    const panel = panelService.getPanels(position).find(({ name }) => name === 'seriesList');
+
+    if (panel) {
+      return panel.id;
+    }
+  }
+
+  return null;
+}
 
 const thumbnailNoImageModalities = [
   'SR',
@@ -51,6 +71,7 @@ export default function PanelStudyBrowserTracking({
     studyPrefetcherService,
     customizationService,
     uiModalService,
+    panelService,
   } = servicesManager.services;
   const navigate = useNavigate();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode');
@@ -120,6 +141,17 @@ export default function PanelStudyBrowserTracking({
     }
 
     viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+    // NUBIX: en teléfono el panel tapa buena parte de la imagen, así que elegir una
+    // serie lo cierra solo: el gesto completo es un toque, elijo y veo. En escritorio
+    // el panel se queda donde está.
+    if (window.innerWidth <= MOBILE_MAX_WIDTH) {
+      const seriesPanelId = _getSeriesPanelId(panelService);
+
+      if (seriesPanelId) {
+        panelService.closePanel(seriesPanelId);
+      }
+    }
   };
 
   const activeViewportDisplaySetInstanceUIDs =
@@ -130,6 +162,36 @@ export default function PanelStudyBrowserTracking({
   useEffect(() => {
     setActiveTabName(studyMode);
   }, [studyMode]);
+
+  // NUBIX: en teléfono el riel de series arranca cerrado para que el estudio se
+  // vea como imagen desde el primer momento, y se abre solo cuando de verdad hay
+  // algo que elegir: más de una serie del estudio actual. Con una sola serie el
+  // panel no aporta nada y estorba. Se hace una vez por montaje; `activatePanel`
+  // respeta el cierre manual, así que nunca se le reabre en la cara al usuario.
+  const seriesPanelAutoOpened = useRef(false);
+
+  useEffect(() => {
+    if (seriesPanelAutoOpened.current || window.innerWidth > MOBILE_MAX_WIDTH) {
+      return;
+    }
+
+    const seriesOfCurrentStudies = displaySets.filter(ds =>
+      StudyInstanceUIDs.includes(ds.StudyInstanceUID)
+    );
+
+    if (seriesOfCurrentStudies.length < 2) {
+      return;
+    }
+
+    const seriesPanelId = _getSeriesPanelId(panelService);
+
+    if (!seriesPanelId) {
+      return;
+    }
+
+    seriesPanelAutoOpened.current = true;
+    panelService.activatePanel(seriesPanelId, true);
+  }, [displaySets, StudyInstanceUIDs, panelService]);
 
   // ~~ studyDisplayList
   useEffect(() => {

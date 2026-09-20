@@ -195,6 +195,29 @@ export default class PanelService extends PubSubService {
   }
 
   /**
+   * NUBIX: pide cerrar el riel lateral que contiene el panel indicado. Se usa en
+   * teléfono, donde un panel abierto tapa casi toda la imagen y elegir una serie
+   * debe bastar para volver a verla. El panel no sabe de qué lado lo puso el modo
+   * (en móvil la disposición se voltea), así que aquí se resuelve la posición y se
+   * emite la opción que ViewerLayout ya escucha en PANELS_CHANGED.
+   * @param panelId the panel's id
+   */
+  public closePanel(panelId: string): void {
+    const position = [PanelPosition.Left, PanelPosition.Right].find(candidate =>
+      this.getPanels(candidate).some(panel => panel.id === panelId)
+    );
+
+    if (!position) {
+      return;
+    }
+
+    const options =
+      position === PanelPosition.Left ? { leftPanelClosed: true } : { rightPanelClosed: true };
+
+    this._broadcastEvent(EVENTS.PANELS_CHANGED, { position, options });
+  }
+
+  /**
    * Adds a mapping of events (activatePanelTriggers.sourceEvents) broadcast by
    * activatePanelTrigger.sourcePubSubService that
    * when fired/broadcasted must in turn activate the panel with the given id.
