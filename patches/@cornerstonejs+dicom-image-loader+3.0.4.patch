@@ -119,10 +119,59 @@ index 1ac3024..7ec23ac 100644
 +    }
  }
 diff --git a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js
-index 9cc5809..7684c47 100644
+index 9cc5809..2be89e0 100644
 --- a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js
 +++ b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/createImage.js
-@@ -100,6 +100,12 @@ function createImage(imageId, pixelData, transferSyntax, options = {}) {
+@@ -11,6 +11,48 @@ import removeAFromRGBA from './removeAFromRGBA';
+ import isModalityLUTForDisplay from './isModalityLutForDisplay';
+ import setPixelDataType from './setPixelDataType';
+ let lastImageIdDrawn = '';
++function windowFromVoiLUT(voiLUT) {
++    const lut = voiLUT && voiLUT.lut;
++    if (!lut || lut.length < 2) {
++        return;
++    }
++    let min = Infinity;
++    let max = -Infinity;
++    for (let i = 0; i < lut.length; i++) {
++        if (lut[i] < min) {
++            min = lut[i];
++        }
++        if (lut[i] > max) {
++            max = lut[i];
++        }
++    }
++    if (max <= min) {
++        return;
++    }
++    const lowOut = min + 0.05 * (max - min);
++    const highOut = min + 0.95 * (max - min);
++    let lowIdx = -1;
++    let highIdx = -1;
++    for (let i = 0; i < lut.length; i++) {
++        if (lowIdx < 0 && lut[i] >= lowOut) {
++            lowIdx = i;
++        }
++        if (lut[i] >= highOut) {
++            highIdx = i;
++            break;
++        }
++    }
++    if (lowIdx < 0 || highIdx <= lowIdx) {
++        return;
++    }
++    const first = voiLUT.firstValueMapped || 0;
++    const low = first + lowIdx;
++    const high = first + highIdx;
++    return {
++        windowCenter: (low + high) / 2,
++        windowWidth: high - low,
++    };
++}
+ function createImage(imageId, pixelData, transferSyntax, options = {}) {
+     const useRGBA = options.useRGBA;
+     options.preScale = {
+@@ -100,6 +142,12 @@ function createImage(imageId, pixelData, transferSyntax, options = {}) {
                      imageFrame.imageData = imageData;
                      imageFrame.pixelData = imageData.data;
                      imageFrame.pixelDataLength = imageData.data.length;
@@ -135,6 +184,26 @@ index 9cc5809..7684c47 100644
                  }
                  else if (!useRGBA &&
                      imageFrame.pixelDataLength === 4 * rows * columns) {
+@@ -205,6 +253,19 @@ function createImage(imageId, pixelData, transferSyntax, options = {}) {
+                 image.windowWidth = 256;
+                 image.windowCenter = 128;
+             }
++            if ((image.windowCenter === undefined ||
++                image.windowWidth === undefined) &&
++                image.voiLUT) {
++                // NUBIX: sin WindowCenter/Width pero con VOI LUT Sequence (CR AGFA),
++                // el render GPU de cornerstone3D ignora la tabla y caeria a min/max, que
++                // lava la imagen. Se aproxima la tabla con la ventana lineal que pasa por
++                // sus cruces de 5 % y 95 %; la LUT es casi lineal entre esos puntos.
++                const window = windowFromVoiLUT(image.voiLUT);
++                if (window) {
++                    image.windowCenter = window.windowCenter;
++                    image.windowWidth = window.windowWidth;
++                }
++            }
+             if (image.windowCenter === undefined ||
+                 image.windowWidth === undefined) {
+                 const minVoi = image.imageFrame.smallestPixelValue;
 diff --git a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js b/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js
 index b6bd888..4fd8d65 100644
 --- a/node_modules/@cornerstonejs/dicom-image-loader/dist/esm/imageLoader/isColorConversionRequired.js

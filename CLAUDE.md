@@ -48,7 +48,7 @@ de `isTypeAcceptable` (documentado en `api/CLAUDE.md`) probablemente ya no haga 
 ## Parches a @cornerstonejs/dicom-image-loader
 
 `patches/@cornerstonejs+dicom-image-loader+3.0.4.patch`, aplicado por `patch-package` desde el
-`postinstall`. Cuatro arreglos, todos verificados contra archivos reales de producción:
+`postinstall`. Cinco arreglos, todos verificados contra archivos reales de producción:
 
 **`isColorConversionRequired.js` — fórmulas 4:2:0 y 4:2:2 intercambiadas.** 4:2:2 submuestrea sólo
 en horizontal (2 bytes/píxel); 4:2:0 también en vertical (1.5 bytes/píxel). Estaban cruzadas, así
@@ -68,6 +68,18 @@ a la referencia calculada con pydicom.
 **`createImage.js` — `numberOfComponents` tras convertir.** Se copiaba de `samplesPerPixel`, que en
 `PALETTE COLOR` vale 1 por definición DICOM, así que `StackViewport` recibía un solo canal aunque el
 buffer ya fuera RGB. Ahora se fija a 3 (o 4 con `useRGBA`) después de `convertColorSpace`.
+
+**`createImage.js` — ventana derivada de la VOI LUT Sequence.** Los CR de AGFA (CR30-Xm, estudio
+1123677) no traen `WindowCenter/Width`: traen una **VOI LUT Sequence** (tabla de ~8400 entradas,
+`PresentationLUTShape INVERSE`, `MONOCHROME1`). El loader sí la lee (`image.voiLUT`), pero el render
+GPU de cornerstone3D sólo aplica la LUT en el fallback CPU y con la ventana ausente cae a mín/máx de
+píxel: W 27123 / L 13631, la placa gris lavada que la organización describió como "muy blanca". El
+visor OHIF 2 aplicaba la tabla. El parche, antes del fallback a mín/máx, aproxima la LUT con la
+ventana lineal que pasa por sus cruces de 5 % y 95 % (`windowFromVoiLUT`): en esa placa da W 6801 /
+L 16512 y la imagen queda igual que con la LUT exacta (la curva es casi lineal entre esos puntos,
+sólo redondea las puntas). Se prefirió esto a aplicar la LUT sobre los píxeles porque conserva los
+valores originales y deja funcionar la herramienta de ventana con normalidad. Referencia: renderizar
+con pydicom `LUTData[clip(p − first, 0, n−1)]` e invertir.
 
 ## Trampa de build: los parches no llegaban al bundle
 
