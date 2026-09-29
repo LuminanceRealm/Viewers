@@ -1,5 +1,5 @@
 import React from 'react';
-import { getEnabledElementByViewportId } from '@cornerstonejs/core';
+import { cache, getEnabledElementByViewportId } from '@cornerstonejs/core';
 import { slabOverlayText } from '../utils/slabProjection';
 
 export default {
@@ -240,6 +240,20 @@ export default {
   ],
 
   'viewportOverlay.bottomRight': [
+    {
+      // NUBIX: la imagen se mostró con el patrón de rejilla filtrado (ver gridSuppression.ts).
+      id: 'GridSuppression',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Se filtró el patrón de la rejilla antidifusora grabado en la imagen',
+      color: '#98a6ad',
+      condition: ({ viewportId }) => {
+        const viewport = getEnabledElementByViewportId(viewportId)?.viewport;
+        const imageId = viewport?.getCurrentImageId?.();
+        return !!(imageId && cache.getImage(imageId)?.nubixGridSuppression);
+      },
+      contentF: () => 'Rejilla suprimida',
+    },
     {
       // NUBIX: una proyección de grosor no es un corte; la etiqueta lo deja claro.
       id: 'SlabProjection',

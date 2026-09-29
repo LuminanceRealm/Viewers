@@ -45,6 +45,30 @@ Cuando se pide el módulo para renderizar, el archivo siempre está en caché.
 Nota para la API: la rama 2 rescata los estudios viejos sin backfill, así que el ruteo por versión
 de `isTypeAcceptable` (documentado en `api/CLAUDE.md`) probablemente ya no haga falta para US.
 
+## Supresión del patrón de rejilla (`utils/gridSuppression.ts`)
+
+Algunas radiografías traen las líneas de la rejilla antidifusora grabadas en los píxeles
+(Fujifilm DR-ID 330CL, estudio 1124473: líneas verticales cada 2.55 px, 0.38 mm; pico 117 veces
+la mediana del espectro). A 1:1 se ve rayado; al reducir, la frecuencia se bate con el muestreo de
+pantalla y salen bandas que cambian con el zoom (moiré). No es un bug de render: el visor viejo
+también lo mostraba, porque está en el archivo.
+
+- **Dónde:** `initWADOImageLoader.js` vuelve a registrar `dicomweb`/`wadouri`/`dicomfile` con el
+  `loadImage` de wadouri envuelto, y filtra el arreglo de píxeles **antes** de que la promesa
+  llegue al caché. Así lo ven igual el viewport, las miniaturas y la impresión, y no hay que tocar
+  el parche de patch-package. Cargas con `targetBuffer` (volúmenes) no pasan por aquí.
+- **Sólo CR y DX, monocromas.** Mamografía queda fuera a propósito: su detalle fino vive en esas
+  frecuencias.
+- **Detección:** perfil promedio de la mitad central, sin tendencia, espectro de 0.18 a 0.5
+  ciclos/px con Goertzel (la DFT directa tardaba >1 s en una placa de 4k; Goertzel ~50 ms); se
+  acepta un pico ≥ 25 veces la mediana. En las placas AGFA de 1123677 no detecta nada.
+- **Supresión:** muesca adaptativa por demodulación (I/Q a esa frecuencia, paso bajo triangular
+  de ~8 periodos, resta), acotada al min/max original. ~170 ms en 2320×2373, una vez por imagen.
+- **Visible:** `image.nubixGridSuppression` y la etiqueta gris "Rejilla suprimida" en la esquina
+  inferior derecha. Si algo falla, la imagen se muestra tal cual llegó.
+- Pruebas jest con fantomas (`gridSuppression.test.js`). Para validar con un archivo real, volcar
+  los píxeles con pydicom a `.bin` y cargarlos desde un test temporal.
+
 ## Parches a @cornerstonejs/dicom-image-loader
 
 `patches/@cornerstonejs+dicom-image-loader+3.0.4.patch`, aplicado por `patch-package` desde el

@@ -1,12 +1,62 @@
-import { volumeLoader } from '@cornerstonejs/core';
+import { imageLoader, metaData, volumeLoader } from '@cornerstonejs/core';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
 } from '@cornerstonejs/core/loaders';
 import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { errorHandler, utils } from '@ohif/core';
+import { detectGridPattern, suppressGridPattern } from './utils/gridSuppression';
 
 const { registerVolumeLoader } = volumeLoader;
+
+// NUBIX: modalidades en las que se busca el patrón de rejilla antidifusora.
+// Mamografía queda fuera a propósito: su detalle fino vive en esas frecuencias.
+const GRID_SUPPRESSION_MODALITIES = ['CR', 'DX'];
+
+/**
+ * NUBIX: quita el patrón de rejilla grabado en algunas radiografías (moiré al
+ * hacer zoom). Se hace sobre el arreglo de píxeles antes de que la imagen
+ * llegue al caché y al render, así lo ven igual el viewport, las miniaturas y
+ * la impresión. Deja constancia en `image.nubixGridSuppression` para la
+ * etiqueta del overlay. Detalle en `utils/gridSuppression.ts`.
+ */
+function applyGridSuppression(image, imageId) {
+  const modality = metaData.get('generalSeriesModule', imageId)?.modality;
+  if (!GRID_SUPPRESSION_MODALITIES.includes(modality) || image.color) {
+    return;
+  }
+  const pixels = image.getPixelData?.();
+  const { rows, columns } = image;
+  if (!pixels || pixels.length !== rows * columns) {
+    return;
+  }
+  const pattern = detectGridPattern(pixels, rows, columns);
+  if (!pattern) {
+    return;
+  }
+  suppressGridPattern(pixels, rows, columns, pattern, image.minPixelValue, image.maxPixelValue);
+  image.nubixGridSuppression = pattern;
+}
+
+function withGridSuppression(loadImage) {
+  return (imageId, options) => {
+    const loadObject = loadImage(imageId, options);
+    // Carga hacia un volumen (TC/RM): no aplica, y los píxeles van a otro búfer.
+    if (!loadObject?.promise || options?.targetBuffer) {
+      return loadObject;
+    }
+    loadObject.promise = loadObject.promise.then(image => {
+      try {
+        applyGridSuppression(image, imageId);
+      } catch (error) {
+        // Si falla, se muestra la imagen tal cual llegó: nunca peor que antes.
+        console.warn('Supresión de rejilla: no se pudo aplicar', error);
+      }
+      return image;
+    });
+    return loadObject;
+  };
+}
 
 export default function initWADOImageLoader(
   userAuthenticationService,
@@ -61,6 +111,13 @@ export default function initWADOImageLoader(
       errorHandler.getHTTPErrorHandler(error);
     },
   });
+
+  // `init` registra estos esquemas con el loadImage de wadouri; se vuelven a
+  // registrar envueltos para pasar por la supresión de rejilla.
+  const wrapped = withGridSuppression(dicomImageLoader.wadouri.loadImage);
+  ['dicomweb', 'wadouri', 'dicomfile'].forEach(scheme =>
+    imageLoader.registerImageLoader(scheme, wrapped)
+  );
 }
 
 export function destroy() {
