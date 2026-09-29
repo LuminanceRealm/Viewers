@@ -3735,6 +3735,91 @@ export const ToolCardiothoracicIndex = (props: IconProps) => (
   </svg>
 );
 
+/** NUBIX: coxometría. Línea de Hilgenreiner, techos acetabulares y líneas de Perkins. */
+export const ToolAcetabularIndex = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <g
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line
+        x1="2.5"
+        y1="12"
+        x2="21.5"
+        y2="12"
+      />
+      <polyline points="9.5,12 4.5,8.6" />
+      <polyline points="14.5,12 19.5,8.6" />
+      <line
+        x1="4.5"
+        y1="6.5"
+        x2="4.5"
+        y2="20"
+        strokeDasharray="1.6 1.8"
+      />
+      <line
+        x1="19.5"
+        y1="6.5"
+        x2="19.5"
+        y2="20"
+        strokeDasharray="1.6 1.8"
+      />
+      <path d="M6.2 17.6a2.6 2.6 0 0 1 3.4-3.3" />
+      <path d="M17.8 17.6a2.6 2.6 0 0 0-3.4-3.3" />
+    </g>
+  </svg>
+);
+
+/** NUBIX: gonometría. Ejes femoral y tibial con la línea cadera-tobillo discontinua. */
+export const ToolMechanicalAxis = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <g
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="9,3.5 14.5,12 10,20.5" />
+      <line
+        x1="9"
+        y1="3.5"
+        x2="10"
+        y2="20.5"
+        strokeDasharray="1.6 1.8"
+      />
+      <circle
+        cx="9"
+        cy="3.5"
+        r="1.3"
+      />
+      <circle
+        cx="14.5"
+        cy="12"
+        r="1.3"
+      />
+      <circle
+        cx="10"
+        cy="20.5"
+        r="1.3"
+      />
+    </g>
+  </svg>
+);
+
 /** NUBIX: score de calcio coronario. Corazón con tres calcificaciones puntuales. */
 export const ToolCalciumScore = (props: IconProps) => (
   <svg

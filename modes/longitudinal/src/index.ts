@@ -173,6 +173,8 @@ function modeFactory({ modeConfiguration }) {
           'CobbAngle',
           'VertebralLabel',
           'CardiothoracicIndex',
+          'AcetabularIndex',
+          'MechanicalAxis',
           'CalciumScore',
           'CoronaryCPR',
           'BreastKinetics',

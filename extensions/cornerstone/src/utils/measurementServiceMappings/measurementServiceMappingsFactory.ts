@@ -14,6 +14,8 @@ import Probe from './Probe';
 import UltrasoundDirectional from './UltrasoundDirectional';
 import VertebralLabel from './VertebralLabel';
 import CardiothoracicIndex from './CardiothoracicIndex';
+import AcetabularIndex from './AcetabularIndex';
+import MechanicalAxis from './MechanicalAxis';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -52,6 +54,8 @@ const measurementServiceMappingsFactory = (
       UltrasoundDirectional: POLYLINE,
       VertebralLabel: POINT,
       CardiothoracicIndex: ANGLE,
+      AcetabularIndex: ANGLE,
+      MechanicalAxis: ANGLE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -208,6 +212,40 @@ const measurementServiceMappingsFactory = (
         {
           valueType: MeasurementService.VALUE_TYPES.ANGLE,
           points: 4,
+        },
+      ],
+    },
+    AcetabularIndex: {
+      toAnnotation: AcetabularIndex.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        AcetabularIndex.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.ANGLE,
+          points: 4,
+        },
+      ],
+    },
+    MechanicalAxis: {
+      toAnnotation: MechanicalAxis.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        MechanicalAxis.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.ANGLE,
+          points: 3,
         },
       ],
     },

@@ -91,6 +91,8 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         configuration: vertebralLabelConfiguration(commandsManager),
       },
       { toolName: toolNames.CardiothoracicIndex },
+      { toolName: toolNames.AcetabularIndex },
+      { toolName: toolNames.MechanicalAxis },
       {
         toolName: CalciumToolNames.CalciumScore,
         configuration: {
@@ -272,6 +274,8 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         configuration: vertebralLabelConfiguration(commandsManager),
       },
       { toolName: toolNames.CardiothoracicIndex },
+      { toolName: toolNames.AcetabularIndex },
+      { toolName: toolNames.MechanicalAxis },
       {
         toolName: CprToolNames.CoronaryCPR,
         configuration: {

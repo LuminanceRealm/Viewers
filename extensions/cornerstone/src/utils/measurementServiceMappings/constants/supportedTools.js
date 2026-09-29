@@ -14,6 +14,8 @@ const supportedTools = [
   'UltrasoundDirectionalTool',
   'VertebralLabel',
   'CardiothoracicIndex',
+  'AcetabularIndex',
+  'MechanicalAxis',
   'SCOORD3DPoint',
 ];
 

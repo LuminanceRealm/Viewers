@@ -255,6 +255,40 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'AcetabularIndex',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-acetabular-index',
+      label: 'Coxometría',
+      tooltip: 'Coxometría: índice acetabular bilateral (Hilgenreiner y Perkins)',
+      commands: setToolActiveToolbar,
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video'],
+        },
+      ],
+    },
+  },
+  {
+    id: 'MechanicalAxis',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-mechanical-axis',
+      label: 'Gonometría',
+      tooltip: 'Gonometría: eje mecánico femorotibial (HKA)',
+      commands: setToolActiveToolbar,
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video'],
+        },
+      ],
+    },
+  },
+  {
     // NUBIX: el id coincide con el nombre de la herramienta de clic de la
     // extensión calcium-score; el segundo comando prepara la serie y abre el panel.
     id: 'CalciumScore',

@@ -36,6 +36,8 @@ const initMeasurementService = (
     UltrasoundDirectional,
     VertebralLabel,
     CardiothoracicIndex,
+    AcetabularIndex,
+    MechanicalAxis,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -98,6 +100,22 @@ const initMeasurementService = (
     CardiothoracicIndex.matchingCriteria,
     CardiothoracicIndex.toAnnotation,
     CardiothoracicIndex.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'AcetabularIndex',
+    AcetabularIndex.matchingCriteria,
+    AcetabularIndex.toAnnotation,
+    AcetabularIndex.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'MechanicalAxis',
+    MechanicalAxis.matchingCriteria,
+    MechanicalAxis.toAnnotation,
+    MechanicalAxis.toMeasurement
   );
 
   measurementService.addMapping(

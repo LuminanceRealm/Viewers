@@ -44,6 +44,8 @@ import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ZoomTouchTool from './tools/ZoomTouchTool';
 import VertebralLabelTool from './tools/VertebralLabelTool';
 import CardiothoracicIndexTool from './tools/CardiothoracicIndexTool';
+import AcetabularIndexTool from './tools/AcetabularIndexTool';
+import MechanicalAxisTool from './tools/MechanicalAxisTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
@@ -95,6 +97,8 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(ZoomTouchTool);
   addTool(VertebralLabelTool);
   addTool(CardiothoracicIndexTool);
+  addTool(AcetabularIndexTool);
+  addTool(MechanicalAxisTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -150,6 +154,8 @@ const toolNames = {
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   VertebralLabel: VertebralLabelTool.toolName,
   CardiothoracicIndex: CardiothoracicIndexTool.toolName,
+  AcetabularIndex: AcetabularIndexTool.toolName,
+  MechanicalAxis: MechanicalAxisTool.toolName,
 };
 
 export { toolNames };

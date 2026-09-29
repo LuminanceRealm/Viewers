@@ -149,6 +149,37 @@ dependencia no usar `yarn add`: reescribe medio `yarn.lock` y sube `prettier-plu
 una versión ESM que rompe prettier; se añade la línea a `platform/app/package.json` y se corre
 `yarn install`. Lo que la API haga con estudios de tipo `DOC` es otra conversación.
 
+## Coxometría y gonometría (`extensions/cornerstone/src/tools`)
+
+Dos herramientas de medición con el patrón del índice cardiotorácico: subclase de una herramienta
+de cornerstone que reutiliza su interacción, mapeo propio al panel de Mediciones y registro en los
+mismos sitios (`initCornerstoneTools.js`, `initMeasurementService.ts`,
+`measurementServiceMappingsFactory.ts`, `supportedTools.js`, `measurementsCustomization.ts`, y en
+el modo `toolbarButtons.ts`, la sección de medición de `index.ts` e `initToolGroups.js`). Se pidió
+"la más usada" de cada una, no un conjunto completo:
+
+- **Coxometría = índice acetabular bilateral** (`AcetabularIndexTool`, sobre `CobbAngleTool`). Es
+  lo que se pide en el tamiz de displasia de cadera. Segmento 1 = Hilgenreiner (Y a Y); segmento 2
+  = borde lateral a borde lateral, que **no se dibuja**: se trazan en su lugar los techos y las
+  líneas de Perkins. Por eso `isPointNearTool` sólo mira Hilgenreiner (si no, clicar entre las
+  cabezas femorales seleccionaba una línea invisible). Cada borde se asigna a su Y por la pareja
+  de menor distancia, así el orden de los clics no importa.
+- **Gonometría = eje mecánico HKA** (`MechanicalAxisTool`, sobre `AngleTool`): cadera, rodilla
+  (vértice), tobillo. `AngleTool` asigna `renderAnnotation` en su constructor, así que se envuelve
+  ahí para añadir la línea de Mikulicz; `cachedStats` conserva `angle` porque el dibujo base lo lee.
+- **Lados y medial** se deciden en índice de imagen (no cambian al voltear el viewport). Derecha o
+  izquierda sale de `PatientOrientation` (componente de las columnas; sin ella se asume la
+  convención AP, derecha del paciente a la izquierda de la imagen). **Medial = hacia la mitad de la
+  imagen**, válido en la telerradiografía bilateral; si la cadera cae en la franja central del 5 %
+  (placa de un solo miembro) no se dice varo ni valgo y el texto lo avisa. Varo = rodilla por fuera
+  de la línea cadera-tobillo.
+- La geometría vive aparte y probada con jest (`utils/orthoGeometry.ts` + `.test.js`; la extensión
+  sólo corre `*.test.js`).
+- **Trampa:** `utils.roundNumber(x, 1)` de `@ohif/core` lanza "toFixed() digits argument must be
+  between 0 and 100" con ángulos de dos cifras, y como lo llama el mapeo, la medición llega vacía
+  al panel sin error visible (sólo un `console.error` de MeasurementService). Los mapeos nuevos
+  usan `toFixed(1)` directo.
+
 ## Score de calcio coronario (`extensions/calcium-score`)
 
 Extensión propia, cargada sólo por el modo longitudinal. No hay nada de Agatston en cornerstone3D;

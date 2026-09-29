@@ -20,6 +20,14 @@ export default {
       displayText: [],
       report: [],
     },
+    AcetabularIndex: {
+      displayText: [],
+      report: [],
+    },
+    MechanicalAxis: {
+      displayText: [],
+      report: [],
+    },
     RectangleROi: {
       displayText: [],
       report: [],
