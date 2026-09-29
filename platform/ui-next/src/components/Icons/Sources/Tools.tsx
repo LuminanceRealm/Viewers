@@ -3735,6 +3735,53 @@ export const ToolCardiothoracicIndex = (props: IconProps) => (
   </svg>
 );
 
+/** NUBIX: proyección de grosor. Tres cortes apilados atravesados por el rayo de proyección. */
+export const ToolSlab = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <g
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 8.5 12 5l8 3.5-8 3.5-8-3.5Z" />
+      <path d="M4 12l8 3.5 8-3.5" />
+      <path d="M4 15.5 12 19l8-3.5" />
+      <line
+        x1="12"
+        y1="2.5"
+        x2="12"
+        y2="21.5"
+        strokeDasharray="1.6 1.8"
+      />
+    </g>
+  </svg>
+);
+
+/** NUBIX: corte fino, sin proyección. Un solo corte. */
+export const ToolSlabThin = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M4 12 12 8.5l8 3.5-8 3.5-8-3.5Z"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 /** NUBIX: coxometría. Línea de Hilgenreiner, techos acetabulares y líneas de Perkins. */
 export const ToolAcetabularIndex = (props: IconProps) => (
   <svg

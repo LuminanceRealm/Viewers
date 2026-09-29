@@ -45,6 +45,61 @@ const toolbarButtons: Button[] = [
       groupId: 'ExportTools',
     },
   },
+  // NUBIX: proyección de grosor (MIP/MinIP/promedio) en las vistas MPR. El
+  // grosor fino se ajusta en el menú de cada viewport; desde una vista 2D el
+  // comando abre el MPR si la serie es reconstruible.
+  {
+    id: 'SlabProjection',
+    uiType: 'ohif.toolButtonList',
+    props: {
+      buttonSection: 'slabSection',
+      groupId: 'SlabProjection',
+    },
+  },
+  {
+    id: 'SlabMIP',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-slab',
+      label: 'MIP',
+      tooltip: 'Proyección de máxima intensidad (grosor en el menú de la vista)',
+      commands: [{ commandName: 'setSlabProjection', commandOptions: { mode: 'mip' } }],
+      evaluate: { name: 'evaluate.slabProjection', mode: 'mip' },
+    },
+  },
+  {
+    id: 'SlabMinIP',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-slab',
+      label: 'MinIP',
+      tooltip: 'Proyección de mínima intensidad: vía aérea y enfisema',
+      commands: [{ commandName: 'setSlabProjection', commandOptions: { mode: 'minip' } }],
+      evaluate: { name: 'evaluate.slabProjection', mode: 'minip' },
+    },
+  },
+  {
+    id: 'SlabAvg',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-slab',
+      label: 'Promedio',
+      tooltip: 'Proyección promedio (corte grueso)',
+      commands: [{ commandName: 'setSlabProjection', commandOptions: { mode: 'avg' } }],
+      evaluate: { name: 'evaluate.slabProjection', mode: 'avg' },
+    },
+  },
+  {
+    id: 'SlabOff',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-slab-thin',
+      label: 'Corte fino',
+      tooltip: 'Volver al corte sin proyección',
+      commands: [{ commandName: 'setSlabProjection', commandOptions: { mode: 'off' } }],
+      evaluate: { name: 'evaluate.slabProjection', mode: 'off' },
+    },
+  },
   // tool defs
   // NUBIX: only registered in a button section when the viewer was opened
   // with ?token= (logged-in sessions) — see index.ts onModeEnter

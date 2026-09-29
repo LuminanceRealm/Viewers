@@ -149,6 +149,33 @@ dependencia no usar `yarn add`: reescribe medio `yarn.lock` y sube `prettier-plu
 una versión ESM que rompe prettier; se añade la línea a `platform/app/package.json` y se corre
 `yarn install`. Lo que la API haga con estudios de tipo `DOC` es otra conversación.
 
+## Proyección de grosor: MIP, MinIP y promedio (`utils/slabProjection.ts`)
+
+Cornerstone ya pinta MIP/MinIP/promedio en los `VolumeViewport` ortográficos (`setBlendMode` +
+`setSlabThickness`) y `CornerstoneViewportService` los acepta desde un protocolo, pero el modo
+longitudinal no los exponía. Ahora hay:
+
+- **Barra:** botón dividido `SlabProjection` (sección `slabSection`, en móvil dentro de Más
+  herramientas) con MIP / MinIP / Promedio / Corte fino → comando `setSlabProjection` de la
+  extensión cornerstone. Grosor inicial 10 mm; si ya hay proyección, conserva el grosor al cambiar
+  de modo.
+- **Desde 2D:** si la vista activa es stack y la serie es reconstruible, el comando aplica el
+  protocolo `mpr` y **sondea** (250 ms, hasta 20 s) hasta que el viewport activo sea ortográfico y
+  tenga actor; si no llega, avisa con una notificación. En series no reconstruibles (CR, DX, US) el
+  evaluador `evaluate.slabProjection` deja el botón deshabilitado con explicación.
+- **Grosor fino:** submenú "Proyección (MIP)" en el menú de ventana de cada viewport MPR
+  (`WindowLevelActionMenu/SlabProjection.tsx`, Slider de ui-next, 1–50 mm).
+- **Sólo el actor de la imagen** (`getDefaultActor`) recibe el modo y el grosor: una MIP de un
+  labelmap o de una fusión taparía la anatomía.
+- **Sin estado propio:** modo y grosor se leen del viewport (`getBlendMode`/`getSlabThickness`);
+  al cambiar de protocolo los viewports se recrean y vuelven a corte fino.
+- **Etiqueta ámbar en la esquina** ("MIP 10 mm", ítem `SlabProjection` de
+  `viewportOverlay.bottomRight`) para que una proyección nunca se lea como corte. Dos trampas: la
+  `condition` de un ítem del overlay **no recibe `servicesManager`**, sólo `viewportId` y datos del
+  display set (por eso se usa `getEnabledElementByViewportId`); y el overlay sólo se redibuja con
+  scroll, zoom o ventana, así que `applySlab` emite `nubix-slab-modified` en el elemento y
+  `CustomizableViewportOverlay` lo escucha.
+
 ## Coxometría y gonometría (`extensions/cornerstone/src/tools`)
 
 Dos herramientas de medición con el patrón del índice cardiotorácico: subclase de una herramienta

@@ -14,6 +14,8 @@ import { VolumeRenderingPresets } from './VolumeRenderingPresets';
 import { VolumeRenderingOptions } from './VolumeRenderingOptions';
 import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
+import { SlabProjection } from './SlabProjection';
+import { isSlabCapable } from '../../utils/slabProjection';
 import { utilities } from '@cornerstonejs/core';
 
 export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
@@ -62,6 +64,7 @@ export function WindowLevelActionMenu({
   const [vpHeight, setVpHeight] = useState(element?.clientHeight);
   const [menuKey, setMenuKey] = useState(0);
   const [is3DVolume, setIs3DVolume] = useState(false);
+  const [isMprView, setIsMprView] = useState(false);
 
   const onSetColorbar = useCallback(() => {
     setViewportColorbar(viewportId, displaySets, commandsManager, servicesManager, {
@@ -100,6 +103,7 @@ export function WindowLevelActionMenu({
     } else {
       setIs3DVolume(false);
     }
+    setIsMprView(isSlabCapable(viewport));
   }, [
     displaySets,
     viewportId,
@@ -149,6 +153,20 @@ export function WindowLevelActionMenu({
               colormaps={colormaps}
               viewportId={viewportId}
               displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
+              commandsManager={commandsManager}
+              servicesManager={servicesManager}
+            />
+          </AllInOneMenu.SubMenu>
+        )}
+
+        {isMprView && (
+          <AllInOneMenu.SubMenu
+            key="slabProjection"
+            itemLabel="Proyección (MIP)"
+            itemIcon="tool-slab"
+          >
+            <SlabProjection
+              viewportId={viewportId}
               commandsManager={commandsManager}
               servicesManager={servicesManager}
             />

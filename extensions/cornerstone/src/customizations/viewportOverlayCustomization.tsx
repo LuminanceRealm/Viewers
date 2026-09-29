@@ -1,4 +1,6 @@
 import React from 'react';
+import { getEnabledElementByViewportId } from '@cornerstonejs/core';
+import { slabOverlayText } from '../utils/slabProjection';
 
 export default {
   'viewportOverlay.topLeft': [
@@ -238,6 +240,19 @@ export default {
   ],
 
   'viewportOverlay.bottomRight': [
+    {
+      // NUBIX: una proyección de grosor no es un corte; la etiqueta lo deja claro.
+      id: 'SlabProjection',
+      inheritsFrom: 'ohif.overlayItem',
+      label: '',
+      title: 'Proyección de grosor',
+      color: '#fbbf24',
+      // La condición sólo recibe viewportId (no los servicios): se pide el viewport a cornerstone.
+      condition: ({ viewportId }) =>
+        !!slabOverlayText(getEnabledElementByViewportId(viewportId)?.viewport),
+      contentF: ({ viewportId }) =>
+        slabOverlayText(getEnabledElementByViewportId(viewportId)?.viewport),
+    },
     {
       id: 'InstanceNumber',
       inheritsFrom: 'ohif.overlayItem.instanceNumber',

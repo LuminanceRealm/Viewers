@@ -1,5 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
 import { utils } from '@ohif/ui-next';
+import { getSlabState, isSlabCapable } from './utils/slabProjection';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -187,6 +188,32 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         return {
           className: utils.getToggledClassName(isToggled),
         };
+      },
+    },
+    {
+      // NUBIX: MIP/MinIP/promedio. Activo en vistas MPR; en 2D también, si la
+      // serie se puede reconstruir, porque el comando abre el MPR.
+      name: 'evaluate.slabProjection',
+      evaluate: ({ viewportId, mode }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        if (!viewport) {
+          return;
+        }
+        if (isSlabCapable(viewport)) {
+          const active = mode !== 'off' && getSlabState(viewport).mode === mode;
+          return { disabled: false, className: utils.getToggledClassName(active) };
+        }
+        if (viewport.type !== 'stack') {
+          return getDisabledState('Disponible en las vistas MPR');
+        }
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const reconstructable =
+          displaySetUIDs?.length > 0 &&
+          displaySetUIDs.every(uid => displaySetService.getDisplaySetByUID(uid)?.isReconstructable);
+        if (!reconstructable || mode === 'off') {
+          return getDisabledState('Requiere una serie reconstruible (TC o RM volumétrica)');
+        }
+        return { disabled: false, className: utils.getToggledClassName(false) };
       },
     },
     {

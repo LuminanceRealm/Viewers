@@ -144,6 +144,7 @@ function modeFactory({ modeConfiguration }) {
               'Zoom',
               'Pan',
               'WindowLevel',
+              'SlabProjection',
               'MoreTools',
               'ExportTools',
               'Layout',
@@ -156,6 +157,9 @@ function modeFactory({ modeConfiguration }) {
         // the featured button is not registered at all.
         toolbarService.createButtonSection('exportSection', exportButtons);
       }
+
+      const slabButtons = ['SlabMIP', 'SlabMinIP', 'SlabAvg', 'SlabOff'];
+      toolbarService.createButtonSection('slabSection', slabButtons);
 
       toolbarService.createButtonSection('measurementSection', [
         ...measurementDropdownLead,
@@ -203,7 +207,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
-        ...(isMobile ? exportButtons : []),
+        ...(isMobile ? [...exportButtons, ...slabButtons] : []),
       ]);
 
       if (isMobile) {

@@ -11,6 +11,7 @@ import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCa
 import { toWindowLevel } from '../../utils/windowLevel';
 
 import './CustomizableViewportOverlay.css';
+import { SLAB_MODIFIED_EVENT } from '../../utils/slabProjection';
 
 const EPSILON = 1e-4;
 const { formatPN } = utils;
@@ -248,6 +249,14 @@ function CustomizableViewportOverlay({
       element.removeEventListener(Enums.Events.VOI_MODIFIED, updateVOI);
     };
   }, [viewportId, viewportData, voi, element]);
+
+  // NUBIX: la etiqueta de MIP/MinIP cambia sin mover la cámara ni la ventana.
+  const [, setSlabRevision] = useState(0);
+  useEffect(() => {
+    const onSlab = () => setSlabRevision(r => r + 1);
+    element?.addEventListener(SLAB_MODIFIED_EVENT, onSlab);
+    return () => element?.removeEventListener(SLAB_MODIFIED_EVENT, onSlab);
+  }, [element]);
 
   /**
    * Updating the scale when the viewport changes its zoom
