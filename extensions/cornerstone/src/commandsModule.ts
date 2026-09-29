@@ -42,7 +42,7 @@ import {
   MAX_PAGES_WITHOUT_CONFIRM,
 } from './utils/printSheet';
 import VertebralLabelStartDialog from './components/VertebralLabelStartDialog';
-import { applySlab, isSlabCapable, SlabMode } from './utils/slabProjection';
+import { applySlab, SlabMode } from './utils/slabProjection';
 import { SPINE_LABELS, DEFAULT_START_LABEL } from './tools/VertebralLabelTool';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -131,37 +131,12 @@ function commandsModule({
     );
   }
 
-  /**
-   * NUBIX: espera a que un viewport de volumen tenga su actor de imagen. Al
-   * entrar al MPR los viewports se recrean y el volumen tarda en cargar.
-   */
-  function _waitForSlabCapableViewport(timeoutMs = 20000): Promise<any> {
-    const started = Date.now();
-    return new Promise(resolve => {
-      const tick = () => {
-        const id = viewportGridService.getActiveViewportId();
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(id);
-        if (isSlabCapable(viewport) && viewport.getDefaultActor?.()) {
-          resolve(viewport);
-          return;
-        }
-        if (Date.now() - started > timeoutMs) {
-          resolve(null);
-          return;
-        }
-        window.setTimeout(tick, 250);
-      };
-      tick();
-    });
-  }
-
   const actions = {
     /**
-     * NUBIX: MIP, MinIP o promedio con grosor en la vista activa. Si la vista
-     * es 2D y la serie se puede reconstruir, abre el MPR y aplica ahí la
-     * proyección cuando el volumen está listo.
+     * NUBIX: MIP, MinIP o promedio con grosor en un plano MPR (por defecto el
+     * activo). En vistas que no son de volumen no hace nada.
      */
-    setSlabProjection: async ({
+    setSlabProjection: ({
       mode,
       thickness,
       viewportId,
@@ -172,41 +147,7 @@ function commandsModule({
     }) => {
       const id = viewportId ?? viewportGridService.getActiveViewportId();
       const viewport = cornerstoneViewportService.getCornerstoneViewport(id);
-
-      const { toolbarService } = servicesManager.services;
-      if (applySlab(viewport, mode, thickness)) {
-        toolbarService.refreshToolbarState({ viewportId: id });
-        return;
-      }
-      if (mode === 'off') {
-        return;
-      }
-
-      const { displaySetService } = servicesManager.services;
-      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(id) ?? [];
-      const reconstructable =
-        displaySetUIDs.length > 0 &&
-        displaySetUIDs.every(uid => displaySetService.getDisplaySetByUID(uid)?.isReconstructable);
-      if (!reconstructable) {
-        uiNotificationService.show({
-          title: 'Proyección de grosor',
-          message: 'Esta serie no se puede reconstruir en MPR, así que no admite MIP ni MinIP.',
-          type: 'info',
-        });
-        return;
-      }
-
-      commandsManager.run('setHangingProtocol', { protocolId: 'mpr' });
-      const mprViewport = await _waitForSlabCapableViewport();
-      if (applySlab(mprViewport, mode, thickness)) {
-        toolbarService.refreshToolbarState({ viewportId: mprViewport.id });
-      } else {
-        uiNotificationService.show({
-          title: 'Proyección de grosor',
-          message: 'El MPR tardó en cargar. Vuelve a elegir la proyección cuando termine.',
-          type: 'warning',
-        });
-      }
+      applySlab(viewport, mode, thickness);
     },
 
     /**

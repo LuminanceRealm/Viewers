@@ -137,7 +137,15 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.createButtonSection(
         'primary',
         isMobile
-          ? ['MeasurementTools', 'MoreTools', 'Zoom', 'Pan', 'WindowLevel', 'Layout']
+          ? [
+              'MeasurementTools',
+              'MoreTools',
+              'Zoom',
+              'Pan',
+              'WindowLevel',
+              'SlabProjection',
+              'Layout',
+            ]
           : [
               ...flattenedMeasurements,
               'MeasurementTools',
@@ -157,9 +165,6 @@ function modeFactory({ modeConfiguration }) {
         // the featured button is not registered at all.
         toolbarService.createButtonSection('exportSection', exportButtons);
       }
-
-      const slabButtons = ['SlabMIP', 'SlabMinIP', 'SlabAvg', 'SlabOff'];
-      toolbarService.createButtonSection('slabSection', slabButtons);
 
       toolbarService.createButtonSection('measurementSection', [
         ...measurementDropdownLead,
@@ -207,7 +212,7 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
-        ...(isMobile ? [...exportButtons, ...slabButtons] : []),
+        ...(isMobile ? exportButtons : []),
       ]);
 
       if (isMobile) {

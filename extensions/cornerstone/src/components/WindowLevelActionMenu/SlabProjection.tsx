@@ -12,6 +12,7 @@ import {
 } from '../../utils/slabProjection';
 
 const MODES: SlabMode[] = ['off', 'mip', 'minip', 'avg'];
+const PRESETS_MM = [5, 10, 20, 30];
 
 /**
  * NUBIX: control de proyección de grosor dentro del menú de cada viewport
@@ -71,6 +72,22 @@ export function SlabProjection({
           onValueChange={([mm]) => run(state.mode, mm)}
           aria-label="Grosor de la proyección en milímetros"
         />
+        <div className="mt-3 grid grid-cols-4 gap-1">
+          {PRESETS_MM.map(mm => (
+            <button
+              key={mm}
+              type="button"
+              onClick={() => run(state.mode, mm)}
+              className={`rounded px-1 py-0.5 text-[11px] tabular-nums transition-colors ${
+                thickness === mm
+                  ? 'bg-primary/30 ring-primary ring-1'
+                  : 'bg-secondary-dark hover:bg-accent'
+              }`}
+            >
+              {mm} mm
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

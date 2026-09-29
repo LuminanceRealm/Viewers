@@ -155,16 +155,16 @@ Cornerstone ya pinta MIP/MinIP/promedio en los `VolumeViewport` ortográficos (`
 `setSlabThickness`) y `CornerstoneViewportService` los acepta desde un protocolo, pero el modo
 longitudinal no los exponía. Ahora hay:
 
-- **Barra:** botón dividido `SlabProjection` (sección `slabSection`, en móvil dentro de Más
-  herramientas) con MIP / MinIP / Promedio / Corte fino → comando `setSlabProjection` de la
-  extensión cornerstone. Grosor inicial 10 mm; si ya hay proyección, conserva el grosor al cambiar
-  de modo.
-- **Desde 2D:** si la vista activa es stack y la serie es reconstruible, el comando aplica el
-  protocolo `mpr` y **sondea** (250 ms, hasta 20 s) hasta que el viewport activo sea ortográfico y
-  tenga actor; si no llega, avisa con una notificación. En series no reconstruibles (CR, DX, US) el
-  evaluador `evaluate.slabProjection` deja el botón deshabilitado con explicación.
-- **Grosor fino:** submenú "Proyección (MIP)" en el menú de ventana de cada viewport MPR
-  (`WindowLevelActionMenu/SlabProjection.tsx`, Slider de ui-next, 1–50 mm).
+- **Barra:** componente propio `nubix.slabProjection` (`components/ToolbarSlabProjection.tsx`,
+  registrado en `getToolbarModule.tsx`) que **devuelve null si el viewport activo no es un plano
+  MPR**: Arturo pidió que no aparezca fuera del MPR, y un evaluador sólo puede deshabilitar, no
+  ocultar. Se redibuja con `VIEWPORT_DATA_CHANGED`, `PROTOCOL_CHANGED` y el evento de slab. Al
+  pulsarlo abre un Popover con modo, deslizador de 1–50 mm y atajos de 5/10/20/30 mm; ese
+  contenido (`WindowLevelActionMenu/SlabProjection.tsx`) es el mismo del submenú "Proyección
+  (MIP)" del menú de cada viewport. El grosor en un submenú escondido no se encontraba: por eso
+  el panel de la barra lo lleva a la vista. Grosor inicial 10 mm; al cambiar de modo se conserva.
+- El comando `setSlabProjection` actúa sobre el plano indicado (o el activo) y no hace nada fuera
+  de un volumen.
 - **Sólo el actor de la imagen** (`getDefaultActor`) recibe el modo y el grosor: una MIP de un
   labelmap o de una fusión taparía la anatomía.
 - **Sin estado propio:** modo y grosor se leen del viewport (`getBlendMode`/`getSlabThickness`);
