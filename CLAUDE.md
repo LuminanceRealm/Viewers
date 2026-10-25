@@ -445,6 +445,12 @@ mismo riel de 280 px las parte en dos filas de iconos de 40 px.
   único sigue siendo de la herramienta activa; al pasar de uno a dos dedos reporta distancia cero
   en ese cuadro, sin salto. Como no tiene binding `Primary`, `setToolActive` de la barra no la
   vuelve pasiva. Probado con CDP `Input.dispatchTouchEvent` a 390×844.
+- **Safari en iPhone hace zoom a la página** con el pellizco aunque el viewport meta diga
+  `user-scalable=no`, y cornerstone no llama a `preventDefault` ni pone `touch-action`.
+  `utils/preventBrowserPinch.ts` (desde `elementEnabledHandler` de `init.tsx`) pone
+  `touch-action: none` en el elemento del viewport y cancela `touchmove` con dos dedos y los
+  `gesturestart`/`gesturechange` de Safari. Sólo sobre la imagen; los paneles no cambian. El
+  Chrome emulado de Playwright respeta `user-scalable=no`, así que esto sólo se ve en un iPhone.
 - **El tour guiado sólo existe en escritorio** (`onboardingCustomization.ts`). En teléfono las
   miniaturas ya están a la vista cuando hay algo que elegir, así que el paso sólo interpondría un
   velo modal sobre la primera interacción. En escritorio apunta a `[data-cy="seriesList-btn"]`,

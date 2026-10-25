@@ -34,6 +34,7 @@ import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
+import preventBrowserPinch from './utils/preventBrowserPinch';
 import { setVolumeSliceLimitSource } from './utils/maxVolumeSlices';
 import { colormaps } from './utils/colormaps';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
@@ -260,6 +261,7 @@ export default async function init({
     });
 
     initViewTiming({ element });
+    preventBrowserPinch(element);
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
