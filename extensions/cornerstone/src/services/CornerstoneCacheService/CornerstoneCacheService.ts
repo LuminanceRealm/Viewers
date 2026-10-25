@@ -1,5 +1,5 @@
 import { Types, utils } from '@ohif/core';
-import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
+import { cache as cs3DCache, Enums, metaData, volumeLoader } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import { getMaxVolumeSlices } from '../../utils/maxVolumeSlices';
@@ -299,19 +299,28 @@ class CornerstoneCacheService {
         // for things that have nothing to do with this viewport.
         displaySet.imageIds = allImageIds;
 
+        // NUBIX: el localizador que viene dentro de la serie se ve en el stack
+        // pero no entra al volumen (ver splitLocalizers en extension-default).
+        const localizers = new Set<string>(displaySet.localizerSOPInstanceUIDs ?? []);
+        const reconstructableImageIds = localizers.size
+          ? allImageIds.filter(
+              imageId => !localizers.has(metaData.get('instance', imageId)?.SOPInstanceUID)
+            )
+          : allImageIds;
+
         // A series with more slices than the GPU's 3D texture depth cannot be
         // uploaded at all — it fails with `texImage3D: depth out of range` and
         // leaves the viewport blank. Reconstruct a contiguous sub-range at
         // native resolution instead, so MPR works where it used to be blank.
         const subRange = getVolumeSubRange({
-          numImages: allImageIds.length,
+          numImages: reconstructableImageIds.length,
           maxSlices: getMaxVolumeSlices(),
           focusIndex,
         });
 
         volumeImageIds = subRange
-          ? allImageIds.slice(subRange.start, subRange.end)
-          : allImageIds;
+          ? reconstructableImageIds.slice(subRange.start, subRange.end)
+          : reconstructableImageIds;
 
         // Recorded so the viewport can keep telling the reader that the
         // reconstruction stops short of the full study.

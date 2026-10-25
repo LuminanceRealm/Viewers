@@ -3,6 +3,7 @@ import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
+import splitLocalizers from './utils/splitLocalizers';
 
 const { isImage, sopClassDictionary, isDisplaySetReconstructable } = utils;
 const { ImageSet } = classes;
@@ -60,23 +61,38 @@ function getDisplaySetInfo(instances) {
   };
 }
 
+/**
+ * NUBIX: si la serie trae un localizador (scout) entre los cortes, se queda en
+ * el stack pero la reconstrucción se evalúa y se arma sin él; si no, una sola
+ * imagen con otra orientación bloquea el MPR de toda la serie.
+ */
+function getVolumeInstances(instances) {
+  const split = splitLocalizers(instances);
+  if (split && isDisplaySetReconstructable(split.main, appContext.appConfig).value) {
+    return { volumeInstances: split.main, localizers: split.localizers };
+  }
+  return { volumeInstances: instances, localizers: [] };
+}
+
 const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
+
+  const { volumeInstances, localizers } = getVolumeInstances(instances);
 
   const {
     isDynamicVolume,
     value: isReconstructable,
     averageSpacingBetweenFrames,
     dynamicVolumeInfo,
-  } = getDisplaySetInfo(instances);
+  } = getDisplaySetInfo(volumeInstances);
 
   const volumeLoaderSchema = isDynamicVolume
     ? DYNAMIC_VOLUME_LOADER_SCHEME
     : DEFAULT_VOLUME_LOADER_SCHEME;
 
   // set appropriate attributes to image set...
-  const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
+  const messages = getDisplaySetMessages(volumeInstances, isReconstructable, isDynamicVolume);
 
   imageSet.setAttributes({
     volumeLoaderSchema,
@@ -99,6 +115,10 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
+    // Lo lee CornerstoneCacheService para dejarlas fuera del volumen.
+    localizerSOPInstanceUIDs: localizers.length
+      ? localizers.map(({ SOPInstanceUID }) => SOPInstanceUID)
+      : undefined,
   });
 
   // Sort the images in this series if needed
@@ -108,6 +128,12 @@ const makeDisplaySet = instances => {
       // Sort by InstanceNumber (0020,0013)
       return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
     });
+  }
+
+  // NUBIX: la instancia de referencia (overlay: posición, campo de visión,
+  // grosor) es un corte, no el localizador.
+  if (localizers.length && localizers.includes(imageSet.instance)) {
+    imageSet.setAttribute('instance', volumeInstances[0]);
   }
 
   // Include the first image instance number (after sorted)

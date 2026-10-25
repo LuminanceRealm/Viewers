@@ -219,6 +219,29 @@ dependencia no usar `yarn add`: reescribe medio `yarn.lock` y sube `prettier-plu
 una versión ESM que rompe prettier; se añade la línea a `platform/app/package.json` y se corre
 `yarn install`. Lo que la API haga con estudios de tipo `DOC` es otra conversación.
 
+## Localizador dentro de la serie y MPR (`utils/splitLocalizers.js`)
+
+Muchos CT mandan el scout/topograma **dentro de la misma serie** que los axiales (estudio 1153591,
+AlphaCT 328 Plus: 120 axiales de 512² más un coronal de 533×742 con `InstanceNumber` 0; el
+`ImageType` no lo distingue). `isDisplaySetReconstructable` exige misma orientación y tamaño en
+todas las imágenes, así que esa sola imagen dejaba la serie entera sin MPR.
+
+- **Decisión de Arturo: no crear una serie aparte.** Se probó separar el localizador en su propio
+  display set y lo descartó; la serie sigue siendo una sola y el localizador sigue en el stack
+  (contador 1/121), pero el volumen se arma sin él.
+- `splitLocalizers` agrupa por filas × columnas × orientación (tolerancia 0.01, la misma de
+  OHIF) y sólo aparta las imágenes distintas si son pocas (≤ 3 o ≤ 10 %) frente a un grupo
+  principal de ≥ 3. `getSopClassHandlerModule` además exige que el grupo principal **sea
+  reconstruible**; si no, la serie queda exactamente como antes (un US con tamaños mezclados no se
+  toca).
+- El display set lleva `localizerSOPInstanceUIDs`; `CornerstoneCacheService` filtra esos
+  imageIds (por `SOPInstanceUID` vía `metaData.get('instance')`) antes del sub-rango de textura.
+  `displaySet.imageIds` sigue siendo la serie completa. `isReconstructable`,
+  `averageSpacingBetweenFrames` y los mensajes se calculan sobre el grupo principal, y
+  `displaySet.instance` (de donde lee el overlay posición, FoV y grosor) apunta a un corte, no al
+  localizador.
+- Verificado en local con 1153591: las cuatro fases abren en MPR con volumen 512×512×120.
+
 ## Proyección de grosor: MIP, MinIP y promedio (`utils/slabProjection.ts`)
 
 Cornerstone ya pinta MIP/MinIP/promedio en los `VolumeViewport` ortográficos (`setBlendMode` +
