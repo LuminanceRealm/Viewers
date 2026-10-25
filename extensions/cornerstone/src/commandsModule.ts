@@ -43,6 +43,7 @@ import {
 } from './utils/printSheet';
 import VertebralLabelStartDialog from './components/VertebralLabelStartDialog';
 import { applySlab, SlabMode } from './utils/slabProjection';
+import { MAMMO_VIEWPORT_RESET_EVENT } from './utils/mammoMirror/hpMammoMirror';
 import { SPINE_LABELS, DEFAULT_START_LABEL } from './tools/VertebralLabelTool';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -955,7 +956,16 @@ function commandsModule({
       const { viewport } = enabledElement;
 
       viewport.resetProperties?.();
+      // NUBIX: en MONOCHROME1 cornerstone restaura la curva de color guardada
+      // antes de invertir la imagen pero conserva la marca de invertida, y la
+      // imagen queda en negativo. Rehacer la curva respeta esa marca.
+      if (viewport instanceof StackViewport && viewport.getProperties().invert) {
+        viewport.setVOI(viewport.getProperties().voiRange, { forceRecreateLUTFunction: true });
+      }
       viewport.resetCamera();
+      // NUBIX: cornerstone no emite CAMERA_RESET en los stack; la lectura en
+      // espejo de mamografía escucha esto para volver a su encuadre.
+      viewport.element.dispatchEvent(new CustomEvent(MAMMO_VIEWPORT_RESET_EVENT));
 
       viewport.render();
     },
@@ -975,6 +985,7 @@ function commandsModule({
           viewport.render();
         } else {
           viewport.resetCamera();
+          viewport.element.dispatchEvent(new CustomEvent(MAMMO_VIEWPORT_RESET_EVENT));
           viewport.render();
         }
       }

@@ -93,10 +93,25 @@ porque sólo sirve cuando hay hallazgo. El US mamario queda fuera por ahora.
   Arturo): sólo entran series de **una imagen y un frame**. La tomosíntesis, multiframe (la API sí
   emite `NumberOfFrames`) o una instancia por corte, nunca casa y se sigue cargando como antes.
   Una serie con varias proyecciones juntas tampoco entra.
-- **Colocación** (`initMammoMirror.ts`, en `VIEWPORT_DATA_CHANGED` y otra vez en `CAMERA_RESET`):
-  imagen completa con la pared torácica pegada al borde del viewport que da al centro de la
-  pantalla. Si el equipo manda la imagen al revés, se voltea según `PatientOrientation`
-  (`displayFlips`): pared al centro, axila arriba en la MLO, lado externo arriba en la CC.
+- **Colocación** (`initMammoMirror.ts`, en `VIEWPORT_DATA_CHANGED` y al pulsar Restablecer):
+  la **mama encuadrada**, no la imagen completa, con la pared torácica pegada al borde del
+  viewport que da al centro de la pantalla. `findTissueBounds` (en `mammoGeometry.ts`) busca el
+  tejido en los píxeles de la imagen en caché: el fondo es la mediana de la franja más alejada de
+  la pared; el alcance horizontal corta en un hueco del 5 % para no contar las etiquetas "R CC"
+  grabadas en el fondo; el vertical sale de una franja pegada a la pared. Las dos mamas del par
+  usan el **mismo marco** (`unionFraming`), así quedan a la misma escala sin importar cuál se
+  coloque primero. Si no encuentra mama, encuadra la imagen completa. Si el equipo manda la
+  imagen al revés, se voltea según `PatientOrientation` (`displayFlips`): pared al centro, axila
+  arriba en la MLO, lado externo arriba en la CC.
+- **Restablecer:** cornerstone **sólo emite `CAMERA_RESET` en viewports de volumen**, así que en
+  los stack el listener nunca corría y la imagen volvía al centro. `resetViewport` y
+  `fitViewportToWindow` (`commandsModule.ts`) emiten `nubix-viewport-reset` en el elemento.
+- **Cambio de tamaño** (ocultar un panel, girar el teléfono, cambiar de etapa): cornerstone
+  conserva el centro y `performResize` de OHIF recalcula zoom y pan respecto de la imagen
+  completa, así que el encuadre se perdía. Se detecta por un `CAMERA_MODIFIED` con el canvas de
+  otro tamaño y, en un `setTimeout(0)` (cuando OHIF ya terminó, es síncrono): si la cámara sigue
+  como se colocó, se encuadra de nuevo; si el usuario ya movió algo, se restaura su cámara con la
+  misma escala en mm por píxel y con el punto que estaba en el borde interior de vuelta al borde.
 - **Espejo** (sincronizador `nubixmammomirror`, uno para CC y otro para MLO): mapea el centro de
   la vista por coordenadas anatómicas, mm desde la pared torácica y mm desde el centro vertical,
   con la misma escala en mm por píxel de pantalla. No sirve el `zoompan` de cornerstone porque
@@ -106,6 +121,14 @@ porque sólo sirve cuando hay hallazgo. El US mamario queda fuera por ahora.
 - Verificado en local con 1153278 a 1440×900, 2560×1440 y 390×844: acercar ×3 la RCC en la
   columna 3700 (1028 px de la pared) deja la LCC en la columna 1028, misma fila y escala; las
   MLO no se mueven. El US 1153339 sigue abriendo con `default`.
+- **Zoom desde el fondo:** `ZoomTouchTool` (la herramienta Zoom de la app) tenía
+  `minZoomScale: 0.1` (píxeles de pantalla por píxel de imagen). Una mamografía de 5928 filas a
+  0.05 mm ajustada a la pantalla ya queda en ~0.08, así que el primer paso de zoom se recortaba
+  al mínimo **sin mover el centro** y se acercaba al fondo negro en vez de al dedo. Ahora 0.01.
+- **Restablecer dejaba la imagen en negativo** en toda imagen MONOCHROME1 (también CR): cornerstone
+  guarda los nodos de la curva de color antes de invertir y `resetProperties` los restaura
+  conservando `invert = true`. `resetViewport` rehace la curva con
+  `setVOI(..., { forceRecreateLUTFunction: true })` cuando la imagen está invertida.
 - **Trampa de prueba:** el Chrome de Playwright sin GPU no crea contexto WebGL, la ruta se
   reinicia y parece que el visor está roto. Lanzar con `--enable-unsafe-swiftshader
   --use-angle=swiftshader`.

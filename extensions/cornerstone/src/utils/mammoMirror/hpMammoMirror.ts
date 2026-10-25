@@ -8,6 +8,8 @@ export const MAMMO_MIRROR_PROTOCOL_ID = '@nubix/mammoMirror';
 export const MAMMO_VIEW_ATTRIBUTE = 'nubixMammoView';
 export const MAMMO_VIEW_COUNT_ATTRIBUTE = 'nubixMammoViewCount';
 export const MAMMO_MIRROR_SYNC_TYPE = 'nubixmammomirror';
+/** Evento DOM que emite "Restablecer" en el elemento del viewport. */
+export const MAMMO_VIEWPORT_RESET_EVENT = 'nubix-viewport-reset';
 
 const CC_SYNC_GROUP = {
   type: MAMMO_MIRROR_SYNC_TYPE,

@@ -1,5 +1,9 @@
 import {
   anatomicalToImage,
+  cameraForFraming,
+  findTissueBounds,
+  framingFromBounds,
+  unionFraming,
   chestWallImageSide,
   classifyMammoDisplaySet,
   displayFlips,
@@ -131,5 +135,79 @@ describe('espejo', () => {
     // 100 filas por encima del centro en pantalla siguen arriba en la otra.
     const [, row] = mirrorImagePoint(right, flipped, [4000, 2964 - 100]);
     expect(row).toBeCloseTo(2964 + 100);
+  });
+});
+
+// Fantoma tipo MONOCHROME1: fondo alto, mama semielíptica pegada a la pared
+// derecha (columna 399) y una etiqueta "R CC" suelta en el fondo.
+function phantom({ columns = 400, rows = 500, wall = 'right', depth = 220, half = 150 } = {}) {
+  const pixels = new Uint16Array(columns * rows).fill(4000);
+  const centerRow = rows / 2;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+      const d = wall === 'right' ? columns - 1 - c : c;
+      const dr = (r - centerRow) / half;
+      if (dr * dr + (d / depth) * (d / depth) <= 1) {
+        pixels[r * columns + c] = 1500;
+      }
+    }
+  }
+  // Etiqueta: 12×30 px lejos de la pared, arriba.
+  for (let r = 40; r < 52; r++) {
+    for (let c = 0; c < 30; c++) {
+      const col = wall === 'right' ? 20 + c : columns - 50 + c;
+      pixels[r * columns + col] = 0;
+    }
+  }
+  return { pixels, columns, rows };
+}
+
+describe('encuadre de la mama', () => {
+  it('encuentra el tejido sin contar la etiqueta', () => {
+    const { pixels, columns, rows } = phantom();
+    const bounds = findTissueBounds(pixels, columns, rows, 'right');
+    expect(bounds.fromWall).toBeGreaterThanOrEqual(215);
+    expect(bounds.fromWall).toBeLessThan(240);
+    expect(bounds.top).toBeGreaterThan(95);
+    expect(bounds.top).toBeLessThan(110);
+    expect(bounds.bottom).toBeGreaterThan(390);
+    expect(bounds.bottom).toBeLessThan(405);
+  });
+
+  it('funciona con la pared a la izquierda', () => {
+    const { pixels, columns, rows } = phantom({ wall: 'left' });
+    expect(findTissueBounds(pixels, columns, rows, 'left').fromWall).toBeGreaterThanOrEqual(215);
+  });
+
+  it('se rinde con una imagen sin mama', () => {
+    const pixels = new Uint16Array(400 * 500).fill(4000);
+    expect(findTissueBounds(pixels, 400, 500, 'right')).toBeUndefined();
+  });
+
+  it('pone la pared en el borde interior y el tejido llena la vista', () => {
+    const frame = {
+      columns: 400,
+      rows: 500,
+      columnSpacing: 0.1,
+      rowSpacing: 0.1,
+      chestWall: 'right',
+      flipVertical: false,
+    };
+    const framing = framingFromBounds(frame, { fromWall: 220, top: 100, bottom: 400 });
+    // Vista alta (teléfono): manda el ancho.
+    const tall = cameraForFraming(framing, 100, 400);
+    expect(tall.parallelScale * 2 * (100 / 400)).toBeCloseTo(framing.uMax);
+    expect(tall.center[0]).toBeCloseTo(framing.uMax / 2);
+    // Vista ancha (escritorio): manda la altura; la pared sigue en el borde.
+    const wide = cameraForFraming(framing, 800, 400);
+    expect(wide.parallelScale).toBeCloseTo((framing.vMax - framing.vMin) / 2);
+    expect(wide.center[0]).toBeCloseTo(wide.parallelScale * 2);
+  });
+
+  it('el par comparte el marco más grande', () => {
+    const a = { uMax: 10, vMin: -5, vMax: 5 };
+    const b = { uMax: 12, vMin: -4, vMax: 7 };
+    expect(unionFraming(a, b)).toEqual({ uMax: 12, vMin: -5, vMax: 7 });
+    expect(unionFraming(a)).toBe(a);
   });
 });
