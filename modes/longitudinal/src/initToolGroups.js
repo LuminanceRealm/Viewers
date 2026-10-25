@@ -51,6 +51,12 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
+      // NUBIX: pellizco con dos dedos en pantallas táctiles; el dedo único
+      // sigue siendo de la herramienta activa.
+      {
+        toolName: toolNames.PinchZoom,
+        bindings: [{ numTouchPoints: 2 }],
+      },
       {
         toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
@@ -183,6 +189,12 @@ function initSRToolGroup(extensionManager, toolGroupService) {
           },
         ],
       },
+      // NUBIX: pellizco con dos dedos en pantallas táctiles; el dedo único
+      // sigue siendo de la herramienta activa.
+      {
+        toolName: toolNames.PinchZoom,
+        bindings: [{ numTouchPoints: 2 }],
+      },
       {
         toolName: toolNames.StackScroll,
         bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
@@ -233,6 +245,12 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      // NUBIX: pellizco con dos dedos en pantallas táctiles; el dedo único
+      // sigue siendo de la herramienta activa.
+      {
+        toolName: toolNames.PinchZoom,
+        bindings: [{ numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.StackScroll,
@@ -353,6 +371,12 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
       {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      // NUBIX: pellizco con dos dedos en pantallas táctiles; el dedo único
+      // sigue siendo de la herramienta activa.
+      {
+        toolName: toolNames.PinchZoom,
+        bindings: [{ numTouchPoints: 2 }],
       },
       {
         toolName: toolNames.Pan,

@@ -42,6 +42,7 @@ import WindowLevelTool from './tools/WindowLevelTool';
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ZoomTouchTool from './tools/ZoomTouchTool';
+import PinchZoomTool from './tools/PinchZoomTool';
 import VertebralLabelTool from './tools/VertebralLabelTool';
 import CardiothoracicIndexTool from './tools/CardiothoracicIndexTool';
 import AcetabularIndexTool from './tools/AcetabularIndexTool';
@@ -95,6 +96,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(ZoomTouchTool);
+  addTool(PinchZoomTool);
   addTool(VertebralLabelTool);
   addTool(CardiothoracicIndexTool);
   addTool(AcetabularIndexTool);
@@ -121,6 +123,7 @@ const toolNames = {
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
   Zoom: ZoomTouchTool.toolName,
+  PinchZoom: PinchZoomTool.toolName,
   VolumeRotate: VolumeRotateTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,

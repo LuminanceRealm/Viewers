@@ -437,6 +437,14 @@ mismo riel de 280 px las parte en dos filas de iconos de 40 px.
   de `SidePanel`, la flecha es sólo el indicador. Por eso el grupo (flecha, iconos y etiqueta
   vertical) va **centrado** y no pegado arriba, que hacía pensar que sólo respondía ahí; en
   teléfono, además, el medio es lo que alcanza el pulgar. Abierta, el contenido sigue desde arriba.
+- **Pellizco con dos dedos** (`tools/PinchZoomTool.ts`, herramienta `PinchZoom`): hasta
+  2026-10-25 ningún gesto de dos dedos tenía herramienta y el pellizco no hacía nada (el manual
+  ya lo prometía). Es una herramienta aparte de `Zoom` (que usa el arrastre de un dedo cuando se
+  elige en la barra) atada a `numTouchPoints: 2` en los cuatro grupos de `initToolGroups.js`.
+  Cornerstone elige la herramienta en cada movimiento según cuántos dedos hay, así que el dedo
+  único sigue siendo de la herramienta activa; al pasar de uno a dos dedos reporta distancia cero
+  en ese cuadro, sin salto. Como no tiene binding `Primary`, `setToolActive` de la barra no la
+  vuelve pasiva. Probado con CDP `Input.dispatchTouchEvent` a 390×844.
 - **El tour guiado sólo existe en escritorio** (`onboardingCustomization.ts`). En teléfono las
   miniaturas ya están a la vista cuando hay algo que elegir, así que el paso sólo interpondría un
   velo modal sobre la primera interacción. En escritorio apunta a `[data-cy="seriesList-btn"]`,
