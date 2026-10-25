@@ -26,6 +26,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
+import initMammoMirror from './utils/mammoMirror/initMammoMirror';
 import initStudyPrefetcherService from './initStudyPrefetcherService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
@@ -181,6 +182,7 @@ export default async function init({
   this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
 
   initCineService(servicesManager);
+  initMammoMirror({ servicesManager } as withAppTypes);
   initStudyPrefetcherService(servicesManager);
 
   // When a custom image load is performed, update the relevant viewports

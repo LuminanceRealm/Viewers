@@ -144,6 +144,7 @@ function modeFactory({ modeConfiguration }) {
               'Pan',
               'WindowLevel',
               'SlabProjection',
+              'MammoStages',
               'Layout',
             ]
           : [
@@ -153,6 +154,7 @@ function modeFactory({ modeConfiguration }) {
               'Pan',
               'WindowLevel',
               'SlabProjection',
+              'MammoStages',
               'MoreTools',
               'ExportTools',
               'Layout',
@@ -367,8 +369,10 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    // Default protocol gets self-registered by default in the init
-    hangingProtocol: 'default',
+    // Default protocol gets self-registered by default in the init.
+    // NUBIX: la mamografía 2D en espejo se elige por sus reglas cuando el
+    // estudio la tiene; si no casa, queda 'default' como siempre.
+    hangingProtocol: ['@nubix/mammoMirror', 'default'],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

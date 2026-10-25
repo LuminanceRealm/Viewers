@@ -52,6 +52,13 @@ const toolbarButtons: Button[] = [
     uiType: 'nubix.slabProjection',
     props: {},
   },
+  // NUBIX: etapas de la lectura en espejo de mamografía (4 / CC / MLO). Sólo
+  // aparece cuando el estudio abrió con ese protocolo.
+  {
+    id: 'MammoStages',
+    uiType: 'nubix.mammoStages',
+    props: {},
+  },
   // tool defs
   // NUBIX: only registered in a button section when the viewer was opened
   // with ?token= (logged-in sessions) — see index.ts onModeEnter

@@ -2,6 +2,7 @@ import { Enums } from '@cornerstonejs/tools';
 import { utils } from '@ohif/ui-next';
 import React from 'react';
 import ToolbarSlabProjection from './components/ToolbarSlabProjection';
+import ToolbarMammoStages from './components/ToolbarMammoStages';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -196,6 +197,17 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'nubix.slabProjection',
       defaultComponent: props => (
         <ToolbarSlabProjection
+          {...props}
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+        />
+      ),
+    },
+    {
+      // NUBIX: etapas de la mamografía en espejo; se oculta fuera de ese protocolo.
+      name: 'nubix.mammoStages',
+      defaultComponent: props => (
+        <ToolbarMammoStages
           {...props}
           commandsManager={commandsManager}
           servicesManager={servicesManager}

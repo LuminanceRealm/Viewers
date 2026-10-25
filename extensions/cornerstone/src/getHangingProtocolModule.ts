@@ -6,6 +6,7 @@ import { only3D } from './hps/only3D';
 import { primary3D } from './hps/primary3D';
 import { primaryAxial } from './hps/primaryAxial';
 import { frameView } from './hps/frameView';
+import { hpMammoMirror } from './utils/mammoMirror/hpMammoMirror';
 
 function getHangingProtocolModule() {
   return [
@@ -40,6 +41,11 @@ function getHangingProtocolModule() {
     {
       name: frameView.id,
       protocol: frameView,
+    },
+    // NUBIX: lectura en espejo de mamografía 2D (ver utils/mammoMirror).
+    {
+      name: hpMammoMirror.id,
+      protocol: hpMammoMirror,
     },
   ];
 }

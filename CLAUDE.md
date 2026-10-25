@@ -69,6 +69,52 @@ también lo mostraba, porque está en el archivo.
 - Pruebas jest con fantomas (`gridSuppression.test.js`). Para validar con un archivo real, volcar
   los píxeles con pydicom a `.bin` y cargarlos desde un test temporal.
 
+## Mamografía 2D en espejo (`utils/mammoMirror/`)
+
+Herramienta para mama elegida porque todo radiólogo la usa en **cada** mamografía: comparar una
+mama contra la otra (asimetrías). Un localizador de lesiones se descartó como primera herramienta
+porque sólo sirve cuando hay hallazgo. El US mamario queda fuera por ahora.
+
+- **Protocolo propio** `@nubix/mammoMirror` (`hpMammoMirror.ts`), registrado en el
+  `getHangingProtocolModule` de cornerstone. El modo longitudinal declara
+  `hangingProtocol: ['@nubix/mammoMirror', 'default']`: con un arreglo, OHIF elige por reglas en
+  vez de forzar `default`. Si el estudio no tiene al menos dos proyecciones reconocidas, nada
+  casa y sale `default` como siempre. Etapas: 4 proyecciones (RCC|LCC arriba, RMLO|LMLO abajo),
+  par CC y par MLO; se recorren con `.`/`,` o con el control `nubix.mammoStages` de la barra
+  (tres botones en escritorio y uno que cicla en teléfono, porque tres desbordaban la barra). Sólo
+  aparece con este protocolo activo.
+- **No se usa `hpMammo` de OHIF**: identifica las proyecciones por `ViewCodeSequence`,
+  `FrameAnatomySequence` o "L CC" en la descripción, y el manifiesto no trae nada de eso. Con la
+  mamografía Fuji FDR-3000AWS (estudio 1153278) sólo vienen `ImageLaterality` y
+  `PatientOrientation`, y alcanzan. En la MLO las columnas avanzan hacia los pies y hacia un lado
+  (`['P','FL']`); en la CC sólo hacia un lado (`['P','L']`). F/H sola es una lateral pura (ML) y no
+  entra. Se prefieren `ViewPosition` y `ViewCodeSequence` si algún día llegan.
+- **La tomosíntesis no se toca, a propósito por conteo y no por SOP Class** (decisión de
+  Arturo): sólo entran series de **una imagen y un frame**. La tomosíntesis, multiframe (la API sí
+  emite `NumberOfFrames`) o una instancia por corte, nunca casa y se sigue cargando como antes.
+  Una serie con varias proyecciones juntas tampoco entra.
+- **Colocación** (`initMammoMirror.ts`, en `VIEWPORT_DATA_CHANGED` y otra vez en `CAMERA_RESET`):
+  imagen completa con la pared torácica pegada al borde del viewport que da al centro de la
+  pantalla. Si el equipo manda la imagen al revés, se voltea según `PatientOrientation`
+  (`displayFlips`): pared al centro, axila arriba en la MLO, lado externo arriba en la CC.
+- **Espejo** (sincronizador `nubixmammomirror`, uno para CC y otro para MLO): mapea el centro de
+  la vista por coordenadas anatómicas, mm desde la pared torácica y mm desde el centro vertical,
+  con la misma escala en mm por píxel de pantalla. No sirve el `zoompan` de cornerstone porque
+  copia el desplazamiento tal cual, y aquí el horizontal va invertido. Si el usuario arrastra una
+  serie del mismo lado a uno de los viewports, el espejo no actúa. La geometría vive aparte y
+  probada con jest (`mammoGeometry.ts` + `.test.js`).
+- Verificado en local con 1153278 a 1440×900, 2560×1440 y 390×844: acercar ×3 la RCC en la
+  columna 3700 (1028 px de la pared) deja la LCC en la columna 1028, misma fila y escala; las
+  MLO no se mueven. El US 1153339 sigue abriendo con `default`.
+- **Trampa de prueba:** el Chrome de Playwright sin GPU no crea contexto WebGL, la ruta se
+  reinicia y parece que el visor está roto. Lanzar con `--enable-unsafe-swiftshader
+  --use-angle=swiftshader`.
+- Pendiente: el manifiesto no trae `SeriesDescription` en estas mamografías, así que las
+  miniaturas salen sin etiqueta (lo arregla la API, el archivo trae "MAMOGRAFIA DCHA, CC"). El
+  previo no viene en el mismo manifiesto, así que no hay comparación con estudio anterior. En
+  teléfono el texto del overlay se encima en los viewports angostos del 2×2 (visto, no
+  investigado).
+
 ## Parches a @cornerstonejs/dicom-image-loader
 
 `patches/@cornerstonejs+dicom-image-loader+3.0.4.patch`, aplicado por `patch-package` desde el
