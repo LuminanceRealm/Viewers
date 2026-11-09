@@ -174,14 +174,36 @@ sólo redondea las puntas). Se prefirió esto a aplicar la LUT sobre los píxele
 valores originales y deja funcionar la herramienta de ventana con normalidad. Referencia: renderizar
 con pydicom `LUTData[clip(p − first, 0, n−1)]` e invertir.
 
+## Parche a jpeg-lossless-decoder-js: el último píxel salía en 0
+
+`patches/jpeg-lossless-decoder-js+2.1.2.patch` (2.1.2 es la última versión publicada; el bug sigue
+ahí). El decodificador lee el siguiente byte por adelantado y, si es el `FF` del EOI, marca
+`markerIndex = 9`; después descarta cualquier código Huffman que deje menos de 9 bits en el
+registro, aunque el código haya terminado justo antes del marcador. Upstream ya exime al último
+píxel con `isLastPixel()` en `getn` (bits de magnitud), pero no en `getHuffmanValue`. Cuando el
+último píxel tiene diferencia 0 con su vecino (categoría SSSS = 0, sin bits extra: aire junto a
+aire, lo normal en la esquina), la rutina devuelve el marcador, el bucle de `decode` sale sin
+llamar a `output` y ese píxel se queda en el 0 del buffer recién creado.
+
+Un píxel no se ve, pero sin `WindowCenter/Width` cornerstone ventana por **mín/máx del corte**, y
+el mínimo pasa de ~31600 a 0. Ticket de Enrique Eickmeier (CBCT dental Dürr VistaSoft, píxeles =
+HU + 32768 sin `RescaleIntercept`, sin ventana; estudios 1159197 y 1170848): en 1159197 el corte
+central (el que usa `setDefaultVolumeVOI` para el MPR) estaba afectado y todo salía gris
+blanquecino con W 38398 / L 19199; en el stack, uno de cada ~8 cortes parpadeaba igual. Medido
+con el decodificador en node contra pydicom: 48/425 y 56/425 cortes con el último píxel mal, y
+3/61 CT/MR de `test-files` recomprimidos con `gdcmconv -J`, o sea que **no es cosa del equipo**:
+afecta a cualquier JPEG Lossless (`1.2.840.10008.1.2.4.70`/`.57`). Con el parche: 0 diferencias en
+los 911 cortes.
+
 ## Trampa de build: los parches no llegaban al bundle
 
 Dos capas de caché ignoraban `node_modules`, y el síntoma es traicionero: el build **termina bien**,
 emite un hash nuevo, y despliega el código **sin parchear**.
 
 - **webpack** trata `node_modules` como inmutable (`snapshot.managedPaths`) y lo instantanea por
-  versión, no por contenido. En `.webpack/webpack.base.js` se saca a
-  `@cornerstonejs/dicom-image-loader` de esa lista.
+  versión, no por contenido. En `.webpack/webpack.base.js` se sacan de esa lista los paquetes
+  parcheados (`@cornerstonejs/dicom-image-loader`, `jpeg-lossless-decoder-js`); **un parche
+  nuevo exige añadir su paquete ahí**.
 - **Nx** cachea por hash de los archivos del proyecto, y ni `node_modules` ni `.webpack/` entraban.
   En `nx.json`, `namedInputs.sharedGlobals` ahora incluye `patches/**` y `.webpack/**`.
 

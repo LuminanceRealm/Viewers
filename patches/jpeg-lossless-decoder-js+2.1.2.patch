@@ -1,0 +1,39 @@
+diff --git a/node_modules/jpeg-lossless-decoder-js/release/cjs/lossless.cjs b/node_modules/jpeg-lossless-decoder-js/release/cjs/lossless.cjs
+index 457302a..12ef1fd 100644
+--- a/node_modules/jpeg-lossless-decoder-js/release/cjs/lossless.cjs
++++ b/node_modules/jpeg-lossless-decoder-js/release/cjs/lossless.cjs
+@@ -979,7 +979,7 @@ var Decoder = class _Decoder {
+     if (index[0] < 0) {
+       throw new Error("index=" + index[0] + " temp=" + temp[0] + " code=" + code + " in HuffmanValue()");
+     }
+-    if (index[0] < this.markerIndex) {
++    if (index[0] < this.markerIndex && !this.isLastPixel()) {
+       this.markerIndex = 0;
+       return 65280 | this.marker;
+     }
+diff --git a/node_modules/jpeg-lossless-decoder-js/release/lossless.js b/node_modules/jpeg-lossless-decoder-js/release/lossless.js
+index c3c7343..80d74d6 100644
+--- a/node_modules/jpeg-lossless-decoder-js/release/lossless.js
++++ b/node_modules/jpeg-lossless-decoder-js/release/lossless.js
+@@ -951,7 +951,7 @@ var Decoder = class _Decoder {
+     if (index[0] < 0) {
+       throw new Error("index=" + index[0] + " temp=" + temp[0] + " code=" + code + " in HuffmanValue()");
+     }
+-    if (index[0] < this.markerIndex) {
++    if (index[0] < this.markerIndex && !this.isLastPixel()) {
+       this.markerIndex = 0;
+       return 65280 | this.marker;
+     }
+diff --git a/node_modules/jpeg-lossless-decoder-js/src/decoder.ts b/node_modules/jpeg-lossless-decoder-js/src/decoder.ts
+index 798e8fb..833808f 100644
+--- a/node_modules/jpeg-lossless-decoder-js/src/decoder.ts
++++ b/node_modules/jpeg-lossless-decoder-js/src/decoder.ts
+@@ -543,7 +543,7 @@ export class Decoder {
+       throw new Error('index=' + index[0] + ' temp=' + temp[0] + ' code=' + code + ' in HuffmanValue()')
+     }
+ 
+-    if (index[0] < this.markerIndex) {
++    if (index[0] < this.markerIndex && !this.isLastPixel()) {
+       this.markerIndex = 0
+       return 0xff00 | this.marker
+     }
