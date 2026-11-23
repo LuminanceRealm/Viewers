@@ -410,6 +410,66 @@ Decisiones que no se ven en el código:
 - Fuera de alcance a propósito: camino mínimo entre dos puntos, detección automática del vaso y
   vista transversal perpendicular al vaso (sería el siguiente paso natural para ROIs con HU).
 
+## Dental: panorámica, cortes y canal (`extensions/dental`)
+
+Herramientas para CBCT dental, elegidas por paridad con OnDemand3D: arco trazado en el axial →
+panorámica reconstruida + cortes transversales, canal mandibular y regla. Botón del diente
+(`DentalArch`, mismo patrón que el CPR: el id del botón es el nombre de la herramienta) y panel
+propio. **Los implantes quedan fuera por decisión de Arturo** (ni biblioteca ni cilindro genérico);
+tampoco hay ATM, fusión ni cefalometría.
+
+Decisiones que no se ven en el código:
+
+- **No usa `vtkImageCPRMapper` ni WebGL.** La panorámica y los cortes son superficies paralelas a
+  la normal de los cortes, así que cada columna de la imagen es un rayo vertical con (fila,
+  columna) fijas: los pesos bilineales se calculan una vez por rayo y se reutilizan en todos los
+  cortes (`utils/reslice.ts`, `sampleColumns`). En CPU la panorámica del fantoma (254 × 120, 21
+  rayos de grosor) tarda menos de 10 ms; con un CBCT real no está medido. Se dibuja en un lienzo
+  2D (se captura sin trucos para el PDF) y funciona sin WebGL2. Por eso tampoco comparte código
+  con `coronary-cpr`.
+- **La franja va bajo la rejilla, no en el panel**: una panorámica en 280 px no sirve.
+  `ViewerLayout` pinta la customization `viewerLayout.bottomDock` debajo de la rejilla de
+  viewports; la extensión la registra en su `getCustomizationModule` (`default`) y el componente
+  devuelve null mientras la herramienta no esté iniciada. Es el primer uso de ese hueco. El panel
+  derecho sólo lleva los controles.
+- **Rejilla propia** (`utils/volumeGrid.ts`), leída de las imágenes en caché y sin el localizador
+  (`localizerSOPInstanceUIDs`). Guarda la referencia al arreglo de píxeles de cada corte, así que
+  sobrevive si cornerstone desaloja la imagen; `onModeExit` de la extensión la suelta. **Lanza si
+  la separación entre cortes no es uniforme** (±10 %): reconstruir sobre un espaciado supuesto
+  daría una imagen normal con medidas falsas.
+- **El arco siempre empieza en la derecha del paciente** (x menor en LPS), se trace en el sentido
+  que se trace: la panorámica sale en convención radiográfica y lleva R/L. La normal apunta a
+  vestibular (lado opuesto al centroide) y en los cortes **vestibular va a la izquierda**.
+- **Coordenadas de arco** (s = mm sobre el arco, o = mm a vestibular, c = mm por la normal):
+  canal y reglas se guardan en mundo y se proyectan al arco en cada dibujo, así siguen a la
+  anatomía si el arco se corrige. La geometría vive en `utils/archGeometry.ts`, con jest.
+- **El canal se marca en los cortes transversales, no en la panorámica**: un clic sobre la
+  panorámica con grosor no sabe a qué profundidad vestíbulo-lingual cae, y la distancia al canal
+  es lo que importa. En la panorámica y en el axial sólo se dibuja. El anillo de los cortes es una
+  marca (1.25 mm de radio), no el diámetro del canal.
+- **Reglas:** en un corte, distancia real en 3D; en la panorámica, **sobre la superficie curva**
+  (avance por el arco y altura), que es lo que se ve; el panel y la hoja lo dicen. Una regla
+  necesita sus dos puntos en la misma vista y el mismo corte. Los cortes van en
+  `cursor + m × separación`, y un punto o regla pertenece a un corte si dista ≤ 0.25 mm sobre el
+  arco: la rueda conserva esa retícula, un clic en la panorámica la cambia.
+- **Ventana automática por percentiles** (2 %–99.8 %), no la del viewport: los CBCT Dürr mandan
+  HU + 32768 sin ventana y el promedio del grosor cambia el rango. La de los cortes sale del corte
+  del centro del arco para que el contraste no cambie al avanzar. **No se informa densidad ósea**:
+  los grises de un CBCT no son HU fiables.
+- **Hoja a tamaño real:** `buildReportDocument` tiene el bloque `scaled` (imágenes en mm sobre el
+  papel). Sólo es 1:1 si el navegador imprime al 100 %; por eso cada imagen lleva una barra de
+  10 mm. Si la panorámica no cabe en vertical la hoja sale apaisada, y si ni así, reducida y lo
+  dice.
+- En teléfono `dentalActivate` no abre el panel (dejaría la imagen en una rendija justo donde se
+  traza el arco); la franja muestra el avance de la carga. `DentalArchTool` define
+  `preTouchStartCallback`/`touchDragCallback`: cornerstone no llama a `preMouseDownCallback` con
+  el dedo (visto en `touchStart.js`; el CPR no los define, así que su trazado probablemente no
+  responde al tacto: no se probó).
+- Probado en local con un **fantoma sintético** (mandíbula en U, dientes, canal y dos marcas a
+  20 mm; generado con dcmjs y servido con un manifiesto local): regla entre las marcas 20.0 mm,
+  40.0 mm sobre la panorámica, salto al corte axial correcto, MPR y 390×844. **Falta probarlo con
+  un CBCT real** (1159197 y 1170848, Dürr) y la validación de un odontólogo o radiólogo.
+
 ## Exportar a PDF y no persistir
 
 Arturo no quiere estado persistente por estudio (ni API ni `localStorage`): lo trabajado se
@@ -427,7 +487,8 @@ superficie sin código propio.
 El umbral es `window.innerWidth <= 768` y se repite en cuatro sitios que deben moverse juntos:
 `modes/longitudinal/src/index.ts` (barra de herramientas y `layoutTemplate`),
 `ViewerLayout/index.tsx`, `ViewerLayout/constants/panels.ts` y
-`PanelStudyBrowserTracking.tsx`.
+`PanelStudyBrowserTracking.tsx`. También lo usan `dentalActivate` (`extensions/dental`) y, con 640 px
+de ancho de la propia franja, `layoutDock`.
 
 En teléfono la disposición se **voltea completa**: el navegador de series pasa al riel derecho,
 donde alcanza el pulgar, y los paneles de trabajo (mediciones, segmentación, score, CPR, curvas)
@@ -481,7 +542,7 @@ mismo riel de 280 px las parte en dos filas de iconos de 40 px.
 
 ## Etiqueta beta
 
-Las tres herramientas clínicas (score de calcio, CPR, curvas cinéticas) se muestran como **beta**
+Las herramientas clínicas (score de calcio, CPR, curvas cinéticas, dental) se muestran como **beta**
 mientras no se validen contra una estación de trabajo: sufijo "· beta" en el botón
 (`modes/longitudinal/src/toolbarButtons.ts`), aviso en la primera línea de cada panel y en los CSV,
 y recuadro en el manual. Todo sale de `IS_BETA` / `BETA_NOTICE` en el `constants.ts` de cada

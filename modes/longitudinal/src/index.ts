@@ -60,6 +60,10 @@ const coronaryCpr = {
   panel: '@ohif/extension-coronary-cpr.panelModule.coronaryCpr',
 };
 
+const dental = {
+  panel: '@ohif/extension-dental.panelModule.dental',
+};
+
 const breastKinetics = {
   panel: '@ohif/extension-breast-kinetics.panelModule.breastKinetics',
 };
@@ -83,6 +87,7 @@ const extensionDependencies = {
   '@ohif/extension-calcium-score': '^3.0.0',
   '@ohif/extension-coronary-cpr': '^3.0.0',
   '@ohif/extension-breast-kinetics': '^3.0.0',
+  '@ohif/extension-dental': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -189,6 +194,7 @@ function modeFactory({ modeConfiguration }) {
           'CalciumScore',
           'CoronaryCPR',
           'BreastKinetics',
+          'DentalArch',
           'CalibrationLine',
           'ShowViewportOverlay',
         ].filter(
@@ -318,6 +324,7 @@ function modeFactory({ modeConfiguration }) {
             calcium.panel,
             coronaryCpr.panel,
             breastKinetics.panel,
+            dental.panel,
           ];
 
           return {

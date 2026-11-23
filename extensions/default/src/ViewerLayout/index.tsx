@@ -55,6 +55,7 @@ function ViewerLayout({
     setRightPanelClosed
   );
 
+  const BottomDock = customizationService.getCustomization('viewerLayout.bottomDock');
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
   );
@@ -171,7 +172,7 @@ function ViewerLayout({
             <ResizablePanel {...resizableViewportGridPanelProps}>
               <div className="flex h-full flex-1 flex-col">
                 <div
-                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  className="relative flex h-full min-h-0 flex-1 items-center justify-center overflow-hidden bg-black"
                   onTouchStart={() => {
                     // En teléfono, tocar la imagen cierra los paneles: cualquiera
                     // de los dos abierto tapa casi todo el estudio. Se cierran los
@@ -189,6 +190,9 @@ function ViewerLayout({
                     commandsManager={commandsManager}
                   />
                 </div>
+                {/* NUBIX: franja bajo la rejilla que aporta una extensión (hoy, la
+                    panorámica dental). El componente decide si pinta algo. */}
+                {BottomDock ? <BottomDock /> : null}
               </div>
             </ResizablePanel>
             {hasRightPanels ? (

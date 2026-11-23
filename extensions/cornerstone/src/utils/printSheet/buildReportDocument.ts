@@ -6,6 +6,14 @@ import type { PrintHeaderInfo } from './getPrintHeader';
  */
 export type ReportSection =
   | { kind: 'images'; images: string[]; columns?: number; caption?: string }
+  // NUBIX: imágenes a tamaño físico (mm sobre el papel), una debajo de otra. La
+  // escala sólo se cumple si el navegador imprime al 100 %.
+  | {
+      kind: 'scaled';
+      title?: string;
+      images: { src: string; widthMm: number; heightMm: number }[];
+      caption?: string;
+    }
   | { kind: 'table'; title?: string; columns: string[]; rows: (string | number)[][] }
   | { kind: 'keyvalues'; title?: string; items: [string, string][] }
   | { kind: 'notes'; title?: string; lines: string[]; tone?: 'plain' | 'warning' };
@@ -36,6 +44,19 @@ function renderSection(section: ReportSection): string {
       return `<section class="images" style="grid-template-columns: repeat(${columns}, 1fr)">${cells.join(
         ''
       )}</section>${section.caption ? `<p class="caption">${escapeHtml(section.caption)}</p>` : ''}`;
+    }
+    case 'scaled': {
+      const blocks = section.images
+        .map(
+          image =>
+            `<div class="scaled"><img src="${image.src}" style="width:${image.widthMm.toFixed(
+              2
+            )}mm;height:${image.heightMm.toFixed(2)}mm" /></div>`
+        )
+        .join('');
+      return `${section.title ? `<h2>${escapeHtml(section.title)}</h2>` : ''}${blocks}${
+        section.caption ? `<p class="caption">${escapeHtml(section.caption)}</p>` : ''
+      }`;
     }
     case 'table': {
       const head = section.columns.map(c => `<th>${escapeHtml(c)}</th>`).join('');
@@ -120,6 +141,8 @@ export default function buildReportDocument({
   section.images { display: grid; gap: 3mm; margin: 2mm 0; break-inside: avoid; }
   .img { background: #000; display: flex; align-items: center; justify-content: center; }
   .img img { max-width: 100%; max-height: 150mm; display: block; }
+  .scaled { margin: 2mm 0; break-inside: avoid; line-height: 0; }
+  .scaled img { display: block; max-width: none; }
   .caption { font-size: 8pt; color: #444; margin: 1mm 0 0 0; }
   table.data { width: 100%; border-collapse: collapse; font-size: 9pt; break-inside: avoid; }
   table.data th, table.data td { border-bottom: 0.2mm solid #bbb; padding: 1.2mm 2mm; text-align: right; }

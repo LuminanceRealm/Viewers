@@ -354,6 +354,32 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    // NUBIX: panorámica dental y cortes transversales sobre CBCT (extensión dental).
+    // El id coincide con el nombre de la herramienta que traza el arco.
+    id: 'DentalArch',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-dental',
+      label: 'Dental · beta',
+      tooltip: 'Panorámica dental, cortes transversales y canal mandibular (CBCT)',
+      commands: [
+        {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: { toolGroupIds: ['default', 'mpr'] },
+        },
+        { commandName: 'dentalActivate' },
+      ],
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.modality.supported',
+          supportedModalities: ['CT'],
+          disabledText: 'Sólo disponible en tomografía',
+        },
+      ],
+    },
+  },
+  {
     // NUBIX: curvas cinéticas de resonancia dinámica (extensión breast-kinetics).
     id: 'BreastKinetics',
     uiType: 'ohif.toolButton',

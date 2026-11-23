@@ -1,6 +1,7 @@
 import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
 import { toolNames as CalciumToolNames } from '@ohif/extension-calcium-score';
 import { toolNames as CprToolNames } from '@ohif/extension-coronary-cpr';
+import { toolNames as DentalToolNames } from '@ohif/extension-dental';
 import { toolNames as KineticsToolNames } from '@ohif/extension-breast-kinetics';
 
 const colours = {
@@ -109,6 +110,12 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: CprToolNames.CoronaryCPR,
         configuration: {
           onRejected: message => commandsManager.runCommand('coronaryCprNotify', { message }),
+        },
+      },
+      {
+        toolName: DentalToolNames.DentalArch,
+        configuration: {
+          onRejected: message => commandsManager.runCommand('dentalNotify', { message }),
         },
       },
       {
@@ -298,6 +305,12 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: CprToolNames.CoronaryCPR,
         configuration: {
           onRejected: message => commandsManager.runCommand('coronaryCprNotify', { message }),
+        },
+      },
+      {
+        toolName: DentalToolNames.DentalArch,
+        configuration: {
+          onRejected: message => commandsManager.runCommand('dentalNotify', { message }),
         },
       },
       { toolName: toolNames.PlanarFreehandROI },

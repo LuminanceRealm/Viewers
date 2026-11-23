@@ -3927,6 +3927,25 @@ export const ToolCoronaryCpr = (props: IconProps) => (
   </svg>
 );
 
+/** NUBIX: herramientas dentales. Un molar. */
+export const ToolDental = (props: IconProps) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
+    <path
+      d="M7.5 3.5C5.3 3.5 4 5.2 4 7.5C4 9.2 4.7 10.6 5.1 12.2C5.6 14.2 5.7 16.3 6.2 18.2C6.5 19.5 7 20.5 7.9 20.5C8.9 20.5 9.1 19.2 9.4 17.8C9.8 16 10.2 14.6 12 14.6C13.8 14.6 14.2 16 14.6 17.8C14.9 19.2 15.1 20.5 16.1 20.5C17 20.5 17.5 19.5 17.8 18.2C18.3 16.3 18.4 14.2 18.9 12.2C19.3 10.6 20 9.2 20 7.5C20 5.2 18.7 3.5 16.5 3.5C14.9 3.5 13.8 4.4 12 4.4C10.2 4.4 9.1 3.5 7.5 3.5Z"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 /** NUBIX: curvas cinéticas. Una curva de realce con lavado sobre ejes. */
 export const ToolBreastKinetics = (props: IconProps) => (
   <svg
