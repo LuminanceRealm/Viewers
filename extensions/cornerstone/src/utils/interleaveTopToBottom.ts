@@ -136,7 +136,11 @@ export default function interleaveTopToBottom({
   });
 
   const requestType = Enums.RequestType.Prefetch;
-  const priority = 0;
+  // NUBIX: por delante (número menor = antes) de lo que ya esperaba en la cola
+  // de prefetch con prioridad 0: el prefetch del stack que se acaba de cerrar y
+  // el de estudio. Si no, el volumen no pinta un solo corte hasta que esas
+  // peticiones viejas terminan, y en una serie larga el MPR se queda gris.
+  const priority = -1;
 
   finalRequests.forEach(({ callLoadImage, additionalDetails, imageId, imageIdIndex, options }) => {
     const callLoadImageBound = callLoadImage.bind(null, imageId, imageIdIndex, options);

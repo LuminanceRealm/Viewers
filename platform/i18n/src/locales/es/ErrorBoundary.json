@@ -4,5 +4,8 @@
   "Something went wrong": "Algo salió mal",
   "in": "en",
   "Sorry, something went wrong there. Try again.": "Lo siento, algo salió mal. Inténtalo de nuevo.",
-  "Stack Trace": "Traza de pila"
+  "Stack Trace": "Traza de pila",
+  "Show Details": "Ver detalle",
+  "Copy Details": "Copiar detalle",
+  "Copied to clipboard": "Copiado al portapapeles"
 }

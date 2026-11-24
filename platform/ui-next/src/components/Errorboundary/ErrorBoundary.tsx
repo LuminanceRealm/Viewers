@@ -14,6 +14,23 @@ import { Icons } from '../Icons';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+/**
+ * NUBIX: datos de la GPU (platform/app/src/utils/probeGpu.ts) y, si la hubo,
+ * de la pérdida de contexto WebGL (watchWebGLContextLoss en la extensión de
+ * cornerstone). Van en el detalle para que un reporte de "pantalla en blanco"
+ * llegue con lo que de otro modo habría que pedir de chrome://gpu.
+ */
+const getGpuDetails = (): string => {
+  const { nubixGpuInfo, nubixContextLoss } = window as unknown as Record<string, unknown>;
+  const lines = [`GPU: ${JSON.stringify(nubixGpuInfo ?? null)}`];
+
+  if (nubixContextLoss) {
+    lines.push(`WebGL context lost: ${JSON.stringify(nubixContextLoss)}`);
+  }
+
+  return lines.join('\n');
+};
+
 interface ErrorBoundaryError extends Error {
   message: string;
   stack?: string;
@@ -42,14 +59,21 @@ const DefaultFallback = ({
 }: DefaultFallbackProps) => {
   const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
-  const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
+  // NUBIX: `!isProduction && ...` dentro de la plantilla escribía "false" en el
+  // título de producción ("Something went wrongfalse.").
+  const title = `${t('Something went wrong')}${!isProduction ? ` ${t('in')} ${context}` : ''}.`;
+  // Una promesa rechazada puede traer cualquier cosa, no sólo un Error.
+  const errorMessage = error?.message ?? String(error);
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
   const copyErrorDetails = () => {
     const errorDetails = `
 Context: ${context}
-Error Message: ${error.message}
-Stack: ${error.stack}
+Error Message: ${errorMessage}
+Stack: ${error?.stack}
+URL: ${window.location.href}
+User Agent: ${navigator.userAgent}
+${getGpuDetails()}
     `;
     navigator.clipboard.writeText(errorDetails);
     toast.success(t('Copied to clipboard'));
@@ -66,10 +90,9 @@ Stack: ${error.stack}
     });
   }, [error]);
 
-  if (isProduction) {
-    return null;
-  }
-
+  // NUBIX: upstream no pintaba el diálogo en producción, así que "Show Details"
+  // era un botón muerto y los reportes llegaban sin el texto del error
+  // (ticket del estudio 1186425). El detalle sólo aparece si el usuario lo pide.
   return (
     <>
       <Dialog
@@ -102,10 +125,13 @@ Stack: ${error.stack}
                   {t('Context')}: {context}
                 </p>
                 <p className="text-aqua-pale break-words text-lg">
-                  {t('Error Message')}: {error.message}
+                  {t('Error Message')}: {errorMessage}
                 </p>
                 <pre className="text-aqua-pale whitespace-pre-wrap break-words rounded bg-gray-900 p-4">
-                  Stack: {error.stack}
+                  Stack: {error?.stack}
+                </pre>
+                <pre className="text-aqua-pale whitespace-pre-wrap break-words rounded bg-gray-900 p-4">
+                  {getGpuDetails()}
                 </pre>
               </div>
             </div>

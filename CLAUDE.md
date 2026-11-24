@@ -287,6 +287,57 @@ todas las imágenes, así que esa sola imagen dejaba la serie entera sin MPR.
   localizador.
 - Verificado en local con 1153591: las cuatro fases abren en MPR con volumen 512×512×120.
 
+## MPR a medias en series largas: la cola de prefetch es compartida
+
+Ticket del estudio 1186425 (CBCT NewTom, 606 cortes de 546×547): las series de 40 cortes abrían en
+MPR y la de 606 se quedaba gris, a medias, para siempre. No era el equipo ni el archivo.
+
+- `imageLoadPoolManager` tiene **una sola cola `Prefetch`** y ahí esperan tres cosas: el prefetch
+  del stack (`stackContextPrefetch`), el de estudio (`StudyPrefetcherService`, que upstream trae
+  apagado y aquí está encendido en `default.js`) y los cortes del volumen MPR (`nthLoader`,
+  `interleaveCenterLoader`, `interleaveTopToBottom`).
+- `StudyPrefetcherService._stopPrefetching` hacía `clearRequestStack(Prefetch)` en cada reinicio
+  (cambia la serie del viewport activo, `DISPLAY_SETS_CHANGED`), y con eso tiraba los cortes del
+  volumen. Como el volumen se queda con `loadStatus.loading = true`,
+  `CornerstoneViewportService` no vuelve a llamar a `volume.load()` y nadie los pide otra vez.
+  Ahora marca sus peticiones (`additionalDetails.source`) y retira sólo ésas con `filterRequests`.
+- Depende del orden de los clics y del tamaño: 40 cortes terminan antes del reinicio. Entrar
+  directo a MPR sobre la serie larga solía funcionar; abrir otra serie antes, no.
+- Los tres cargadores de volumen encolan con **prioridad −1** (número menor = antes). Con 0
+  quedaban detrás del prefetch del stack recién cerrado y el MPR no pintaba un solo corte hasta
+  que esas peticiones viejas terminaban.
+- Para ver la cola en un build de producción sin tocar código: `self.webpackChunk.push([[Symbol()],
+  {}, r => (req = r)])` y buscar en `req.m` el módulo cuyo fuente contiene `'imageLoadPool'`.
+- Visto y no investigado: con una serie ATM en el stack, `toggleHangingProtocol {protocolId:'mpr'}`
+  lanzado por comando abrió la serie de 606 y no la ATM.
+
+### Pantalla en blanco en un equipo Windows (sin resolver)
+
+El mismo ticket traía capturas que **no** son el atasco de arriba: los tres planos en blanco, con
+el icono de imagen rota de Chrome en la esquina de cada canvas, y el aviso "Something went wrong".
+Hipótesis sin confirmar: la GPU de ese equipo no sostiene la textura 3D de 546×547×606 (~345 MB
+con 16 bits normalizados, el doble si sube como float32) y el navegador le quita el contexto a
+todos los canvas. No se pudo reproducir: una pérdida simulada con `WEBGL_lose_context` congela la
+imagen, no la pone blanca. Lo que se dejó para la próxima vez:
+
+- **`ErrorBoundary` (ui-next) ya muestra el detalle en producción.** Upstream devolvía `null`, así
+  que "Show Details" era un botón muerto y los reportes llegaban sin el texto del error. El detalle
+  trae mensaje, traza, URL, navegador y los datos de GPU. De paso se quitó el "false" que se colaba
+  en el título (`!isProduction && ...` dentro de una plantilla).
+- **`probeGpu`** (`platform/app/src/utils`) mide una vez al arrancar, en el mismo contexto que ya
+  se creaba para `max3DTextureSize`, y deja `window.nubixGpuInfo` (modelo, límites de textura,
+  `norm16`, `deviceMemory`). No hay API para saber la memoria de video.
+- **`watchWebGLContextLoss`** (extensión de cornerstone, enganchado al crear el `RenderingEngine`)
+  escucha `webglcontextlost` en el canvas offscreen, avisa con las reconstrucciones que había
+  cargadas y deja `window.nubixContextLoss`. No intenta recuperarse: cornerstone no rehace sus
+  texturas, hay que recargar. Trampa: en `uiNotificationService.show`, `duration: 0` no es "para
+  siempre" (sonner aplica su duración por defecto); para un aviso fijo va `Infinity`.
+- **No se puso un presupuesto de memoria preventivo** a propósito: sin datos el umbral sería
+  inventado. Si el detalle confirma que es memoria, el paso siguiente es ofrecer, tras la caída, el
+  sub-rango a resolución nativa que ya existe (hoy sólo se activa por número de cortes), a
+  elección del usuario. `preferSizeOverAccuracy` queda descartado: con media precisión los enteros
+  sólo son exactos hasta 2048 y un CT se sale.
+
 ## Proyección de grosor: MIP, MinIP y promedio (`utils/slabProjection.ts`)
 
 Cornerstone ya pinta MIP/MinIP/promedio en los `VolumeViewport` ortográficos (`setBlendMode` +

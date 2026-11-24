@@ -32,6 +32,7 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
+import watchWebGLContextLoss from '../../utils/watchWebGLContextLoss';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -117,6 +118,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
       this.renderingEngine = new RenderingEngine(RENDERING_ENGINE_ID);
+      watchWebGLContextLoss(this.renderingEngine, this.servicesManager);
     }
 
     return this.renderingEngine;

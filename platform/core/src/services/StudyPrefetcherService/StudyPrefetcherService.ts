@@ -83,7 +83,14 @@ interface IImageLoadPoolManager {
     priority?: number
   );
   clearRequestStack(type: string): void;
+  filterRequests(filterFunction: (requestDetails: any) => boolean): void;
 }
+
+/**
+ * Marca en `additionalDetails` las peticiones que este servicio mete a la cola
+ * compartida de carga, para poder retirar sólo las suyas al detenerse.
+ */
+const STUDY_PREFETCHER_REQUEST = 'studyPrefetcher';
 
 interface IImageLoader {
   loadAndCacheImage(imageId: string, options: any): Promise<any>;
@@ -617,7 +624,7 @@ class StudyPrefetcherService extends PubSubService {
             error => this._onImagePrefetchFailed(imageRequest, error)
           ),
         this.requestType,
-        { imageId }
+        { imageId, source: STUDY_PREFETCHER_REQUEST }
       );
 
       inflightRequests.set(imageId, imageRequest);
@@ -679,7 +686,17 @@ class StudyPrefetcherService extends PubSubService {
     this._displaySetLoadingStates.clear();
     this._imageIdsToDisplaySetsMap.clear();
     this._inflightRequests.clear();
-    this.imageLoadPoolManager.clearRequestStack(this.requestType);
+
+    // NUBIX: sólo se retiran las peticiones de este servicio. La cola de
+    // prefetch es compartida: ahí también esperan los cortes de un volumen MPR
+    // (nthLoader / interleaveCenterLoader). Vaciarla entera con
+    // `clearRequestStack` los tiraba, y como el volumen se queda con
+    // `loadStatus.loading = true` nadie los volvía a pedir: la reconstrucción
+    // se quedaba a medias para siempre. Una serie de 40 cortes termina antes
+    // de que esto ocurra; una de 606 no (estudio 1186425).
+    this.imageLoadPoolManager.filterRequests(
+      requestDetails => requestDetails?.additionalDetails?.source !== STUDY_PREFETCHER_REQUEST
+    );
 
     this._broadcastEvent(this.EVENTS.SERVICE_STOPPED, {});
   }

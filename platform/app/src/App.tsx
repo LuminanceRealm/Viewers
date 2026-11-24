@@ -6,6 +6,7 @@ import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 
+import probeGpu from './utils/probeGpu';
 import Compose from './routes/Mode/Compose';
 import {
   ExtensionManager,
@@ -89,12 +90,11 @@ function App({
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
 
-  // get the maximum 3D texture size
-  const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl2');
+  // get the maximum 3D texture size (y, de paso, el resto de lo que se puede
+  // saber de la GPU: ver probeGpu)
+  const { max3DTextureSize } = probeGpu();
 
-  if (gl) {
-    const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+  if (max3DTextureSize) {
     appConfigState.max3DTextureSize = max3DTextureSize;
   }
 
