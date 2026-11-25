@@ -332,6 +332,19 @@ imagen, no la pone blanca. Lo que se dejó para la próxima vez:
   cargadas y deja `window.nubixContextLoss`. No intenta recuperarse: cornerstone no rehace sus
   texturas, hay que recargar. Trampa: en `uiNotificationService.show`, `duration: 0` no es "para
   siempre" (sonner aplica su duración por defecto); para un aviso fijo va `Infinity`.
+- **Lo que sí se supo (25-nov-2026):** con el detalle ya activo, ese equipo mandó `TypeError:
+  Cannot read properties of undefined (reading 'values')` en `RenderingEngine._getViewportsAsArray`,
+  sobre una pantalla vacía. Es el síntoma de **un navegador sin WebGL** (reproducido igual con
+  `--disable-gpu --disable-3d-apis`): el constructor de `RenderingEngine` se registra en el caché y
+  truena al crear la ventana offscreen, antes de inicializar `_viewports`; todo lo que venga
+  después usa ese motor a medio construir. Chrome bloquea WebGL cuando la tarjeta gráfica falla
+  varias veces, así que cuadra con la hipótesis, pero no la prueba.
+- **No se activó el respaldo por CPU, por decisión de Arturo** (no arriesgar a los demás por
+  arreglar un equipo). El origen es `init.tsx`: `cornerstone.setUseCPURendering(Boolean(
+  appConfig.useCPURendering))` pisa con `false` lo que cornerstone ya detectó en su `init`. Se probó
+  respetar esa detección: el stack sí pinta por CPU, pero el MPR queda en negro sin aviso y
+  `uiNotificationService.show` llamado desde el `init` de la extensión no muestra nada (el
+  proveedor aún no existe). Si se retoma, hay que resolver esas dos cosas.
 - **No se puso un presupuesto de memoria preventivo** a propósito: sin datos el umbral sería
   inventado. Si el detalle confirma que es memoria, el paso siguiente es ofrecer, tras la caída, el
   sub-rango a resolución nativa que ya existe (hoy sólo se activa por número de cortes), a
