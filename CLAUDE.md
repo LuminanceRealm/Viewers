@@ -300,7 +300,11 @@ MPR y la de 606 se quedaba gris, a medias, para siempre. No era el equipo ni el 
   (cambia la serie del viewport activo, `DISPLAY_SETS_CHANGED`), y con eso tiraba los cortes del
   volumen. Como el volumen se queda con `loadStatus.loading = true`,
   `CornerstoneViewportService` no vuelve a llamar a `volume.load()` y nadie los pide otra vez.
-  Ahora marca sus peticiones (`additionalDetails.source`) y retira sólo ésas con `filterRequests`.
+  Ahora vacía la cola con `filterRequests` **dejando sólo los cortes de volumen**
+  (`additionalDetails.volumeId`). Lo demás se sigue descartando a propósito, igual que antes: una
+  primera versión retiraba sólo las peticiones del propio servicio y dejaba vivo el prefetch del
+  stack que se acababa de cerrar (~500 peticiones por delante de la serie nueva), que en conexión
+  lenta retrasaría la precarga al saltar entre series.
 - Depende del orden de los clics y del tamaño: 40 cortes terminan antes del reinicio. Entrar
   directo a MPR sobre la serie larga solía funcionar; abrir otra serie antes, no.
 - Los tres cargadores de volumen encolan con **prioridad −1** (número menor = antes). Con 0

@@ -86,12 +86,6 @@ interface IImageLoadPoolManager {
   filterRequests(filterFunction: (requestDetails: any) => boolean): void;
 }
 
-/**
- * Marca en `additionalDetails` las peticiones que este servicio mete a la cola
- * compartida de carga, para poder retirar sólo las suyas al detenerse.
- */
-const STUDY_PREFETCHER_REQUEST = 'studyPrefetcher';
-
 interface IImageLoader {
   loadAndCacheImage(imageId: string, options: any): Promise<any>;
 }
@@ -624,7 +618,7 @@ class StudyPrefetcherService extends PubSubService {
             error => this._onImagePrefetchFailed(imageRequest, error)
           ),
         this.requestType,
-        { imageId, source: STUDY_PREFETCHER_REQUEST }
+        { imageId }
       );
 
       inflightRequests.set(imageId, imageRequest);
@@ -687,15 +681,18 @@ class StudyPrefetcherService extends PubSubService {
     this._imageIdsToDisplaySetsMap.clear();
     this._inflightRequests.clear();
 
-    // NUBIX: sólo se retiran las peticiones de este servicio. La cola de
-    // prefetch es compartida: ahí también esperan los cortes de un volumen MPR
-    // (nthLoader / interleaveCenterLoader). Vaciarla entera con
-    // `clearRequestStack` los tiraba, y como el volumen se queda con
-    // `loadStatus.loading = true` nadie los volvía a pedir: la reconstrucción
-    // se quedaba a medias para siempre. Una serie de 40 cortes termina antes
-    // de que esto ocurra; una de 606 no (estudio 1186425).
+    // NUBIX: se vacía la cola de prefetch como siempre, **menos los cortes de un
+    // volumen**. La cola es compartida: ahí también esperan los cortes del MPR
+    // (nthLoader / interleaveCenterLoader), y `clearRequestStack` los tiraba.
+    // Como el volumen se queda con `loadStatus.loading = true`, nadie los
+    // volvía a pedir y la reconstrucción quedaba a medias para siempre. Una
+    // serie de 40 cortes termina antes de que esto ocurra; una de 606 no
+    // (estudio 1186425). Lo demás (prefetch del stack anterior y el de estudio)
+    // se sigue descartando a propósito: conservarlo retrasaría la precarga de
+    // la serie nueva en conexiones lentas.
     this.imageLoadPoolManager.filterRequests(
-      requestDetails => requestDetails?.additionalDetails?.source !== STUDY_PREFETCHER_REQUEST
+      requestDetails =>
+        requestDetails?.type !== this.requestType || !!requestDetails?.additionalDetails?.volumeId
     );
 
     this._broadcastEvent(this.EVENTS.SERVICE_STOPPED, {});
