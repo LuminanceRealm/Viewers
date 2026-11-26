@@ -25,11 +25,45 @@ export function setVolumeSliceLimitSource(appConfig: Record<string, unknown>): v
 }
 
 /**
+ * NUBIX: tope de cortes que el usuario aceptó después de que la tarjeta gráfica
+ * se cayó cargando un volumen (watchWebGLContextLoss). Vive en sessionStorage:
+ * la página tiene que recargarse tras la caída, y el tope es de **esta pestaña
+ * en este equipo**, no del estudio; al cerrar la pestaña desaparece.
+ */
+const SESSION_LIMIT_KEY = 'nubix.maxVolumeSlices';
+
+export function getSessionVolumeSliceLimit(): number | undefined {
+  try {
+    const value = Number(window.sessionStorage.getItem(SESSION_LIMIT_KEY));
+
+    return Number.isFinite(value) && value > 0 ? value : undefined;
+  } catch (error) {
+    return undefined;
+  }
+}
+
+export function setSessionVolumeSliceLimit(slices: number): void {
+  try {
+    window.sessionStorage.setItem(SESSION_LIMIT_KEY, String(Math.floor(slices)));
+  } catch (error) {
+    console.warn('No se pudo guardar el tope de cortes de la sesión', error);
+  }
+}
+
+/**
  * Returns the slice ceiling, or undefined when it could not be determined — in
  * which case callers must leave the volume alone rather than guess at a limit.
+ * It is the GPU's 3D texture depth, lowered by the session limit when there is
+ * one.
  */
 export function getMaxVolumeSlices(): number | undefined {
   const value = appConfigRef?.max3DTextureSize as number | undefined;
+  const gpuLimit = Number.isFinite(value) && value > 0 ? value : undefined;
+  const sessionLimit = getSessionVolumeSliceLimit();
 
-  return Number.isFinite(value) && value > 0 ? value : undefined;
+  if (gpuLimit && sessionLimit) {
+    return Math.min(gpuLimit, sessionLimit);
+  }
+
+  return sessionLimit ?? gpuLimit;
 }

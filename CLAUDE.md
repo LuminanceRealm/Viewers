@@ -349,11 +349,23 @@ imagen, no la pone blanca. Lo que se dejó para la próxima vez:
   respetar esa detección: el stack sí pinta por CPU, pero el MPR queda en negro sin aviso y
   `uiNotificationService.show` llamado desde el `init` de la extensión no muestra nada (el
   proveedor aún no existe). Si se retoma, hay que resolver esas dos cosas.
-- **No se puso un presupuesto de memoria preventivo** a propósito: sin datos el umbral sería
-  inventado. Si el detalle confirma que es memoria, el paso siguiente es ofrecer, tras la caída, el
-  sub-rango a resolución nativa que ya existe (hoy sólo se activa por número de cortes), a
-  elección del usuario. `preferSizeOverAccuracy` queda descartado: con media precisión los enteros
-  sólo son exactos hasta 2048 y un CT se sale.
+- **Confirmado en ese equipo (25-nov-2026):** con beta, al entrar al MPR de la serie de 606 salió
+  el aviso de `watchWebGLContextLoss`. La GPU sí pierde el contexto con ese volumen; falta saber
+  si es por memoria o porque el controlador tarda y Windows lo reinicia (no llegó el
+  `nubixGpuInfo`).
+- **Tras la caída se ofrece reconstruir menos cortes, a elección del usuario.** El aviso trae
+  "Recargar con N cortes" (la mitad del volumen que se cayó; si vuelve a caerse, la mitad de eso;
+  por debajo de 20 ya no se ofrece) y "Sólo recargar". El tope va a `sessionStorage`
+  (`nubix.maxVolumeSlices`) porque la página tiene que recargarse: es de **esa pestaña en ese
+  equipo**, no del estudio, y muere al cerrarla. `getMaxVolumeSlices` devuelve el menor entre ese
+  tope y `MAX_3D_TEXTURE_SIZE`, así que lo demás es el sub-rango a resolución nativa de siempre,
+  con su aviso y su etiqueta ámbar "Parcial: cortes a–b de n". No hay forma de quitar el tope sin
+  cerrar la pestaña. El aviso usa `toast` de sonner directo porque `uiNotificationService` no
+  admite botones. Probado sólo con caída simulada (`WEBGL_lose_context`): 606 → 303 → 151.
+- **No se puso un presupuesto de memoria preventivo** a propósito: el navegador no expone la
+  memoria de video y sin datos el umbral sería inventado; la única señal fiable es la caída misma.
+  `preferSizeOverAccuracy` queda descartado: con media precisión los enteros sólo son exactos
+  hasta 2048 y un CT se sale.
 
 ## Proyección de grosor: MIP, MinIP y promedio (`utils/slabProjection.ts`)
 
