@@ -50,6 +50,14 @@ export function setSessionVolumeSliceLimit(slices: number): void {
   }
 }
 
+export function clearSessionVolumeSliceLimit(): void {
+  try {
+    window.sessionStorage.removeItem(SESSION_LIMIT_KEY);
+  } catch (error) {
+    console.warn('No se pudo quitar el tope de cortes de la sesión', error);
+  }
+}
+
 /**
  * Returns the slice ceiling, or undefined when it could not be determined — in
  * which case callers must leave the volume alone rather than guess at a limit.

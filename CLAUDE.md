@@ -353,15 +353,19 @@ imagen, no la pone blanca. Lo que se dejó para la próxima vez:
   el aviso de `watchWebGLContextLoss`. La GPU sí pierde el contexto con ese volumen; falta saber
   si es por memoria o porque el controlador tarda y Windows lo reinicia (no llegó el
   `nubixGpuInfo`).
-- **Tras la caída se ofrece reconstruir menos cortes, a elección del usuario.** El aviso trae
-  "Recargar con N cortes" (la mitad del volumen que se cayó; si vuelve a caerse, la mitad de eso;
-  por debajo de 20 ya no se ofrece) y "Sólo recargar". El tope va a `sessionStorage`
+- **Tras la caída se ofrece reconstruir menos cortes, a elección del usuario.** Es un diálogo
+  (`components/GpuLostDialog.tsx`, por `uiModalService`) con "Reconstruir N cortes" y "Recargar
+  completa". Baja **de dos tercios en dos tercios** (decisión de Arturo: 100 → 66 → 44 → 30 % de
+  la serie, no a la mitad); por debajo de 20 cortes ya no se ofrece. El tope va a `sessionStorage`
   (`nubix.maxVolumeSlices`) porque la página tiene que recargarse: es de **esa pestaña en ese
-  equipo**, no del estudio, y muere al cerrarla. `getMaxVolumeSlices` devuelve el menor entre ese
-  tope y `MAX_3D_TEXTURE_SIZE`, así que lo demás es el sub-rango a resolución nativa de siempre,
-  con su aviso y su etiqueta ámbar "Parcial: cortes a–b de n". No hay forma de quitar el tope sin
-  cerrar la pestaña. El aviso usa `toast` de sonner directo porque `uiNotificationService` no
-  admite botones. Probado sólo con caída simulada (`WEBGL_lose_context`): 606 → 303 → 151.
+  equipo**, no del estudio, y muere al cerrarla; "Recargar completa" lo quita. `getMaxVolumeSlices`
+  devuelve el menor entre ese tope y `MAX_3D_TEXTURE_SIZE`, así que lo demás es el sub-rango a
+  resolución nativa de siempre, con su aviso y su etiqueta ámbar "Parcial: cortes a–b de n".
+  Confirmado en el equipo Windows del ticket: con 303 de 606 cortes sí reconstruye.
+- **Por qué diálogo y no toast:** la primera versión era un `toast.error` de sonner con dos
+  botones; con el texto largo se plegaba en una columna roja angosta, ilegible, encima de los
+  overlays. La imagen ya no responde, así que tapar el fondo no cuesta nada. No se cierra con Esc
+  ni con clic fuera.
 - **No se puso un presupuesto de memoria preventivo** a propósito: el navegador no expone la
   memoria de video y sin datos el umbral sería inventado; la única señal fiable es la caída misma.
   `preferSizeOverAccuracy` queda descartado: con media precisión los enteros sólo son exactos

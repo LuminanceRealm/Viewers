@@ -118,7 +118,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
       this.renderingEngine = new RenderingEngine(RENDERING_ENGINE_ID);
-      watchWebGLContextLoss(this.renderingEngine);
+      watchWebGLContextLoss(this.renderingEngine, this.servicesManager);
     }
 
     return this.renderingEngine;

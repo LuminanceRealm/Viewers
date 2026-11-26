@@ -358,15 +358,16 @@ export default function PanelDental() {
               Ventana auto
             </button>
           )}
-          <button
-            type="button"
-            className="ml-auto hover:text-white disabled:opacity-40"
+          <Button
+            className="ml-auto"
+            variant="secondary"
+            size="sm"
             disabled={!arch || printing}
             onClick={exportPdf}
             title="Abre la hoja de impresión a tamaño real; desde ahí se guarda como PDF"
           >
             {printing ? 'Preparando…' : 'PDF'}
-          </button>
+          </Button>
         </div>
       </section>
     </div>
