@@ -39,7 +39,7 @@ export default function GpuLostDialog({
         {slices
           ? `Este equipo no pudo sostener la reconstrucción de ${slices} cortes. `
           : 'Este equipo perdió la conexión con su tarjeta gráfica. '}
-        Las imágenes en pantalla ya no se actualizan: hay que recargar la página.
+        Las imágenes en pantalla ya no son de fiar: hay que recargar la página.
       </p>
 
       {fewerSlices > 0 && (

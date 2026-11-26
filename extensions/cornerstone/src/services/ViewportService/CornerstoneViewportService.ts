@@ -32,7 +32,7 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
-import watchWebGLContextLoss from '../../utils/watchWebGLContextLoss';
+import watchWebGLContextLoss, { scheduleGpuHealthCheck } from '../../utils/watchWebGLContextLoss';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -799,6 +799,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // }
 
     // This returns the async continuation only
+    // NUBIX: una reserva de textura que falla no avisa; ver scheduleGpuHealthCheck.
+    scheduleGpuHealthCheck(this.getRenderingEngine(), this.servicesManager);
+
     return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
   }
 

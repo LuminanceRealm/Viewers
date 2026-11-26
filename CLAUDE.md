@@ -366,6 +366,14 @@ imagen, no la pone blanca. Lo que se dejó para la próxima vez:
   botones; con el texto largo se plegaba en una columna roja angosta, ilegible, encima de los
   overlays. La imagen ya no responde, así que tapar el fondo no cuesta nada. No se cierra con Esc
   ni con clic fuera.
+- **Falla sin evento (26-nov-2026, hipótesis):** en ese equipo, tras elegir 404 de 606 cortes, el
+  MPR quedó sin mostrar nada y **sin aviso**: el contexto no se perdió, así que no había forma de
+  pedir menos cortes (con 303 sí había funcionado). Lo más probable es que la reserva de la
+  textura falle con `GL_OUT_OF_MEMORY`, que vtk no revisa. `scheduleGpuHealthCheck` (mismo
+  archivo, llamado desde `_setVolumeViewport`) pregunta `gl.getError()` a 1.5, 6 y 15 s de
+  asignar un volumen y, si hay `OUT_OF_MEMORY` o el contexto está perdido, abre el mismo diálogo.
+  Los errores vistos quedan en `nubixGpuInfo.glErrors`. En un MPR normal no reporta ninguno;
+  probado sólo inyectando el error. **Falta confirmar en ese equipo que ésa es la falla.**
 - **No se puso un presupuesto de memoria preventivo** a propósito: el navegador no expone la
   memoria de video y sin datos el umbral sería inventado; la única señal fiable es la caída misma.
   `preferSizeOverAccuracy` queda descartado: con media precisión los enteros sólo son exactos
